@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Wifi Locator</title>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script>
+<script type="text/javascript">
+
+var api_key = 'ABQIAAAA8gWuqjA2lsDa9ahZk8gq2BRNcKBwMAjyWjL-8UvR9FHGJtFysBRFzkRZX_W0F-bFUsm-7BXKN0yAlA';
+/// ----- Callback functions ----
+// This function handles the initial position determination as well as any changes
+// that might be returned from the browser due to a higher accuracy fix being
+// available.
+function geolocation(position) {
+  $("#latitude").html(position.coords.latitude + " N");
+  $("#longitude").html(position.coords.longitude + " E");
+
+  $("#location_data").show();
+  $("#status").html("Position acquired... Requesting address geocoding");
+  $.getJSON("http://maps.googleapis.com/maps/api/geocode/json?callback=?&sensor=false&latlng=" + position.coords.latitude + "," + position.coords.longitude,
+    function(data) {
+      alert(data + " received");
+    }
+  );
+}
+
+// This function handles the case when the browser is unable to generate a
+// GeoFix either due to user permission denial or due to lack of connectivity etc.
+function geoerror(error) {
+  switch(error.code) {
+    case error.TIMEOUT:
+      $("#status").html("Timeout... Retrying...");
+      getLocation();
+    break;
+
+    default:
+      $("#status").html("The Geolocation failed because of permission denial or an unspecified error.")
+  }
+
+}
+
+/// ---- onclick event handlers ----
+// This function is called to initiate the geolocation process using Wifi data
+// In case of smartphone browsers, it may optionally issue a GPS request to
+// get a higher accuracy fix.
+function getLocation() {
+    $("#status").html("Requesting Geolocation Access...");
+    if(navigator.geolocation) {
+      // Fire off an asynchronous request to get the current position via
+      // an IP address lookup or a GPS lookup (if on a smartphone or on a
+      // PC with gpsd - the GPS daemon)
+      navigator.geolocation.getCurrentPosition(geolocation, geoerror);
+
+      // Geolocation API available, change the html text of the status div
+      // to reflect the loading status
+      $("#status").html("Loading...").prepend("<img src='images/ajax-loader.gif' alt='loading' />");
+    } else {
+      $("#nojs").html("Your browser does not support HTML5 Geolocation API");
+      $("#nojs").show();
+    }
+
+    return false; // To suppress the browser from visiting the page in the href tag
+}
+
+$(document).ready(function() {
+  // The browser supports javascript, so hide the error message
+  $("#nojs").hide();
+
+  // Attach the javascript event handler on the click event
+  // to fire off the geocoding request.
+  $("#find_location").click(getLocation);
+}
+);
+</script>
+
+<style type="text/css">
+.error {
+  color:red;
+}
+h3 {
+  color: #dddddd;
+}
+h1 {
+  color: #333333;
+}
+
+body {
+  font-family:Verdana,"Trebuchet MS","Tahoma","Arial",sans-serif;
+  font-size:14px;
+}
+</style>
+
+</head>
+<body>
+<h1>Wifi Locator</h1>
+<h3 style="text-align:right">By Divye Kapoor</h3>
+
+<div id="nojs" class="error">Your browser does not have Javascript support which is required for this site to work.</div>
+
+<a id="find_location" href="#">Determine Location</a>
+
+<div id="location_data" style="display:none">
+  <h2>Your current location</h2>
+  <table>
+  <tr>
+    <td>Latitude</td>
+    <td id="latitude"></td>
+  </tr>
+  <tr>
+    <td>Longitude</td>
+    <td id="longitude"></td>
+  </tr>
+  <tr>
+    <td>Geocoded Address</td>
+    <td id="address"></td>
+  </tr>
+  </table>
+</div>
+
+
+<div id="status" class="error">Status</div>
+</body>
+</html>
+
