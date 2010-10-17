@@ -2,10 +2,33 @@
 <html>
 <head>
 <title>Wifi Locator</title>
+
+<meta name="viewport" content="initial-scale=1.0" />
+
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script>
+<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
 <script type="text/javascript">
 
 var api_key = 'ABQIAAAA8gWuqjA2lsDa9ahZk8gq2BRNcKBwMAjyWjL-8UvR9FHGJtFysBRFzkRZX_W0F-bFUsm-7BXKN0yAlA';
+
+function initialize_map(position) {
+    var latlong = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+    var mapOptions = {
+        zoom: 8,
+        center: latlong,
+        mapTypeId: google.maps.MapTypeId.ROADMAP
+    };
+    var map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
+
+    $.getJSON("/geocode/?lat=" + position.coords.latitude + "&long=" + position.coords.longitude,
+        function (data) {
+            console.log(data);
+            $("#address").html(data);
+        }
+    );
+    
+}
+
 /// ----- Callback functions ----
 // This function handles the initial position determination as well as any changes
 // that might be returned from the browser due to a higher accuracy fix being
@@ -16,11 +39,8 @@ function geolocation(position) {
 
   $("#location_data").show();
   $("#status").html("Position acquired... Requesting address geocoding");
-  $.getJSON("http://maps.googleapis.com/maps/api/geocode/json?callback=?&sensor=false&latlng=" + position.coords.latitude + "," + position.coords.longitude,
-    function(data) {
-      alert(data + " received");
-    }
-  );
+  
+  initialize_map(position);
 }
 
 // This function handles the case when the browser is unable to generate a
@@ -87,6 +107,12 @@ body {
   font-family:Verdana,"Trebuchet MS","Tahoma","Arial",sans-serif;
   font-size:14px;
 }
+
+#map_canvas {
+  width:400px;
+  height:300px;
+  border: solid 1px red;
+}
 </style>
 
 </head>
@@ -118,6 +144,7 @@ body {
 
 
 <div id="status" class="error">Status</div>
+<div id="map_canvas"></div>
 </body>
 </html>
 
