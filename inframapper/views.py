@@ -1,8 +1,13 @@
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import render_to_response
+from django.template import RequestContext
 from subprocess import Popen, PIPE
 import re
 import simplejson as json
+from urllib2 import urlopen
+from pprint import pprint
+from inframapper.models import *
 
 ip_match_regex = re.compile("(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})")
 
@@ -10,14 +15,17 @@ def error(request):
     """
         This function returns the error response web page in case of a malformed request
         to an HTTP API function.
+
+        HTTP Status Code 400 conforms to a malformed request.
     """
-    return HttpResponse("Your request was malformed.")
+    return HttpResponse("Your request was malformed.", status=400)
 
 
 # Public API
 def home(request):
     """ This function renders the home page from the home page html template  """
-    return HttpResponse("Hi!")
+    return render_to_response("index.html", {}, context_instance=RequestContext(request))
+
 
 def locate(request):
     """
@@ -36,6 +44,51 @@ def nearestAP(request):
     return HttpResponse("Nearest AP!")
 
 
+def geocode(request):
+    """
+        This function accesses the Google Maps API to reverse geocode a lat/long location to an 
+        address. This function is required as a cross site access to the Google Maps API via
+        javascript on the browser is subject to cross site scripting attacks.
+    """
+    if not hasattr(request.GET, 'lat') and not hasattr(request.GET, 'long'):
+        error(request)
+    
+    lat = request.GET.get('lat', None)
+    lon = request.GET.get('long', None)
+
+    f = urlopen("http://maps.googleapis.com/maps/api/geocode/json?latlng=" + lat + "," + lon + "&sensor=false")
+    return HttpResponse(f.read(), mimetype="application/json")
+
+
+def maplist(request):
+    """
+        Return a list of maps present in the bounding box provided by the NorthEast and SouthWest
+        corners of an estimation rectangle
+    """
+    NElat = request.GET.get('NElat', None)
+    NElng = request.GET.get('NElng', None)
+    SWlat = request.GET.get('SWlat', None)
+    SWlng = request.GET.get('SWlng', None)
+
+    if None in [NElat, NElng, SWlat, SWlng]:
+        return error(request)
+
+    floor_plans = FloorPlan.objects.filter(SWlocation__latitude__lte = NElat).filter(SWlocation__longitude__lte = NElng).filter(NElocation__latitude__gte = SWlat).filter(NElocation__longitude__gte = SWlng)
+    result = { 'result' : 'OK','floorPlans' : [i.__dict__ for i in floor_plans]}
+    for fp in result['floorPlans']:
+        fp['image'] = fp['image'].url
+    return HttpResponse(json.dumps(result), mimetype="application/json")
+    
+
+def mapshow(request):
+    """
+        Show the indoor maps along with the sample data for the access points.
+    """
+    if request.method != "POST":
+        return error(request)
+    
+    assert False,request
+    return render_to_response("indoor.html", {}, context_instance=RequestContext(request))
 
 # Internal functions
 def arp(request):

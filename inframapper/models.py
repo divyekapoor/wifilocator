@@ -1,22 +1,35 @@
 from django.db import models
 
-# Create your models here.
-class GeoLocation(models.Model):
+class Location(models.Model):
     latitude = models.FloatField()
     longitude = models.FloatField()
-    address = models.CharField(max_length=10000)
 
     def __unicode__(self):
-        return "(%d E, %d N) %s" % (self.gps_easting, self.gps_northing, self.address)
+        return "(%f N, %f E)" % (self.latitude, self.longitude)
+
+
+class FloorPlan(models.Model):
+    image = models.ImageField(upload_to="uploads", height_field='height', width_field='width', max_length=1000)
+    height = models.IntegerField(default=0, editable=False)
+    width = models.IntegerField(default=0, editable=False)
+    NElocation = models.ForeignKey(Location, related_name="NElocation") # The bounding box of the floor plan in terms of GPS coordinates
+    SWlocation = models.ForeignKey(Location, related_name="SWlocation") #    - NE and SW corners of the bounding box
+    description = models.CharField(max_length=1000)
+    scale = models.FloatField()
+
+    def __unicode__(self):
+        return self.description
 
 class IndoorLocation(models.Model):
-    floor_plan = models.ImageField()
+    floor_plan = models.ForeignKey(FloorPlan)
+    xoffset = models.IntegerField()         # The offsets of the position from the NW of the floor plan
+    yoffset = models.IntegerField()
 
 
 class AccessPoint(models.Model):
     ip_address = models.IPAddressField()
     eth_address = models.CharField(max_length=18)
-    location = models.ForeignKey(Location)
+    location = models.ForeignKey(IndoorLocation)
     
     def __unicode__(self):
         return "%s - %s" % (self.ip_address, self.location)
@@ -28,5 +41,5 @@ class Sample(models.Model):
     sample_time = models.DateTimeField(auto_now=True)
 
     def __unicode__(self):
-        return "%d dbm %s" % (self.rssi, self.ap)
+        return "%s: %d dbm %s" % (self.sample_time, self.rssi, self.ap)
 

@@ -2,6 +2,9 @@ from django.conf.urls.defaults import *
 from wifilocator.inframapper import views
 
 urlpatterns = patterns('',
+    (r'^mapshow/', views.mapshow),
+    (r'^maplist/', views.maplist),
+    (r'^geocode/', views.geocode),
     (r'^externalscan/', views.external_scan),
     (r'^scan/', views.scan),
     (r'^ping/', views.ping),

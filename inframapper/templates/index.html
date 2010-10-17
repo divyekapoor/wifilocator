@@ -10,23 +10,103 @@
 <script type="text/javascript">
 
 var api_key = 'ABQIAAAA8gWuqjA2lsDa9ahZk8gq2BRNcKBwMAjyWjL-8UvR9FHGJtFysBRFzkRZX_W0F-bFUsm-7BXKN0yAlA';
+var map;
+var latlong;
+var mapOptions = {
+    zoom: 16,
+    center: latlong,
+    mapTypeId: google.maps.MapTypeId.ROADMAP
+};
+
+function log(data) {
+    if(console) {
+        console.log(data);
+    }
+}
 
 function initialize_map(position) {
-    var latlong = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-    var mapOptions = {
-        zoom: 8,
-        center: latlong,
-        mapTypeId: google.maps.MapTypeId.ROADMAP
-    };
-    var map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
+    latlong = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+    mapOptions.center = latlong;
+    map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
+    var marker = new google.maps.Marker({
+        position: latlong,
+        title: "Detected Location"
+    });
+    marker.setMap(map);
+}
 
-    $.getJSON("/geocode/?lat=" + position.coords.latitude + "&long=" + position.coords.longitude,
+function geocode(position) {
+    $.getJSON("geocode/?lat=" + position.coords.latitude + "&long=" + position.coords.longitude,
         function (data) {
-            console.log(data);
-            $("#address").html(data);
+            log(data); // Log the incoming JSON for debugging
+            if(data.status == "OK") {
+                // Append a form element onto the web page.
+                $("#address").html("");
+                $("#address").append($("<form>"));
+
+                // Append the addresses as radio buttons
+                $.each(data.results, function (index, value) {
+                    $("#address form").append("<input type='radio' name='location' value='" + value.geometry.bounds.northeast.lat + ";" + value.geometry.bounds.northeast.lng + ";" + value.geometry.bounds.southwest.lat + ";" + value.geometry.bounds.southwest.lng + ";" + value.formatted_address + "' /> " + value.formatted_address + " <br />");
+                });
+
+                // Bind an event handler to the change event
+                $("#address form input[name=location]").change(plotMapBounds);
+
+                $("#status").html("Geocoding done. Please select your nearest location...");
+            } else {
+                $("#status").html("Geocoding the address faced some error...");
+            }
         }
     );
-    
+
+}
+
+var current_polygon = null;
+
+function plotMapBounds() {
+    log($(this));
+    var value = $(this).attr('value');
+    var bounds = value.split(';');
+    if(current_polygon !== null) {
+        current_polygon.setMap(null);
+    }
+    var coords = [ new google.maps.LatLng(bounds[0], bounds[1]), new google.maps.LatLng(bounds[0], bounds[3]), new google.maps.LatLng(bounds[2], bounds[3]), new google.maps.LatLng(bounds[2], bounds[1]) ];
+    current_polygon = new google.maps.Polygon({
+        paths: coords,
+        strokeColor: "#2233ff",
+        strokeOpacity: 0.8,
+        strokeWeight: 2,
+        fillColor: "#2233ff",
+        fillOpacity: 0.35
+    });
+    current_polygon.setMap(map);
+
+    getIndoorMapList({
+            NElat: bounds[0],
+            NElng: bounds[1],
+            SWlat: bounds[2],
+            SWlng: bounds[3],
+    });
+}
+
+
+function getIndoorMapList(bounds) {
+    $("#status").html("Fetching indoor maps within selected region...");
+    $.getJSON("maplist/",bounds, function(data, textStatus) {
+        log(textStatus);
+        log(data);
+        if(textStatus === "success") {
+            $("#available_maps").html('');
+            $("#available_maps").append($("<form method='post' action='mapshow/'>"));
+            $.each(data.floorPlans, function (index, value) {
+                $("#available_maps form").append("<input type='checkbox' name='indoor_map' value='" + value.id + "' checked /> " + value.description + " <br />");
+            });
+            $("#available_maps form").append("<input type='submit' name='submit' value='View Map' />");
+            $("#status").html("Please select maps to use for indoor positioning.");
+        } else {
+            $("#status").html("JSON request to getIndoorMapList failed");
+        }
+    });
 }
 
 /// ----- Callback functions ----
@@ -41,6 +121,7 @@ function geolocation(position) {
   $("#status").html("Position acquired... Requesting address geocoding");
   
   initialize_map(position);
+  geocode(position);
 }
 
 // This function handles the case when the browser is unable to generate a
@@ -68,11 +149,11 @@ function getLocation() {
       // Fire off an asynchronous request to get the current position via
       // an IP address lookup or a GPS lookup (if on a smartphone or on a
       // PC with gpsd - the GPS daemon)
-      navigator.geolocation.getCurrentPosition(geolocation, geoerror);
+      navigator.geolocation.watchPosition(geolocation, geoerror);
 
       // Geolocation API available, change the html text of the status div
       // to reflect the loading status
-      $("#status").html("Loading...").prepend("<img src='images/ajax-loader.gif' alt='loading' />");
+      $("#status").html("Loading...").prepend("<img src='{{ MEDIA_URL }}images/ajax-loader.gif' alt='loading' />");
     } else {
       $("#nojs").html("Your browser does not support HTML5 Geolocation API");
       $("#nojs").show();
@@ -109,9 +190,9 @@ body {
 }
 
 #map_canvas {
-  width:400px;
-  height:300px;
-  border: solid 1px red;
+  width:1000px;
+  height:800px;
+  border: solid 1px blue;
 }
 </style>
 
@@ -142,9 +223,16 @@ body {
   </table>
 </div>
 
+<div style="float:right">
+    <h3>Available Indoor Maps</h3>
+    <div id="available_maps">
+    </div>
+</div>
 
 <div id="status" class="error">Status</div>
 <div id="map_canvas"></div>
+<div id="floor_plan_canvas"></div>
+
 </body>
 </html>
 
