@@ -1,0 +1,1 @@
+[{"macaddr": "00:19:5B:6C:C0:23", "max_quality": "70", "signallevel": "-86", "freq": "2.412", "quality": "24", "channel": "1", "essid": "ravinder"}, {"macaddr": "00:19:5B:6C:C0:24", "max_quality": "70", "signallevel": "-86", "freq": "2.412", "quality": "24", "channel": "1", "essid": "ravinder"}]
