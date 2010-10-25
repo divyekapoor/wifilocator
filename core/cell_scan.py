@@ -92,7 +92,7 @@ def main(interface, options):
     # If easily parsable output is desired, transform the result to JSON and print it out
     if not options.quiet:
         if options.json:
-            print json.dumps(cell_list)
+            print json.dumps(cells)
         else:
             # Pretty print the result
             counter = 0
@@ -111,7 +111,6 @@ if __name__ == "__main__":
     parser = OptionParser(usage="Usage: %s [interface] [options]" % sys.argv[0])
     parser.add_option("-Q", "--quiet", action="store_true", default=False, dest="quiet", help="Do not print cell scan results to stdout. May be useful to test the return error code")
     parser.add_option("-j", "--json", action="store_true", default=False, dest="json", help="Return the cell scan output in JSON for portability")
-
     (options,args) = parser.parse_args()
     if len(args) > 1:
         parser.error("Too many arguments for [interface]")

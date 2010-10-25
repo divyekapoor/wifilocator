@@ -8,8 +8,66 @@
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script>
 <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
 
+<script type="text/javascript">
+var canvas_ids = [{% for p in floorPlans %}{% if forloop.first %}'canvas_{{ p.id }}'{% else %}, 'canvas_{{ p.id }}'{% endif %}{% endfor %}];
+var image_urls = [{% for p in floorPlans %}{% if forloop.first %}'{{ p.image.url }}'{% else %}, '{{ p.image.url }}'{% endif %}{% endfor %}];
+var images = [];
+
+function log(data) {
+    if(console) {
+        console.log(data);
+    }
+}
+
+function draw() {
+    log("draw called");
+
+    var i;
+    for(i = 0; i < canvas_ids.length; ++i) {
+        var canvas = document.getElementById(canvas_ids[i]);
+        var context = canvas.getContext('2d');
+        //log(context);
+
+        context.clearRect(0,0, canvas.width, canvas.height);
+        context.drawImage(images[i], 0, 0);
+    }
+    //setTimeout(draw, 3000);
+}
+
+function markPosition(evt) {
+    log("markPosition");
+    var context = $(this)[0].getContext('2d');
+    var offset = $(this).offset();
+    log("Position: " + (evt.pageX - offset.left) + ", " + (evt.pageY - offset.top));
+    var box_size = 20;
+    context.save();
+        context.fillStyle = "#ff0000";
+        context.fillRect(evt.pageX - offset.left - box_size/2, evt.pageY - offset.top - box_size/2, box_size, box_size);
+    context.restore();
+}
+
+$(document).ready(function() {
+    var i;
+    for(i = 0; i < canvas_ids.length; ++i) {
+        images[i] = new Image();
+        images[i].src = image_urls[i];
+   }
+   
+   $("canvas").bind('mousedown', markPosition);
+   setTimeout(draw, 30);
+});
+
+</script>
+
 </head>
 <body>
+
+{% for p in floorPlans %}
+<canvas id="canvas_{{ p.id }}" width="{{ p.width }}" height="{{ p.height }}" >
+<p>No browser support for canvas element.</p>
+</canvas>
+{{ p }} {{ p.location }}
+{% endfor %}
 
 </body>
 </html>

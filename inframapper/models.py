@@ -27,10 +27,10 @@ class IndoorLocation(models.Model):
 
 
 class AccessPoint(models.Model):
-    ip_address = models.IPAddressField()
     eth_address = models.CharField(max_length=18)
     location = models.ForeignKey(IndoorLocation)
-    
+    essid = models.CharField(max_length=1024)
+
     def __unicode__(self):
         return "%s - %s" % (self.ip_address, self.location)
 
@@ -38,6 +38,10 @@ class AccessPoint(models.Model):
 class Sample(models.Model):
     ap = models.ForeignKey(AccessPoint)
     rssi = models.IntegerField() # Value in db
+    quality = models.IntegerField()
+    max_quality = models.IntegerField()
+    channel = models.IntegerField()
+    freq = models.FloatField()
     sample_time = models.DateTimeField(auto_now=True)
 
     def __unicode__(self):

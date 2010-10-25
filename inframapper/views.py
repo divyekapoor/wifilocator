@@ -84,11 +84,15 @@ def mapshow(request):
     """
         Show the indoor maps along with the sample data for the access points.
     """
-    if request.method != "POST":
+    if request.method != "GET":
         return error(request)
     
-    assert False,request
-    return render_to_response("indoor.html", {}, context_instance=RequestContext(request))
+    indoor_map_ids = request.GET.getlist("indoor_map")
+    if len(indoor_map_ids) == 0:
+        return error(request)
+    
+    floor_plans = FloorPlan.objects.filter(pk__in = indoor_map_ids)
+    return render_to_response("indoor.html", {'floorPlans' : floor_plans }, context_instance=RequestContext(request))
 
 # Internal functions
 def arp(request):
@@ -112,6 +116,20 @@ def scan(request):
 
         Provide an option for saving the results of the scan to the database.
     """
+    if request.method == "GET":
+        cell_scan = Popen("/home/divye/src/acads/mtp/wifilocator/core/cell_scan.py --json", shell=True, stdout=PIPE)
+        cell_list_json = cell_scan.stdout.read()
+        cell_scan.wait()
+
+        return render_to_response("scan.html", cell_list_json, context_instance=RequestContext(request))
+    else:
+        operation = request.POST.get('operation', 'query')
+        if operation == 'query':
+            pass
+        elif operation == 'ap':
+            pass
+        elif operation == 'sample':
+            pass
     return HttpResponse("Scan!")
 
 @login_required

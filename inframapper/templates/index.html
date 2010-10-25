@@ -97,7 +97,7 @@ function getIndoorMapList(bounds) {
         log(data);
         if(textStatus === "success") {
             $("#available_maps").html('');
-            $("#available_maps").append($("<form method='post' action='mapshow/'>"));
+            $("#available_maps").append($("<form method='get' action='mapshow/'>"));
             $.each(data.floorPlans, function (index, value) {
                 $("#available_maps form").append("<input type='checkbox' name='indoor_map' value='" + value.id + "' checked /> " + value.description + " <br />");
             });
