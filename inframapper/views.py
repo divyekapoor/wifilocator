@@ -3,8 +3,9 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from subprocess import Popen, PIPE
-import re
+import re, os
 import simplejson as json
+import socket
 from urllib2 import urlopen
 from pprint import pprint
 from inframapper.models import *
@@ -35,7 +36,23 @@ def locate(request):
 
         This is the most critical code functionality.
     """
-    return HttpResponse("Locate!")
+    json_request = request.raw_post_data
+    print json_request
+
+    sock = socket.create_connection(('www.google.com', 80))
+    sock.send("POST /loc/json HTTP/1.1\r\nHost: www.google.com\r\nUser-Agent: Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.2.11) Gecko/20101013 Ubuntu/10.04 (lucid) Firefox/3.6.11\r\nAccept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8\r\nAccept-Language: en-us,en;q=0.5\r\nAccept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7\r\nConnection: close\r\nContent-Length: " + str(len(json_request)) + "\r\nContent-Type: text/plain; charset=UTF-8\r\nPragma: no-cache\r\nCache-Control: no-cache\r\n\r\n" + json_request)
+    data = sock.recv(4096)
+    sock.close()
+    headers, body = data.split("\r\n\r\n", 2)
+    # print headers
+    # print body
+
+    body = json.loads(body)
+    
+    #knn = Popen("indoorloc/knn.py -j -k 4 -d edist", shell=True, stdin=PIPE, stdout=PIPE)
+    #knn.wait()
+
+    return HttpResponse(body)
     
 def nearestAP(request):
     """
