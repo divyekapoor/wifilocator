@@ -1,0 +1,48 @@
+Cell 0
+{ 'channel': '6',
+  'essid': 'ravinder',
+  'freq': '2.437',
+  'macaddr': '00:1C:F0:CB:EC:5B',
+  'max_quality': '70',
+  'quality': '46',
+  'signallevel': '-64'}
+Cell 1
+{ 'channel': '13',
+  'essid': 'ravinder',
+  'freq': '2.472',
+  'macaddr': '00:19:5B:77:A5:EE',
+  'max_quality': '70',
+  'quality': '25',
+  'signallevel': '-85'}
+Cell 2
+{ 'channel': '6',
+  'essid': 'ravinder',
+  'freq': '2.437',
+  'macaddr': '00:1C:F0:CB:EC:89',
+  'max_quality': '70',
+  'quality': '36',
+  'signallevel': '-74'}
+Cell 3
+{ 'channel': '13',
+  'essid': 'oasis_9997459688',
+  'freq': '2.472',
+  'macaddr': '00:0C:42:68:DE:D3',
+  'max_quality': '70',
+  'quality': '28',
+  'signallevel': '-82'}
+Cell 4
+{ 'channel': '1',
+  'essid': 'oasisgb',
+  'freq': '2.412',
+  'macaddr': '00:15:6D:65:17:B6',
+  'max_quality': '70',
+  'quality': '26',
+  'signallevel': '-84'}
+Cell 5
+{ 'channel': '1',
+  'essid': 'ravinder',
+  'freq': '2.412',
+  'macaddr': '00:1C:F0:CB:EC:70',
+  'max_quality': '70',
+  'quality': '25',
+  'signallevel': '-85'}
