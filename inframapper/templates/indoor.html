@@ -19,19 +19,30 @@ function log(data) {
     }
 }
 
+function idraw(i) {
+    var canvas = document.getElementById(canvas_ids[i]);
+    var context = canvas.getContext('2d');
+    //log(context);
+
+    context.clearRect(0,0, canvas.width, canvas.height);
+    context.drawImage(images[i], 0, 0);
+}
+
 function draw() {
     log("draw called");
 
     var i;
+    var imgcount = 0;
     for(i = 0; i < canvas_ids.length; ++i) {
-        var canvas = document.getElementById(canvas_ids[i]);
-        var context = canvas.getContext('2d');
-        //log(context);
-
-        context.clearRect(0,0, canvas.width, canvas.height);
-        context.drawImage(images[i], 0, 0);
+        if(images[i].complete) {
+            idraw(i);
+            imgcount++;
+        }
     }
-    //setTimeout(draw, 3000);
+
+    // If all images haven't loaded successfully, try again after sometime.
+    if(imgcount != canvas_ids.length)
+        setTimeout(draw, 1000);
 }
 
 function markPosition(evt) {
@@ -49,7 +60,8 @@ function markPosition(evt) {
 $(document).ready(function() {
     var i;
     for(i = 0; i < canvas_ids.length; ++i) {
-        images[i] = new Image();
+        images.push(new Image());
+        images[i].onLoad = ((function (idx) { return function() { idraw(idx); } })(i));
         images[i].src = image_urls[i];
    }
    
