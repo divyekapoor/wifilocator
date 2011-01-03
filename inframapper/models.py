@@ -24,6 +24,13 @@ class IndoorLocation(models.Model):
     floor_plan = models.ForeignKey(FloorPlan)
     xoffset = models.IntegerField()         # The offsets of the position from the NW of the floor plan
     yoffset = models.IntegerField()
+    description = models.CharField(max_length=1000, default="")
+
+    def __unicode__(self):
+        if self.description != "":
+            return self.description
+        else:
+            return "%s: %d %d" % (self.floor_plan, self.xoffset, self.yoffset)
 
 
 class AccessPoint(models.Model):
