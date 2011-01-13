@@ -48,12 +48,12 @@ def locate(request):
     # print body
 
     body = json.loads(body)
-    
+
     #knn = Popen("indoorloc/knn.py -j -k 4 -d edist", shell=True, stdin=PIPE, stdout=PIPE)
     #knn.wait()
 
     return HttpResponse(body)
-    
+
 def nearestAP(request):
     """
         Given an address + floor + wing, what is the nearest access point located physically?
@@ -63,13 +63,13 @@ def nearestAP(request):
 
 def geocode(request):
     """
-        This function accesses the Google Maps API to reverse geocode a lat/long location to an 
+        This function accesses the Google Maps API to reverse geocode a lat/long location to an
         address. This function is required as a cross site access to the Google Maps API via
         javascript on the browser is subject to cross site scripting attacks.
     """
     if not hasattr(request.GET, 'lat') and not hasattr(request.GET, 'long'):
         error(request)
-    
+
     lat = request.GET.get('lat', None)
     lon = request.GET.get('long', None)
 
@@ -95,7 +95,14 @@ def maplist(request):
     for fp in result['floorPlans']:
         fp['image'] = fp['image'].url
     return HttpResponse(json.dumps(result), mimetype="application/json")
-    
+
+
+def external_scan(request):
+    """
+        Take in a json body, evaluate it as the result of a scan and register it
+        in the database.
+    """
+    return HttpResponse("externalscan: {0}".format(request.raw_post_data))
 
 def mapshow(request):
     """
@@ -103,11 +110,11 @@ def mapshow(request):
     """
     if request.method != "GET":
         return error(request)
-    
+
     indoor_map_ids = request.GET.getlist("indoor_map")
     if len(indoor_map_ids) == 0:
         return error(request)
-    
+
     floor_plans = FloorPlan.objects.filter(pk__in = indoor_map_ids)
     return render_to_response("indoor.html", {'floorPlans' : floor_plans }, context_instance=RequestContext(request))
 
@@ -120,7 +127,7 @@ def arp(request):
 
 def rarp(request):
     """
-        Due to lack of kernel support, perform a broadcast Ping, cache the 
+        Due to lack of kernel support, perform a broadcast Ping, cache the
         ARPs and try for an RARP. Else, report failure.
         Alternatively, use the net-tools package to support RARP via a daemon
     """
@@ -149,13 +156,7 @@ def scan(request):
             pass
     return HttpResponse("Scan!")
 
-@login_required
-def external_scan(request):
-    """
-        A scan was performed by a trusted external entity. Save the scan results
-        to the database.
-    """
-    return HttpResponse("External Scan!")
+
 
 
 def ping(request):
@@ -169,7 +170,7 @@ def ping(request):
     if ip is None:
         return error(request)
 
-    # Validate the IP Address 
+    # Validate the IP Address
     re_match_result = re.match(ip_match_regex, ip)
     if not re_match_result or len([x for x in re_match_result.groups() if int(x) > 255]) != 0:
         return error(request)
