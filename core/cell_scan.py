@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import re
-import sys
+import sys, time
 import simplejson as json
 from pprint import pprint
 from subprocess import Popen,PIPE
@@ -54,7 +54,7 @@ from optparse import OptionParser
 #                    ESSID:"(?P<essid>[^\n"]*)"""
 
 
-def scan(interface):
+def scan(interface, extended_info = False):
     # Note: it takes quite a bit of time to create and verify this regex! :)
     cellre = r"""Address: (?P<macaddr>(?:(?:[0-9a-fA-F]{2}):){5}(?:[0-9a-fA-F]{2}))\s+Channel:(?P<channel>\d+)\s+Frequency:(?P<freq>\d+|\d+\.\d*) GHz \(Channel (?:\d+)\)\s+Quality=(?P<quality>\d+)/(?P<max_quality>\d+)  Signal level=(?P<signallevel>[+-]?\d+) dBm\s+Encryption key:.*\s+ESSID:"(?P<essid>[^\n"]*)"""
 
@@ -65,9 +65,11 @@ def scan(interface):
     cell_parse_pattern = re.compile(cellre)
 
     # Completely read in the input as a huge string
+    start_time = time.time()
     iwlist = Popen("./iwscan " + interface, shell=True, stdout=PIPE, stdin=None, stderr=PIPE)
     complete_input = iwlist.stdout.read()
     ret_code = iwlist.wait()
+    end_time = time.time()
 
     # Make sure we scanned successfully
     if ret_code != 0:
@@ -79,13 +81,22 @@ def scan(interface):
     # Go through the groups and append the matched named groups to the cell_list
     cell_list = []
     for g in groups:
-        cell_list.append(g.groupdict())
+       cell_list.append(g.groupdict())
 
-    return (ret_code, cell_list)
+    if not extended_info:
+        return (ret_code, cell_list)
+    else:
+        return (ret_code, { 
+            "starttime" : start_time, 
+            "endtime" : end_time, 
+            "starttime_asc" : time.asctime(time.localtime(start_time)), 
+            "endtime_asc" : time.asctime(time.localtime(end_time)),
+            "scaninfo" : cell_list,
+        })
 
 
 def main(interface, options):
-    retcode, cells = scan(interface)
+    retcode, cells = scan(interface, options.extended_info)
     if retcode != 0:
         sys.exit(retcode)
 
@@ -111,6 +122,7 @@ if __name__ == "__main__":
     parser = OptionParser(usage="Usage: %s [interface] [options]" % sys.argv[0])
     parser.add_option("-Q", "--quiet", action="store_true", default=False, dest="quiet", help="Do not print cell scan results to stdout. May be useful to test the return error code")
     parser.add_option("-j", "--json", action="store_true", default=False, dest="json", help="Return the cell scan output in JSON for portability")
+    parser.add_option("-e", "--extended", action="store_true", default=False, dest="extended_info", help="Give data with timestamp information")
     (options,args) = parser.parse_args()
     if len(args) > 1:
         parser.error("Too many arguments for [interface]")
