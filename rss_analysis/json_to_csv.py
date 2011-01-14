@@ -2,6 +2,13 @@
 #
 #          Copyright Divye Kapoor 2010
 #
+# This file is used to obtain in CSV form filtered sections of
+# a JSON input file
+#
+# Input to this script: newline delimited sets of JSON objects
+# Command Line Arguments: a . delimited path for every JSON field to be inserted into the CSV file
+# Output: A CSV file with JSON values of the fields specified in the command line args
+#
 
 from termcolor import colored
 
@@ -41,7 +48,7 @@ def main():
                 field_paths[i][j] = int(field_paths[i][j])
 
     writer = csv.writer(sys.stdout)
-    writer.writerow([path[-1] for path in field_paths])
+    writer.writerow([header for header in sys.argv[1:]])
     for line in sys.stdin:
         try:
             sample = json.loads(line)
