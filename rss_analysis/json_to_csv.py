@@ -33,7 +33,13 @@ def process_field(sample, field):
             return ""
         if type(subfield) is int and subfield >= len(item):
             return ""
-        item = item[subfield]
+
+        try:
+            item = item[subfield]
+        except KeyError as e:
+            print >>sys.stderr, colored("Warning: ", 'blue', attrs=['bold']), colored(e, 'yellow'), "key not found"
+            return ""
+
     return item
  
 
