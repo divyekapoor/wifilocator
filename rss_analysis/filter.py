@@ -49,6 +49,7 @@ def main():
         except ValueError as e:
             print colored(e, 'red')
             print 'Line: ', colored(line, 'yellow')
+            raise
 
 
 if __name__ == "__main__":
