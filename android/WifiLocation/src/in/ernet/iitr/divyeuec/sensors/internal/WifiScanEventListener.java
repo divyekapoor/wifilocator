@@ -14,7 +14,7 @@ import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.util.Log;
 
-public class WifiScanEventListener extends BroadcastReceiver {
+public class WifiScanEventListener {
 	// Logging
 	private static final String TAG = "WifiReceiver-DK";
 	
@@ -23,7 +23,17 @@ public class WifiScanEventListener extends BroadcastReceiver {
 
 	private Context mCtx;
 	private WifiManager mWifiManager;
+
+	private BroadcastReceiver mWifiEventReceiver;
 	
+	public void setmWifiEventReceiver(BroadcastReceiver mWifiEventReceiver) {
+		this.mWifiEventReceiver = mWifiEventReceiver;
+	}
+
+	public BroadcastReceiver getmWifiEventReceiver() {
+		return mWifiEventReceiver;
+	}
+
 	// Methods
 	public WifiScanEventListener(Context ctx) {
 		mCtx = ctx;
@@ -43,7 +53,16 @@ public class WifiScanEventListener extends BroadcastReceiver {
 		return mCallbacks.size();
 	}
 	
-	@Override
+	public BroadcastReceiver getBroadcastReceiverInstance() {
+		return mWifiEventReceiver = new BroadcastReceiver() {
+			
+			@Override
+			public void onReceive(Context context, Intent intent) {
+				WifiScanEventListener.this.onReceive(context, intent);
+			}
+		};
+	}
+	
 	public void onReceive(Context context, Intent intent) {
 		Log.i(TAG, "onReceive Callback called.");
 		String action = intent.getAction();

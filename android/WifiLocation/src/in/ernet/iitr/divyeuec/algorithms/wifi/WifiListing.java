@@ -5,6 +5,7 @@ import in.ernet.iitr.divyeuec.sensors.DefaultSensorCallbacks;
 import in.ernet.iitr.divyeuec.sensors.ISensorCallback;
 import in.ernet.iitr.divyeuec.sensors.SensorLifecycleManager;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -16,6 +17,7 @@ public class WifiListing extends DefaultSensorCallbacks implements IAlgorithm, I
 	private SensorLifecycleManager mSensorLifecycleManager;
 	private List<Map<String, String>> mScanResults;
 	private WifiManager mWifiManager;
+	private List<IWifiListingUpdateCallback> mCallbacks = new ArrayList<IWifiListingUpdateCallback>();
 
 	public WifiListing(Context ctx) {
 		mSensorLifecycleManager = SensorLifecycleManager.getInstance(ctx);
@@ -32,15 +34,45 @@ public class WifiListing extends DefaultSensorCallbacks implements IAlgorithm, I
 		mSensorLifecycleManager.unregisterCallback(this, SensorLifecycleManager.SENSOR_WIFI);
 	}
 
+	public void refresh() {
+		mWifiManager.startScan();
+	}
 	
 	@Override
 	public void onWifiScanResultsAvailable(List<Map<String, String>> scanResults) {
 		super.onWifiScanResultsAvailable(scanResults);
 		mScanResults = scanResults;
+		
+		notifyUpdates();
 	}
 
-	public void refresh() {
-		mWifiManager.startScan();
+	public boolean registerCallback(IWifiListingUpdateCallback callback) {
+		return mCallbacks.add(callback);
 	}
+	
+	public boolean unregisterCallback(IWifiListingUpdateCallback callback) {
+		return mCallbacks.remove(callback);
+	}
+	
+	public int callbackCount() {
+		return mCallbacks.size();
+	}
+	
+	private void notifyUpdates() {
+		for(IWifiListingUpdateCallback callback : mCallbacks) {
+			callback.onWifiScanListUpdate();
+		}
+	}
+
+	
+	
+	public List<Map<String, String>> getmScanResults() {
+		return mScanResults;
+	}
+
+	public void setmScanResults(List<Map<String, String>> mScanResults) {
+		this.mScanResults = mScanResults;
+	}
+
 	
 }

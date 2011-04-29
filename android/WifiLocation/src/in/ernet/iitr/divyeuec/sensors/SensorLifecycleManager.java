@@ -21,6 +21,8 @@ public class SensorLifecycleManager {
 	private WifiLock mWifiLock;
 	private WifiScanEventListener mWifiScanResultReceiver;
 
+	private boolean mDisableWifiOnPause = false;
+
 	public static final int SENSOR_ACCELEROMETER = 1;
 	public static final int SENSOR_GRAVITY = 2;
 	public static final int SENSOR_MAGNETISM = 3;
@@ -39,7 +41,7 @@ public class SensorLifecycleManager {
 	}
 
 	private SensorLifecycleManager(Context ctx) {
-		mCtx = ctx;
+		mCtx = ctx.getApplicationContext();
 		mSensorManager = (SensorManager) mCtx
 				.getSystemService(Context.SENSOR_SERVICE);
 		mWifiManager = (WifiManager) mCtx
@@ -60,9 +62,10 @@ public class SensorLifecycleManager {
 
 		IntentFilter scanIntent = new IntentFilter();
 		scanIntent.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
-		mCtx.registerReceiver(mWifiScanResultReceiver, scanIntent);
+		mCtx.registerReceiver(mWifiScanResultReceiver.getBroadcastReceiverInstance(), scanIntent);
 
-		if (!mWifiManager.isWifiEnabled()) {
+		if (!mWifiManager.isWifiEnabled() && mWifiManager.getWifiState() != mWifiManager.WIFI_STATE_ENABLING) {
+			mDisableWifiOnPause = true;
 			mWifiManager.setWifiEnabled(true);
 		}
 
@@ -91,8 +94,13 @@ public class SensorLifecycleManager {
 	}
 
 	private void pauseWifiEventListeners() {
-		mCtx.unregisterReceiver(mWifiScanResultReceiver);
+		mCtx.unregisterReceiver(mWifiScanResultReceiver.getmWifiEventReceiver());
+		mWifiScanResultReceiver.setmWifiEventReceiver(null);
+		
 		mWifiLock.release();
+		if(mDisableWifiOnPause) {
+			mWifiManager.setWifiEnabled(false);
+		}
 	}
 
 	private void pauseHWEventListeners() {

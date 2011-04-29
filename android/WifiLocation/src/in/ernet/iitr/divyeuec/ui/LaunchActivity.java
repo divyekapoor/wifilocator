@@ -18,7 +18,7 @@ public class LaunchActivity extends ListActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.launch_activity);
 		
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, R.array.activities);
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, getResources().getStringArray(R.array.activities));
 		getListView().setAdapter(adapter);
 		
 	}
@@ -31,11 +31,11 @@ public class LaunchActivity extends ListActivity {
 		
 		switch(position) {
 		case WIFI_LOCATOR_ACTIVITY:
-			launchIntent = new Intent("in.ernet.iitr.divyeuec.WifiLocatorActivity");
+			launchIntent = new Intent(this, WifiLocatorActivity.class);
 			startActivityForResult(launchIntent, 1);
 			break;
 		case DEAD_RECKONING_ACTIVITY:
-			launchIntent = new Intent("in.ernet.iitr.divyeuec.DeadReckoningActivity");
+			launchIntent = new Intent(this, DeadReckoningActivity.class);
 			startActivityForResult(launchIntent, 1);
 			break;
 		default:

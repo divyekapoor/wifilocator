@@ -1,6 +1,7 @@
 package in.ernet.iitr.divyeuec.ui;
 
 import in.ernet.iitr.divyeuec.R;
+import in.ernet.iitr.divyeuec.algorithms.wifi.IWifiListingUpdateCallback;
 import in.ernet.iitr.divyeuec.algorithms.wifi.WifiListing;
 import in.ernet.iitr.divyeuec.sensors.SensorLifecycleManager;
 import in.ernet.iitr.divyeuec.sensors.WifiScanResults;
@@ -18,7 +19,7 @@ import android.view.MenuItem;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
-public class WifiLocatorActivity extends ListActivity {
+public class WifiLocatorActivity extends ListActivity implements IWifiListingUpdateCallback {
 
 	// Menu Constants
 	private static final int REFRESH_MENU_ITEM = Menu.FIRST;
@@ -31,6 +32,7 @@ public class WifiLocatorActivity extends ListActivity {
 		setContentView(R.layout.wifi_locator_activity);
 		
 		mWifiListing = new WifiListing(this);
+		mWifiListing.registerCallback(this); // Make sure we get to know when the scan results update
 	}
 
 	@Override
@@ -62,7 +64,7 @@ public class WifiLocatorActivity extends ListActivity {
 		return super.onMenuItemSelected(featureId, item);
 	}
 
-	public void onRefresh(List<Map<String, String>> scanResults) {
+	public void onWifiScanListUpdate(List<Map<String, String>> scanResults) {
 		// This function is called from the WifiScanResultsReceiver the moment
 		// Scan results are available.
 		Log.i(TAG, "Scan Results Available callback called.");
@@ -82,6 +84,14 @@ public class WifiLocatorActivity extends ListActivity {
 
 		Log.i(TAG, "Setting List Adapter");
 		getListView().setAdapter(listDataAdapter);
+	}
+
+	@Override
+	public void onWifiScanListUpdate() {
+		onWifiScanListUpdate(mWifiListing.getmScanResults());
+		
+		// Restart scanning immediately
+		mWifiListing.refresh();
 	}
 
 }
