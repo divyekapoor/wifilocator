@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Charts!</title>
+<style type="text/css">
+.red {
+	color: red;
+}
+.green {
+	color: green;
+}
+.graph {
+	width:300px;
+	height:200px;
+}
+
+</style>
+<script src="jquery-1.5.2.js"></script>
+<script src="flot/jquery.flot.js"></script>
+<script src="json2.js"></script>
+<script type="text/javascript" language="javascript">
+// Explanation:
+// This code is using a standard javascript "trick" that prevents global
+// namespace pollution. An anonymous function is defined within which 
+// the module's public and private functions are defined as variables.
+//
+// The exports variable at the end of the function specifies which of the 
+// functions declared here can be exported as part of the public interface
+// of the javascript module which is exposed as the global "module" variable.
+var module = (function($) {
+
+	var errorHandler = function (e, context) {
+		if(!context) { 
+			context = "None";
+		}
+			
+		$('#error').html('Error in javascript!<br />Context: ' + context + '<br />Exception: ' + e).addClass('red');
+	};
+	
+	var logCount = 0;
+	var log = function(msg, context) {
+		logCount = logCount + 1;
+		if(logCount % 5 === 0) {   // Keep last 5 log messages
+			$('#log').html('');
+		}
+			
+		if(!context) { 
+			context = "None";
+		}
+			
+		$("<p>Context: " + context + "<br />Message: " + msg + '<\/p>').appendTo('#log'); 
+	};
+	
+	var $elements = {
+		/* Initialized on DOM Load */
+	};
+	
+	var updateDOMElement = function(prefix, dataArray) {
+		var idx;
+		try {
+			// log('Prefix: ' + prefix, 'updateDOMElement');
+			// log('DataArray: ' + dataArray, 'updateDOMElement');
+			
+			var DOMElementArray = $elements[prefix];
+			var len = DOMElementArray.length;
+			for(idx = 0; idx < len; ++idx) {
+				DOMElementArray[idx].text(dataArray[idx]);
+			}
+		} catch(e) {
+			errorHandler(e, 'updateDOMElement');
+		}
+	};
+	
+	
+	var updateTimeSeries = function(series, sample, ts) {
+		series[0].push([ts, sample[0]]);
+		series[1].push([ts, sample[1]]);
+		series[2].push([ts, sample[2]]);
+	};
+	
+	
+	
+	var repeatInterval = 5;
+	var ax = [], ay = [], az = [], dx = [], dy = [], dz = [], timeCounter = 0;
+	var ox = [], oy = [], oz = [], avx = [], avy = [], avz = [];
+	var updateData = function() {
+		if(sensorData) {
+			try {
+				// eval is bad for a variety of reasons but since we control the 
+				// input data source, eval should work.
+				var allData = $.parseJSON(sensorData.getAllData());
+				var accel = allData[sensorData.getKeyAccelArray()];
+				var velocity = allData[sensorData.getKeyVelocityArray()];
+				var displacement = allData[sensorData.getKeyDisplacementArray()];
+				var angular_velocity = allData[sensorData.getKeyAngularVelocityArray()];
+				var angles = allData[sensorData.getKeyAnglesArray()];
+				var lastAccelTimestamp = allData[sensorData.getKeyLastAccelTimestamp()];
+				
+				++timeCounter;
+				
+				// update time series data
+				updateTimeSeries([ax, ay, az], accel, timeCounter);
+				updateTimeSeries([dx, dy, dz], displacement, timeCounter);
+				updateTimeSeries([avx, avy, avz], angular_velocity, timeCounter);
+				updateTimeSeries([ox, oy, oz], angles, timeCounter);
+				
+				// log('AllData ' + allData, 'updateData');
+				// log('SensorData: ' + sensorData, 'updateData');
+				// log('Accel: ' + accel, 'updateData');
+				// log('KEY_ACCEL_ARRAY: ' + sensorData.getKeyAccelArray(), 'updateData');
+				
+				var prefixes = ["a", "v", "d", "av", "o"];
+				var data = [accel, velocity, displacement, angular_velocity, angles];
+				updateGraph([ax, ay, az], [dx, dy, dz], [avx, avy, avz], [ox, oy, oz]);
+			} catch(e) {
+				errorHandler(e, 'updateData');
+			}
+			setTimeout(updateData, repeatInterval);
+		} else {
+			errorHandler('sensorData variable not exposed', 'updateData');
+		}
+	};
+	
+	var accelPlot, dispPlot, angvPlot, angPlot; // Initialized in $(document).ready(...)
+	var updateGraph = function(accelPlotData, dispPlotData, angvPlotData, angPlotData) {
+		// set the time series data for the plot.
+		accelPlot.setData(accelPlotData); // time series
+		dispPlot.setData(dispPlotData);
+		angvPlot.setData(angvPlotData);
+		angPlot.setData(angPlotData);
+		
+		/// plot.setupGrid(); - omitted as axes don't change.
+		accelPlot.draw();
+		dispPlot.draw();
+		angvPlot.draw();
+		angPlot.draw();
+		
+	};
+	
+	// This is the "main" segment of the function. It executes on page load and sets up the 
+	// main timer loop for updateData.
+	$(document).ready(function() {
+		// Cache the DOM Elements for the data wrapped in the jQuery object
+		$elements = {
+			'a' : [$('#ax'), $('#ay'), $('#az')],
+			'v' : [$('#vx'), $('#vy'), $('#vz')],
+			'd' : [$('#dx'), $('#dy'), $('#dz')],
+			'av' : [$('#avx'), $('#avy'), $('#avz')],
+			'o' : [$('#ox'), $('#oy'), $('#oz')]
+		};
+		
+		try {
+			var options = {
+		       series: { shadowSize: 0 }, // drawing is faster without shadows
+		       yaxis: { min: -10, max: 10 },
+		       xaxis: { show: true, min:0, max:300 }
+		    };
+		    
+		    // Initialize the variables being used for plotting.
+		    accelPlot = $.plot($("#accelPlot"), [ [0,0], [0,0], [0,0] ], options);
+		    dispPlot = $.plot($("#dispPlot"), [ [0,0], [0,0], [0,0] ], options);
+		    angvPlot = $.plot($("#angvPlot"), [ [0,0], [0,0], [0,0] ], options);
+		    angPlot = $.plot($("#angPlot"), [ [0,0], [0,0], [0,0] ], options);
+		    
+			// Use the setTimeout mechanism instead of setInterval to deal with a slow function execution
+			// that might cause the function execution time to exceed the function call interval
+			setTimeout(updateData, 300);		
+		} catch(e) {
+			errorHandler(e, 'document.ready');
+		}
+	});
+	
+	var exports = {
+		'errorHandler' : errorHandler,
+		'updateData' : updateData
+	};
+	
+	return exports;
+}(jQuery));
+
+$(function () {
+    var d1 = [];
+    for (var i = 0; i < 14; i += 0.5)
+        d1.push([i, Math.sin(i)]);
+
+    var d2 = [[0, 3], [4, 8], [8, 5], [9, 13]];
+
+    // a null signifies separate line segments
+    var d3 = [[0, 12], [7, 12], null, [7, 2.5], [12, 2.5]];
+    
+    $.plot($("#placeholder"), [ d1, d2, d3 ]);
+});
+
+</script>
+</head>
+<body>
+	<div class="red" id="error"></div>
+	<div class="green" id="log"></div>
+	
+	<div id="accelPlot" class="graph accel"></div>
+	<div id="dispPlot" class="graph disp"></div>
+	<div id="angvPlot" class="graph angv"></div>
+	<div id="angPlot" class="graph ang"></div>
+	<div id="placeholder" class="graph"></div>
+	
+	<div id="content">
+		<p class="acceleration">
+		<span class="title">Acceleration</span> 
+		<span id="ax" class="value x"></span>
+		<span id="ay" class="value y"></span>
+		<span id="az" class="value z"></span> 
+		</p>
+		<p class="velocity">
+		<span class="title">Velocity</span> 
+		<span id="vx" class="value x"></span>
+		<span id="vy" class="value y"></span>
+		<span id="vz" class="value z"></span> 
+		</p>
+		<p class="displacement">
+		<span class="title">Displacement</span> 
+		<span id="dx" class="value x"></span>
+		<span id="dy" class="value y"></span>
+		<span id="dz" class="value z"></span> 
+		</p>
+		<p class="angular-velocity">
+		<span class="title">Angular Velocity</span> 
+		<span id="avx" class="value x"></span>
+		<span id="avy" class="value y"></span>
+		<span id="avz" class="value z"></span> 
+		</p>
+		<p class="orientation">
+		<span class="title">Orientation</span> 
+		<span id="ox" class="value x"></span>
+		<span id="oy" class="value y"></span>
+		<span id="oz" class="value z"></span> 
+		</p>
+	</div>
+	<a href="#" id="refresh">Refresh</a>
+	<script type="text/javascript">
+	$("#refresh").click(function() {
+		window.location.reload();
+	});
+	</script>
+</body>
+</html>

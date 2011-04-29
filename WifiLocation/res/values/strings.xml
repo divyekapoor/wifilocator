@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="activity_list">Activity List</string>
+    <string name="no_APs">There are no APs in the area</string>
+    <string name="no_Activities">There are no APs in the area</string>
+    <string name="hello">Hello World, WifiLocator!</string>
+    <string name="app_name">Wifi Locator</string>
+    <string-array name="activities">
+    	<item>WifiLocator Activity</item>
+    	<item>Dead Reckoning Activity</item>
+    </string-array>
+</resources>
