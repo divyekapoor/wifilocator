@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent"
+  android:scrollbars="vertical"
+  android:orientation="vertical"
+  >
+  <TextView
+  	android:text="Wifi Site Survey Samples Show"
+  	android:layout_width="wrap_content"
+  	android:layout_height="wrap_content"
+  	android:textSize="22dp"
+  	android:typeface="sans"
+  	/>
+  
+  <View
+  	android:background="#cccccc"
+  	android:layout_width="fill_parent"
+  	android:layout_height="1dp"
+  	/>
+  	
+  <in.ernet.iitr.divyeuec.ui.views.SampleMapView
+  	android:id="@+id/sample_map_view"
+  	android:src="@drawable/floor"
+  	android:scaleType="fitStart"
+  	android:layout_width="wrap_content"
+  	android:layout_height="wrap_content"
+  	android:background="#ff0000"
+  	android:adjustViewBounds="true"
+  	/>
+  
+  	
+  <TextView
+  	android:text="Number of samples: "
+  	android:layout_width="wrap_content"
+  	android:layout_height="wrap_content"
+  	/>
+  	
+  <TextView
+  	android:text=""
+  	android:id="@+id/num_samples"
+  	android:layout_width="wrap_content"
+  	android:layout_height="wrap_content"
+  	/>
+</LinearLayout>

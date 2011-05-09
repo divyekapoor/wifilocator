@@ -14,10 +14,12 @@ import android.net.wifi.WifiManager;
 
 public class WifiListing extends DefaultSensorCallbacks implements IAlgorithm, ISensorCallback {
 	
-	private SensorLifecycleManager mSensorLifecycleManager;
-	private List<Map<String, String>> mScanResults;
-	private WifiManager mWifiManager;
+	protected SensorLifecycleManager mSensorLifecycleManager;
+	protected WifiManager mWifiManager;
+	
 	private List<IWifiListingUpdateCallback> mCallbacks = new ArrayList<IWifiListingUpdateCallback>();
+	private List<Map<String, String>> mScanResults;
+	
 
 	public WifiListing(Context ctx) {
 		mSensorLifecycleManager = SensorLifecycleManager.getInstance(ctx);

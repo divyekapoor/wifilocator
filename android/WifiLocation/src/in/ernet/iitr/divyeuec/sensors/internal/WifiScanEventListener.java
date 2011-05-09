@@ -41,6 +41,8 @@ public class WifiScanEventListener {
 	}
 	
 	public boolean registerCallback(IWifiScanResultsAvailableCallback callback) {
+		if(mCallbacks.contains(callback))
+			return true;
 		mCallbacks.add(callback);
 		return true;
 	}

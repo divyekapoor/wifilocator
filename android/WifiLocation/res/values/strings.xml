@@ -5,8 +5,16 @@
     <string name="no_Activities">There are no APs in the area</string>
     <string name="hello">Hello World, WifiLocator!</string>
     <string name="app_name">Wifi Locator</string>
+    <string name="wifiSS">Wifi Signal Strengths</string>
+    <string name="dead_reckoning_activity">Dead Reckoning</string>
+    <string name="dead_reckoning_training_activity">Dead Reckoning Training Activity</string>
+    <string name="wifi_site_survey_activity">Wifi Site Survey Activity</string>
+    <string name="wifi_record_samples_activity">Wifi Site Survey Activity</string>
+    <string name="wifi_samples_show_activity">Wifi Samples Show Activity</string>
     <string-array name="activities">
     	<item>WifiLocator Activity</item>
     	<item>Dead Reckoning Activity</item>
+    	<item>Wifi Site Survey Activity</item>
+    	<item>Wifi Samples Show Activity</item>
     </string-array>
 </resources>

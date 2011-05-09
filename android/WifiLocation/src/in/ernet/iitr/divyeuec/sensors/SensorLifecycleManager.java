@@ -118,7 +118,7 @@ public class SensorLifecycleManager {
 			if (mSensorEventListener.callbackCount() == 0) {
 				resumeRequired = true;
 			}
-
+			
 			mSensorEventListener.registerCallback(callback);
 
 			if (resumeRequired && mSensorEventListener.callbackCount() > 0) {
@@ -177,5 +177,18 @@ public class SensorLifecycleManager {
 		unregisterCallback(callback, SENSOR_GYROSCOPE);
 		unregisterCallback(callback, SENSOR_MAGNETISM);
 		unregisterCallback(callback, SENSOR_WIFI);
+	}
+	
+	public float[] getRotationMatrix() {
+		return mSensorEventListener.getRotationMatrix();
+	}
+	
+	public float[] getInclinationMatrix() {
+		return mSensorEventListener.getInclinationMatrix();
+	}
+	
+	public float[] getOrientation() {
+		float[] values = new float[3];
+		return SensorManager.getOrientation(getRotationMatrix(), values);
 	}
 }

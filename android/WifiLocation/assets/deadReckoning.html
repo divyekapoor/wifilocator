@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Dead Reckoning</title>
+<script src="jquery-1.5.2.js"></script>
+<script src="flot/jquery.flot.js"></script>
+<script src="json2.js"></script>
+
+<style type="text/css">
+h1 {
+	font-size:140%;
+	margin:0 0;
+	padding:0 0;
+	margin-bottom:5px;
+}
+p {
+	margin:0 0;
+	padding:0 0;
+}
+.mar5 {
+	margin-bottom:5px;
+}
+.red {
+	color: red;
+}
+.green {
+	color: green;
+}
+.graph {
+	width:300px;
+	height:200px;
+}
+
+.canvas-area {
+	width:640px;
+	height:480px;
+
+	background:url(images/640.png) rgb(180,180,0)  0 0;
+}
+.inline {
+	display:inline;
+}
+</style>
+
+
+<script type="text/javascript">
+$(document).ready(function() {
+	var $steps = $("#steps");
+	var $step_count = $("#step-count");
+	var $angle = $("#angle");
+	var $training_constant = $("#training-constant");
+	var $accel_threshold = $("#accel-threshold");
+	var $accel = $("#accel");
+	var canvas = document.getElementById('canvas');
+	var ctx = canvas.getContext("2d");
+
+	var options = {
+       series: { shadowSize: 0 }, // drawing is faster without shadows
+       yaxis: { min: -10, max: 10 },
+       xaxis: { show: true, min:0, max:1000 }
+	};
+	var $accelPlot = $.plot($accel, [ [0,0], [1,1] ], options);
+
+	
+	var TIMEOUT_INTERVAL = 100; // in ms
+	
+	var error = function (e, context) {
+		if(!context) { 
+			context = "None";
+		}
+			
+		$('#error').html('Error in javascript!<br />Context: ' + context + '<br />Exception: ' + e).addClass('red');
+	};
+	
+	var logCount = 0;
+	var log = function(msg, context) {
+		logCount = logCount + 1;
+		if(logCount % 5 === 0) {   // Keep last 5 log messages
+			$('#log').html('');
+		}
+			
+		if(!context) { 
+			context = "None";
+		}
+			
+		$("<p>Context: " + context + "<br />Message: " + msg + '<\/p>').appendTo('#log'); 
+	};
+	
+	var zip = function (series) {
+		var len = series.length;
+		var i;
+		var result = [];
+		for(i = 0; i < len; ++i) {
+			result.push([i, series[i]]);
+		}
+		return result;
+	};
+	
+	var update = function () {
+		try {
+			var steps = sensorData.getStepDisplacement(); // return value as array string
+			var stepCount = sensorData.getStepCount();
+			var angle = sensorData.getAngle();
+			var trainingConst = sensorData.getTrainingConstant();
+			var accelThreshold = sensorData.getAccelThreshold();
+			
+			// Disable this for performance reasons
+			// var accel = JSON.parse(sensorData.getAccelHistory())["accel"];
+			
+			$step_count.html(stepCount);
+			$steps.html(steps);
+			$angle.html(angle);
+			$training_constant.html(trainingConst);
+			$accel_threshold.html(accelThreshold);
+			
+			// $accelPlot.setData([zip(eval(accel))]);
+			// -- $accelPlot.setupGrid(); -- not needed as axes scale doesn't change
+			// $accelPlot.draw();
+			
+			updateCanvas(eval(steps));
+		} catch(e) {
+			error(e, "update");
+		}
+		
+		setTimeout(update, TIMEOUT_INTERVAL);
+	};
+	
+	
+	var rotation_angle = 10*2.0*Math.PI/360.0;
+	var drawNorth = function(ctx, rotation_angle) {
+		log('called', 'drawNorth');
+		// Draw the North line
+		ctx.save();
+		ctx.strokeStyle = "blue";
+		ctx.translate(0.9*ctx.canvas.width, 0.2*ctx.canvas.height);
+		ctx.transform(1,0,0,-1,0,0);
+		ctx.rotate(rotation_angle);
+		ctx.beginPath();
+		ctx.moveTo(0,0);
+		ctx.lineTo(0, 30);
+		ctx.lineTo(-5, 25);
+		ctx.lineTo(0, 30);
+		ctx.lineTo(5, 25);
+		ctx.stroke();
+		ctx.transform(1,0,0,-1,0,0); // undo transform to print text
+		ctx.strokeText("N", 5, -10);
+		ctx.beginPath();
+		ctx.restore();
+	};
+	
+	var startPosInit = function(event) {
+		var d = document.documentElement;
+		var offset = $(this).offset();
+		
+		var x = event.pageX - offset.left;
+		var y = event.pageY - offset.top;
+		ctx.save();
+		//ctx.fillRect(0, 0, 10, 10); // black
+		ctx.translate(x, y);
+		//ctx.fillStyle = "green";
+		ctx.transform(1,0,0,-1,0,0); // flip the Y axis to correspond to true north.
+		//ctx.fillRect(0, 0, 10, 10); // green
+		ctx.rotate(rotation_angle);
+		ctx.beginPath();
+		ctx.moveTo(0,0);
+		ctx.strokeStyle = "red";
+		ctx.fillStyle = "black";
+		ctx.lineWidth = "3px";
+		ctx.fillRect(-2, -2, 4, 4); // box at origin
+		ctx.stroke();
+		// ctx.restore();
+	};
+	
+	var initCanvas = function() {
+		try {
+			var map = new Image();
+			map.onload = function() {
+				// Set the canvas to the dimensions of the map
+				ctx.canvas.width = map.width;
+				ctx.canvas.height = map.height;
+				// ctx.drawImage(map, 0, 0);
+				
+				drawNorth(ctx, rotation_angle);
+				
+				ctx.save();		
+				// log('Click to locate start position', 'map.onload');
+				$(canvas).click(startPosInit);
+			};
+			map.src = 'images/640.png';
+		} catch(e) {
+			error(e, "initCanvas");
+		}
+	};
+	
+	var scalingFactor = 1;
+	try {
+		scalingFactor = sensorData.getTrainingConstant();
+	} catch(e) {
+		error(e, 'scalingFactor');
+	}
+	var updateCanvas = function(location) {
+		var width = 4, height = 4;
+		ctx.lineTo(scalingFactor*location[0], scalingFactor*location[1]);
+		ctx.stroke();
+		ctx.fillRect(scalingFactor*location[0] - width/2, scalingFactor*location[1] - height/2, width, height);
+		
+	};
+	
+	initCanvas();
+	setTimeout(update, TIMEOUT_INTERVAL);
+		
+});
+
+</script>
+
+</head>
+<body>
+<h1>Dead Reckoning Data</h1>
+<div class="mar5">
+	<p class="red" id="error"></p>
+	<p class="green" id="log"></p>
+	<div>Step Count: <div class="inline" id="step-count"></div></div>
+	<div>Steps: <div class="inline" id="steps"></div></div>
+	<div>Angle: <div class="inline" id="angle"></div></div>
+	<div>Step Constant: <div class="inline" id="training-constant"></div></div>
+	<div>Accel Limit: <div class="inline" id="accel-threshold"></div></div>
+</div>
+
+<canvas class="graph canvas-area mar5" id="canvas"></canvas>
+<div class="graph" id="accel"></div>
+
+
+</body>
+</html>

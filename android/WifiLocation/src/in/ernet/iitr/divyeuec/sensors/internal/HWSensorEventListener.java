@@ -61,6 +61,7 @@ public class HWSensorEventListener implements SensorEventListener {
 			0.f };
 	private float[] mR = new float[] { 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f,
 			0.f };
+	
 	private float[] mPrevAccel = new float[] { 0.f,0.f,0.f};
 	private float[] mPrevTrueAccel = new float[] {0.f, 0.f,0.f};
 	private float[] mPrevDisplacement = new float[]{0.f,0.f,0.f};
@@ -112,6 +113,8 @@ public class HWSensorEventListener implements SensorEventListener {
 	}
 	
 	public boolean registerCallback(IHWSensorEventCallback callback) {
+		if(mCallbacks.contains(callback)) 
+			return true;
 		mCallbacks.add(callback);
 		return true;
 	}
@@ -194,8 +197,8 @@ public class HWSensorEventListener implements SensorEventListener {
 				mLastAccelTimestamp = event.timestamp;
 				mPrevAccel = mAccel;
 				mAccel = event.values.clone();
-				updateTrueAccel();
-				updateVelocityAndDisplacement(deltaT);
+				// updateTrueAccel();
+				// updateVelocityAndDisplacement(deltaT);
 				
 				for(IHWSensorEventCallback callback : mCallbacks) {
 					callback.onAccelUpdate(mAccel, deltaT, mLastAccelTimestamp);
@@ -209,7 +212,7 @@ public class HWSensorEventListener implements SensorEventListener {
 				deltaT += mLastGyroTimestamp;
 				mLastGyroTimestamp = event.timestamp;
 				mAngularVelocity = event.values.clone();
-				updateAngles(deltaT);
+				// updateAngles(deltaT);
 				
 				for(IHWSensorEventCallback callback : mCallbacks) {
 					callback.onGyroUpdate(mAngularVelocity, deltaT, mLastGyroTimestamp);
@@ -436,6 +439,13 @@ public class HWSensorEventListener implements SensorEventListener {
 		return KEY_GYRO_ACCURACY;
 	}
 	
+	public float[] getRotationMatrix() {
+		return mR;
+	}
+
+	public float[] getInclinationMatrix() {
+		return mI;
+	}
 	
 
 }

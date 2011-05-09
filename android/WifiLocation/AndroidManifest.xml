@@ -5,12 +5,28 @@
       android:versionName="1.0">
     <application android:icon="@drawable/icon" android:label="@string/app_name" android:debuggable="true">
         <activity android:name=".ui.WifiLocatorActivity"
-                  android:label="@string/app_name">
+                  android:label="@string/wifiSS">
         </activity>
 
     
 		<activity android:name=".ui.DeadReckoningActivity"
-			android:label="@string/app_name">
+			android:label="@string/dead_reckoning_activity">
+		</activity>
+		
+		<activity android:name=".ui.DeadReckoningTrainingActivity"
+			android:label="@string/dead_reckoning_training_activity">
+		</activity>
+		
+		<activity android:name=".ui.WifiSiteSurveyActivity"
+			android:label="@string/wifi_site_survey_activity">
+		</activity>
+		
+		<activity android:name=".ui.WifiRecordSamplesActivity"
+			android:label="@string/wifi_record_samples_activity">
+		</activity>
+		
+		<activity android:name=".ui.WifiSamplesShowActivity"
+			android:label="@string/wifi_samples_show_activity">
 		</activity>
 		
 		<activity android:name=".ui.LaunchActivity"
@@ -29,4 +45,7 @@
 <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"></uses-permission>
 <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"></uses-permission>
 <uses-permission android:name="android.permission.WAKE_LOCK"></uses-permission>
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>
+
+
 </manifest> 

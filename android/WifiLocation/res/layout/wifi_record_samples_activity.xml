@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="fill_parent"
+  android:layout_height="wrap_content"
+  android:orientation="vertical">
+  <TextView
+  	android:text="Wifi Record Samples"
+  	android:layout_width="wrap_content"
+  	android:layout_height="wrap_content"
+  	android:textSize="22dp"
+  	android:typeface="sans"
+  	/>
+  <View
+  	android:background="#cccccc"
+  	android:layout_width="fill_parent"
+  	android:layout_height="1dp"
+  	/>
+  <Button
+  	android:id="@+id/btn_record_sample"
+  	android:layout_width="fill_parent"
+  	android:layout_height="wrap_content"
+  	android:text="Record Sample"
+  	/>
+  	
+  <TextView
+  	android:text="Sample Information: "
+  	android:layout_width="wrap_content"
+  	android:layout_height="wrap_content"
+  	/>
+    <TextView
+  	android:id="@+id/sample_information"
+  	android:text=""
+  	android:layout_width="wrap_content"
+  	android:layout_height="wrap_content"
+  	/>
+  
+  <LinearLayout
+  	android:layout_width="wrap_content"
+  	android:layout_height="wrap_content"
+  	android:orientation="horizontal"
+  	>
+	  <TextView
+	  	android:text="Angle: "
+	  	android:layout_width="wrap_content"
+	  	android:layout_height="wrap_content"
+	  	/>
+	  <TextView
+	  	android:id="@+id/txt_angle"
+	  	android:layout_width="wrap_content"
+	  	android:layout_height="wrap_content"
+	  	/>
+  </LinearLayout>
+  <ScrollView
+  	android:scrollbars="vertical"
+  	android:layout_width="fill_parent"
+	android:layout_height="wrap_content"
+  	>
+	  <TextView
+	  	android:id="@+id/sample_values"
+	  	android:text=""
+	  	android:layout_width="wrap_content"
+	  	android:layout_height="wrap_content"
+	  	android:layout_weight="1"
+	  	/>
+  </ScrollView>
+</LinearLayout>
