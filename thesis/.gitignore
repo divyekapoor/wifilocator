@@ -1,0 +1,15 @@
+*.toc
+*.lst
+
+*.bbl
+*.aux
+*.pdf
+*.backup
+*.blg
+*.tex~
+*.big~
+*.bib~
+*.log~
+*.log
+*.lot
+*.lof
