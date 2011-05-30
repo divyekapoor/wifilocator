@@ -1,0 +1,81 @@
+\documentclass[12pt,a4paper,oneside]{report}
+\usepackage[avantgarde]{quotchap}
+\usepackage{fancyhdr}
+
+\fancyhead{}
+\fancyfoot{}
+
+\newenvironment{prelude}{
+\pagenumbering{roman}
+}
+
+\newenvironment{mainmatter}{
+\pagenumbering{arabic}
+\setcounter{page}{1}
+}
+
+\begin{document}
+
+\title{This is the new age}
+\author{Divye Kapoor}
+\date{\today}
+
+\maketitle
+
+\begin{prelude}
+
+    \begin{abstract}
+    This is the abstract content.
+    \end{abstract}
+
+    \chapter*{Abstract}
+    \addcontentsline{toc}{chapter}{Abstract}
+
+    Abstract content
+    
+    \chapter*{Acknowledgement}
+    \addcontentsline{toc}{chapter}{Acknowledgement}
+    Acknowledgement content
+
+    \tableofcontents
+
+    \listoffigures
+
+    \listoftables
+
+\end{prelude}
+
+\clearpage
+
+\begin{mainmatter}
+
+    \chapter{Chapter 1}
+
+    \section{Section 1.1}
+
+    This is a basic document with specific settings.\cite{Boney96}
+
+    \clearpage
+
+    \section{Section 1.2}
+
+    This is the next section.\cite{MG}
+
+    \subsection{Section 1.2.1}
+
+    This is the subsection discussing something.\cite{HK}
+
+
+    \appendix
+    \chapter{Appendix A}
+    This is content of appendix A.
+
+    \chapter{Appendix B}
+    This is content of appendix B.
+
+\end{mainmatter}
+
+\bibliographystyle{plain}
+\bibliography{mybib}
+
+\end{document} 
