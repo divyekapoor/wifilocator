@@ -1,0 +1,111 @@
+\chapter{Proposed Method}
+The particle filter approach described in [ped. Nav.] is adapted to and implemented on the Android smartphone. The onboard accelerometer and magnetometer of the Nexus S are used as inertial navigation sensors. Improvements are made to the algorithm. The performance of the particle filter is analyzed with different parameters and approaches:
+
+\section{Dead reckoning with step counts}
+
+The acceleration of the human body as part of the act of walking is small and very impulsive
+in nature. The motion of the torso of the body is governed mostly by inertia. 
+Unfortunately, the impulsive acceleration values are small and lie buried in sensor
+noise. They are virtually indetectible using the MEMS accelerometer supplied with the android
+device - Nexus S.
+
+To overcome this difficulty, the step count method of [ped. Nav.] is adopted. Under
+the assumption that step size varies very little over the course of motion of the subject,
+an inertial navigation system may be created.
+
+\subsection{Step counting method}
+
+The step counting method is described in [ped. Nav.]. However, we take a slightly
+modified approach. 
+
+\subsection{Noise clamping\label{sec:NoiseClamping}}
+
+The MEMS accelerometer sensor on the smartphone has sensor noise present close to
+zero. The noise level for the accelerometer was determined to be always less than
+$0.6 m/s^2$. To allow for a reasonable noise margin and provide sufficient cushion
+for additional noise introduced due to the dynamic nature of walking, we choose
+a threshold of $1.3 m/s^2$. If the absolute value of the Z-axis acceleration
+sample is less than this threshold, then the sample will be clamped to zero.
+
+As has been determined experimentally, steps taken by a human usually produce
+a pair of spikes - one positive and one negative with magnitude around $2 m/s^2$.
+By choosing this threshold value, we give maximal noise margin for step detection.
+
+See figure [...] for a comparative estimation of step values versus sensor noise.
+
+\subsection{Step size detection procedure}
+
+\subsubsection{Zero Crossings}
+
+To detect actual steps taken by the subject holding the device, [ped. Nav.] 
+suggests using zero crossings. However, in the sensor data collected, a number
+of spurious zero crossings exist (primarily due to sensor noise). However, 
+even after sensor noise is clamped as per section \ref{sec:NoiseClamping}, 
+spurious zero crossings often arise due to variable motion of the subject.
+
+\subsubsection{Peak and Valley hunting}
+Peak and Valley hunting procedure (better than zero crossings) for step detection.
+Robust to unexpected values.
+
+To have robust detection of steps, a state machine is maintained. The state 
+machine detects a peak and then waits for a trough. Subsequent
+
+An internal state machine is used. The state machine has 2 states and a comparison
+is made between $A_{max}$ or $A_{min}$ and the sample value that forms the peak/trough
+whenever state transitions occur.
+
+\begin{table}[h]\centering
+    \caption{State table of the step detection state machine}
+    \begin{tabular}{cccc} \hline
+    State & Accelerometer Value     & New State &  Action\\     \hline
+    $q_0$ & Positive Peak Detected  & $q_1$     & Update $A_{max}$ if peak is of larger magnitude \\
+          & Other values            & $q_0$     & Ignore \\         \hline
+    $q_1$ & Negative Trough Detected & $q_0$    & Update $A_{min}$ if trough is negative \\ 
+          &                         &           & and of larger magnitude than $A_{min}$ \\
+          & Other values            & $q_1$     & Ignore \\ \hline
+    \end{tabular}
+\end{table}
+\subsection{Step Size Estimation}
+
+Reference [A. Engineers] provides this empirical relationship between acceleration
+values and step size.
+
+\begin{equation}
+ Step-size = C \sqrt[4]{A_{max} - A_{min}}
+\end{equation}
+
+The constant $C$ is a scaling factor that is used as a constant of proportionality
+to scale the step-values to real world distances.
+
+\section{Sensor fusion using Particle Filters}
+
+A background on particle filters has already been given.
+
+\subsection{Dynamical equations for system}
+
+The dynamical equations that govern the system are:
+
+
+
+\subsection{Accelerometer}
+
+
+\subsection{Orientation}
+
+\subsection{Camera info}
+For first fix, we use QR codes. They are used whenever subject changes floors too.
+The QR codes provide information about the map of the floor, the current location
+and any additional information that is required by the tracking algorithm.
+
+\subsection{Map Information}
+
+
+
+\subsection{Wifi Information}
+
+\section{Accounting for orientation bias and noise}
+
+\section{Accounting for varying step sizes}
+
+\section{Barometer Information}
+

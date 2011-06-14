@@ -1,0 +1,296 @@
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2011.5.23)  15 JUN 2011 03:01
+entering extended mode
+ %&-line parsing enabled.
+**results.tex
+(./results.tex
+LaTeX2e <2009/09/24>
+Babel <v3.8l> and hyphenation patterns for english, usenglishmax, dumylang, noh
+yphenation, loaded.
+(/usr/share/texmf-texlive/tex/latex/base/book.cls
+Document Class: book 2007/10/19 v1.4h Standard LaTeX document class
+(/usr/share/texmf-texlive/tex/latex/base/bk12.clo
+File: bk12.clo 2007/10/19 v1.4h Standard LaTeX file (size option)
+)
+\c@part=\count79
+\c@chapter=\count80
+\c@section=\count81
+\c@subsection=\count82
+\c@subsubsection=\count83
+\c@paragraph=\count84
+\c@subparagraph=\count85
+\c@figure=\count86
+\c@table=\count87
+\abovecaptionskip=\skip41
+\belowcaptionskip=\skip42
+\bibindent=\dimen102
+)
+(/usr/share/texmf-texlive/tex/latex/preprint/fullpage.sty
+Package: fullpage 1999/02/23 1.1 (PWD)
+\FP@margin=\skip43
+)
+(/usr/share/texmf-texlive/tex/latex/quotchap/quotchap.sty
+Package: quotchap 1998/02/09 v0.9f Decorative Chapter Headings with Quotes
+
+(/usr/share/texmf-texlive/tex/latex/graphics/color.sty
+Package: color 2005/11/14 v1.0j Standard LaTeX Color (DPC)
+
+(/etc/texmf/tex/latex/config/color.cfg
+File: color.cfg 2007/01/18 v1.5 color configuration of teTeX/TeXLive
+)
+Package color Info: Driver file: pdftex.def on input line 130.
+
+(/usr/share/texmf-texlive/tex/latex/pdftex-def/pdftex.def
+File: pdftex.def 2010/03/12 v0.04p Graphics/color for pdfTeX
+\Gread@gobject=\count88
+))
+\@quotebox=\box26
+)
+(/usr/share/texmf-texlive/tex/latex/graphics/graphicx.sty
+Package: graphicx 1999/02/16 v1.0f Enhanced LaTeX Graphics (DPC,SPQR)
+
+(/usr/share/texmf-texlive/tex/latex/graphics/keyval.sty
+Package: keyval 1999/03/16 v1.13 key=value parser (DPC)
+\KV@toks@=\toks14
+)
+(/usr/share/texmf-texlive/tex/latex/graphics/graphics.sty
+Package: graphics 2009/02/05 v1.0o Standard LaTeX Graphics (DPC,SPQR)
+
+(/usr/share/texmf-texlive/tex/latex/graphics/trig.sty
+Package: trig 1999/03/16 v1.09 sin cos tan (DPC)
+)
+(/etc/texmf/tex/latex/config/graphics.cfg
+File: graphics.cfg 2009/08/28 v1.8 graphics configuration of TeX Live
+)
+Package graphics Info: Driver file: pdftex.def on input line 91.
+)
+\Gin@req@height=\dimen103
+\Gin@req@width=\dimen104
+) (./results.aux)
+\openout1 = `results.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 6.
+LaTeX Font Info:    ... okay on input line 6.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 6.
+LaTeX Font Info:    ... okay on input line 6.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 6.
+LaTeX Font Info:    ... okay on input line 6.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 6.
+LaTeX Font Info:    ... okay on input line 6.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 6.
+LaTeX Font Info:    ... okay on input line 6.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 6.
+LaTeX Font Info:    ... okay on input line 6.
+
+(/usr/share/texmf-texlive/tex/context/base/supp-pdf.mkii
+[Loading MPS to PDF converter (version 2006.09.02).]
+\scratchcounter=\count89
+\scratchdimen=\dimen105
+\scratchbox=\box27
+\nofMPsegments=\count90
+\nofMParguments=\count91
+\everyMPshowfont=\toks15
+\MPscratchCnt=\count92
+\MPscratchDim=\dimen106
+\MPnumerator=\count93
+\everyMPtoPDFconversion=\toks16
+)
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <14.4> on input line 12.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <7> on input line 12.
+ [1
+
+
+
+{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}]
+LaTeX Font Info:    Try loading font information for T1+pag on input line 14.
+
+(/usr/share/texmf-texlive/tex/latex/psnfss/t1pag.fd
+File: t1pag.fd 2001/06/04 font definitions for T1/pag.
+)
+LaTeX Font Info:    Font shape `T1/pag/b/n' in size <24.88> not available
+(Font)              Font shape `T1/pag/db/n' tried instead on input line 14.
+LaTeX Font Info:    Font shape `T1/pag/b/n' in size <100> not available
+(Font)              Font shape `T1/pag/db/n' tried instead on input line 14.
+ [1
+
+] [2
+
+] [3
+
+] (./results.toc
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <12> on input line 5.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <8> on input line 5.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <6> on input line 5.
+Missing character: There is no â in font cmr12!
+Missing character: There is no € in font cmr12!
+Missing character: There is no ™ in font cmr12!
+[4
+
+])
+\tf@toc=\write3
+\openout3 = `results.toc'.
+
+ [5] (./results.lof)
+\tf@lof=\write4
+\openout4 = `results.lof'.
+
+ [6
+
+
+] (./results.lot)
+\tf@lot=\write5
+\openout5 = `results.lot'.
+
+ [7
+
+] (./introduction.tex
+Chapter 1.
+) (./literature_review.tex [1
+
+
+]
+Chapter 2.
+) (./problem_description.tex [2
+
+]
+Chapter 3.
+) (./groundwork.tex [3
+
+]
+Chapter 4.
+<figures/short_term_wifi.png, id=40, 381.425pt x 286.06876pt>
+File: figures/short_term_wifi.png Graphic file (type png)
+
+<use figures/short_term_wifi.png>
+<figures/wifi_thunderstorm.png, id=41, 381.425pt x 286.06876pt>
+File: figures/wifi_thunderstorm.png Graphic file (type png)
+
+<use figures/wifi_thunderstorm.png>
+<figures/histogram_00_1C_F0_CB_EC_92.png, id=42, 361.35pt x 224.84pt>
+File: figures/histogram_00_1C_F0_CB_EC_92.png Graphic file (type png)
+
+<use figures/histogram_00_1C_F0_CB_EC_92.png>
+<figures/histogram_00_1C_F0_CB_EC_95.png, id=43, 361.35pt x 223.83624pt>
+File: figures/histogram_00_1C_F0_CB_EC_95.png Graphic file (type png)
+
+<use figures/histogram_00_1C_F0_CB_EC_95.png>
+<figures/histogram_00_19_5B_77_A5_EE.png, id=44, 361.35pt x 223.83624pt>
+File: figures/histogram_00_19_5B_77_A5_EE.png Graphic file (type png)
+
+<use figures/histogram_00_19_5B_77_A5_EE.png>
+<figures/listplot_00_1C_F0_CB_EC_92.png, id=45, 361.35pt x 215.80624pt>
+File: figures/listplot_00_1C_F0_CB_EC_92.png Graphic file (type png)
+
+<use figures/listplot_00_1C_F0_CB_EC_92.png>
+<figures/moving_average.png, id=46, 361.35pt x 215.80624pt>
+File: figures/moving_average.png Graphic file (type png)
+
+<use figures/moving_average.png> [4
+
+] [5 <./figures/short_term_wifi.png (PNG copy)> <./figures/wifi_thunderstorm.pn
+g (PNG copy)>] [6 <./figures/histogram_00_1C_F0_CB_EC_92.png (PNG copy)> <./fig
+ures/histogram_00_1C_F0_CB_EC_95.png (PNG copy)>] [7 <./figures/histogram_00_19
+_5B_77_A5_EE.png (PNG copy)> <./figures/listplot_00_1C_F0_CB_EC_92.png (PNG cop
+y)>]
+<figures/wifi_corridoor_walk.png, id=62, 381.425pt x 286.06876pt>
+File: figures/wifi_corridoor_walk.png Graphic file (type png)
+
+<use figures/wifi_corridoor_walk.png> [8 <./figures/moving_average.png (PNG cop
+y)>] [9 <./figures/wifi_corridoor_walk.png (PNG copy)>]
+<figures/mag_z_table.png, id=71, 381.425pt x 286.06876pt>
+File: figures/mag_z_table.png Graphic file (type png)
+
+<use figures/mag_z_table.png>
+<figures/mag_z_handheld_standing.png, id=72, 381.425pt x 286.06876pt>
+File: figures/mag_z_handheld_standing.png Graphic file (type png)
+
+<use figures/mag_z_handheld_standing.png>
+<figures/angle_stationary_table.png, id=73, 381.425pt x 286.06876pt>
+File: figures/angle_stationary_table.png Graphic file (type png)
+
+<use figures/angle_stationary_table.png>
+<figures/angle_handheld_standing.png, id=74, 381.425pt x 286.06876pt>
+File: figures/angle_handheld_standing.png Graphic file (type png)
+
+<use figures/angle_handheld_standing.png>
+<figures/angle_180_rotation_table.png, id=75, 381.425pt x 286.06876pt>
+File: figures/angle_180_rotation_table.png Graphic file (type png)
+
+<use figures/angle_180_rotation_table.png> [10
+
+] [11 <./figures/mag_z_table.png (PNG copy)> <./figures/mag_z_handheld_standing
+.png (PNG copy)>] [12 <./figures/angle_stationary_table.png (PNG copy)> <./figu
+res/angle_handheld_standing.png (PNG copy)>] <figures/angle_180_corridoor.png, 
+id=91, 381.425pt x 286.06876pt>
+File: figures/angle_180_corridoor.png Graphic file (type png)
+
+<use figures/angle_180_corridoor.png>
+<figures/accel_static.png, id=92, 381.425pt x 286.06876pt>
+File: figures/accel_static.png Graphic file (type png)
+
+<use figures/accel_static.png> [13 <./figures/angle_180_rotation_table.png (PNG
+ copy)>] [14 <./figures/angle_180_corridoor.png (PNG copy)> <./figures/accel_st
+atic.png (PNG copy)>]
+Missing character: There is no â in font cmbx12!
+Missing character: There is no € in font cmbx12!
+Missing character: There is no ™ in font cmbx12!
+Missing character: There is no â in font cmr12!
+Missing character: There is no € in font cmr12!
+Missing character: There is no “ in font cmr12!
+Missing character: There is no â in font cmr12!
+Missing character: There is no € in font cmr12!
+Missing character: There is no ™ in font cmr12!
+) (./proposed_method.tex [15
+
+]
+Chapter 5.
+[16
+
+]
+Overfull \hbox (33.27101pt too wide) in paragraph at lines 59--67
+ [][] 
+ []
+
+[17]) (./experimental_results.tex [18]
+Chapter 6.
+
+Overfull \hbox (0.59993pt too wide) in paragraph at lines 25--25
+[]\OT1/cmr/bx/n/14.4 Case 4a: Use of av-er-aged data points v/s ran-dom weighte
+d
+ []
+
+[19
+
+] [20]) (./summary.tex [21]
+Chapter 7.
+) [22
+
+] (./results.aux) ) 
+Here is how much of TeX's memory you used:
+ 1201 strings out of 495061
+ 17152 string characters out of 1182621
+ 68816 words of memory out of 3000000
+ 4362 multiletter control sequences out of 15000+50000
+ 13853 words of font info for 35 fonts, out of 3000000 for 9000
+ 28 hyphenation exceptions out of 8191
+ 25i,10n,20p,384b,204s stack positions out of 5000i,500n,10000p,200000b,50000s
+{/usr/share/texmf-texlive/fonts/enc/dvips/base/8r.enc}</usr/
+share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/share/texmf
+-texlive/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texmf-texlive/fo
+nts/type1/public/amsfonts/cm/cmmi12.pfb></usr/share/texmf-texlive/fonts/type1/p
+ublic/amsfonts/cm/cmmi8.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfon
+ts/cm/cmr12.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmr17.
+pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/sha
+re/texmf-texlive/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/share/texmf-texl
+ive/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texmf-texlive/fonts/t
+ype1/urw/avantgar/uagd8a.pfb>
+Output written on results.pdf (30 pages, 238940 bytes).
+PDF statistics:
+ 164 PDF objects out of 1000 (max. 8388607)
+ 0 named destinations out of 1000 (max. 500000)
+ 76 words of extra memory for PDF output out of 10000 (max. 10000000)
+
