@@ -1,0 +1,9 @@
+Name: KR3DM 3-axis AccelerometerPower: 0.23mA Type: 1Accelerometer
+Name: AK8973 3-axis Magnetic field sensorPower: 6.8mA Type: 2Magnetic
+Name: AK8973 Orientation sensorPower: 7.8mA Type: 3Unknown
+Name: GP2A Light sensorPower: 0.75mA Type: 5Light
+Name: GP2A Proximity sensorPower: 0.75mA Type: 8Unknown
+Name: K3G Gyroscope sensorPower: 6.1mA Type: 4Gyro
+Name: Gravity SensorPower: 0.23mA Type: 9Gravity
+Name: Linear Acceleration SensorPower: 0.23mA Type: 10Unknown
+Name: Rotation Vector SensorPower: 7.03mA Type: 11Unknown
