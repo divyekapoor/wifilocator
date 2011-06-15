@@ -1,31 +1,36 @@
-\chapter{Proposed Method}
-The particle filter approach described in [ped. Nav.] is adapted to and implemented on the Android smartphone. The onboard accelerometer and magnetometer of the Nexus S are used as inertial navigation sensors. Improvements are made to the algorithm. The performance of the particle filter is analyzed with different parameters and approaches:
+\chapter{Proposed Method\label{chap:proposed_method}}
+The particle filter approach described in [ped. Nav.] is adapted to and
+implemented on the Android smartphone. The onboard accelerometer and
+magnetometer of the Nexus S are used as inertial navigation sensors.
+Improvements are made to the algorithm. The performance of the particle filter
+is analyzed with different parameters and approaches:
 
 \section{Dead reckoning with step counts}
 
-The acceleration of the human body as part of the act of walking is small and very impulsive
-in nature. The motion of the torso of the body is governed mostly by inertia. 
-Unfortunately, the impulsive acceleration values are small and lie buried in sensor
-noise. They are virtually indetectible using the MEMS accelerometer supplied with the android
-device - Nexus S.
+The acceleration of the human body as part of the act of walking is small and 
+very impulsive in nature. The motion of the torso of the body is governed 
+mostly by inertia. Unfortunately, the impulsive acceleration values are small 
+and lie buried in sensor noise. They are virtually indetectible using the MEMS 
+accelerometer supplied with the android device - Nexus S.
 
-To overcome this difficulty, the step count method of [ped. Nav.] is adopted. Under
-the assumption that step size varies very little over the course of motion of the subject,
-an inertial navigation system may be created.
+To overcome this difficulty, the step count method of [ped. Nav.] is adopted. 
+Under the assumption that step size varies very little over the course of 
+motion of the subject, an inertial navigation system may be created.
 
 \subsection{Step counting method}
 
-The step counting method is described in [ped. Nav.]. However, we take a slightly
-modified approach. 
+The step counting method is described in [ped. Nav.]. However, we take a
+slightly modified approach.  
 
 \subsection{Noise clamping\label{sec:NoiseClamping}}
 
-The MEMS accelerometer sensor on the smartphone has sensor noise present close to
-zero. The noise level for the accelerometer was determined to be always less than
-$0.6 m/s^2$. To allow for a reasonable noise margin and provide sufficient cushion
-for additional noise introduced due to the dynamic nature of walking, we choose
-a threshold of $1.3 m/s^2$. If the absolute value of the Z-axis acceleration
-sample is less than this threshold, then the sample will be clamped to zero.
+The MEMS accelerometer sensor on the smartphone has sensor noise present close
+to zero. The noise level for the accelerometer was determined to be always less
+than $0.6 m/s^2$. To allow for a reasonable noise margin and provide sufficient
+cushion for additional noise introduced due to the dynamic nature of walking, we
+choose a threshold of $1.3 m/s^2$. If the absolute value of the Z-axis
+acceleration sample is less than this threshold, then the sample will be clamped
+to zero. 
 
 As has been determined experimentally, steps taken by a human usually produce
 a pair of spikes - one positive and one negative with magnitude around $2 m/s^2$.
@@ -76,6 +81,11 @@ values and step size.
 
 The constant $C$ is a scaling factor that is used as a constant of proportionality
 to scale the step-values to real world distances.
+
+\section{Determining the Training Constant}
+A simple procedure was followed to determine the training constant for a user.
+The user was asked to locate himself using a QRCode before starting out along
+a straight line along a corridoor
 
 \section{Sensor fusion using Particle Filters}
 

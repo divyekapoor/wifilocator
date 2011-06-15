@@ -5,6 +5,6 @@ all: *.tex figures/*
 	gnome-open thesis.pdf
 
 clean:
-	rm -rf *.lof *.lot  *.log *.toc *.aux *.pdf
+	rm -f *.lof *.lot  *.log *.toc *.aux *.pdf
 
 .PHONY: all clean
