@@ -1,9 +1,61 @@
-\chapter{Proposed Method\label{chap:proposed_method}}
-The particle filter approach described in [ped. Nav.] is adapted to and
-implemented on the Android smartphone. The onboard accelerometer and
-magnetometer of the Nexus S are used as inertial navigation sensors.
-Improvements are made to the algorithm. The performance of the particle filter
-is analyzed with different parameters and approaches:
+\chapter[Proposed Work]{Particle filter Based Map and Sensor Fusion technique for Indoor Tracking 
+using an Android Smartphone \label{chap:proposed_method}}
+
+As described in Chapter \ref{chap:literature_review} (Literature Review),
+the step detection method for pedestrian navigation shows the most promise
+for accurate tracking of subjects in indoor tracking scenarios. 
+Hence, our proposed method will be building upon the same. However, specific
+modifications are proposed and implemented to take into account the fact 
+that our implementation system is an Android smartphone with a number of 
+sensors and limited processing capabilities. 
+
+The device for implementation is the Samsung Nexus S. The onboard accelerometer 
+and magnetometer of the Nexus S are used as inertial navigation sensors.
+Improvements are made to the algorithm keeping in mind the capabilities and
+shortcomings of the mobile platform as well as the behaviour of sensors during
+real world tests. The algorithm is then analyzed with
+different parameters and approaches and is compared and contrasted with other
+tracking approaches.
+
+\section{Inputs}
+
+Given the choice of hardware, we are constrained to use only specific 
+data sources for our algorithm. The sections below detail the data 
+sources used by the algorithm.
+
+\subsection{Accelerometer}
+
+\todo[inline]{Show how Accelerometer can be sensor fused}
+
+\subsection{Orientation}
+
+\todo[inline]{Show how Orientation can be sensor fused}
+
+\subsection{Camera info\label{sec:QRCodes}}
+QRCodes are a kind of 2 dimensional bar code
+that can be read off from a camera. They can contain a variety of content - 
+from URLs to Contact information. They can also contain plain text. The 
+plain text information mode of QRCodes is leveraged to provide encoding 
+of a human-readable text representation of map points. We can leverage 
+the on-board camera of smartphones to provide information about the map 
+of the floor, the current location and any additional information that is 
+required by the tracking algorithm. Such factors might include the scaling 
+factor of the map, Wifi AP information, navigation information etc.
+
+\subsubsection{QRCode information format}
+
+\todo[inline]{Add information about the message format for embedding data inside the QRCode}
+
+
+\subsection{Map Information}
+\todo[inline]{Show how Map Information can be sensor fused}
+
+
+\subsection{Wifi Information}
+
+\todo[inline]{Show how wifi information can be sensor fused}
+\todo[inline]{Which cases is such sensor fusion useful?}
+
 
 \section{Dead reckoning with step counts}
 
@@ -13,60 +65,80 @@ mostly by inertia. Unfortunately, the impulsive acceleration values are small
 and lie buried in sensor noise. They are virtually indetectible using the MEMS 
 accelerometer supplied with the android device - Nexus S.
 
-To overcome this difficulty, the step count method of [ped. Nav.] is adopted. 
+To overcome this difficulty, the step count method of \todo{Provide reference}[ped. Nav.] is adopted. 
 Under the assumption that step size varies very little over the course of 
-motion of the subject, an inertial navigation system may be created.
+motion of the subject, an inertial navigation system may be created. An
+empirical formula is used to correlate acceleration values from 
+the 
 
 \subsection{Step counting method}
 
 The step counting method is described in [ped. Nav.]. However, we take a
-slightly modified approach.  
+slightly modified approach. 
+
+\todo[inline]{Write a short recap on the step counting approach}
 
 \subsection{Noise clamping\label{sec:NoiseClamping}}
 
-The MEMS accelerometer sensor on the smartphone has sensor noise present close
-to zero. The noise level for the accelerometer was determined to be always less
-than $0.6 m/s^2$. To allow for a reasonable noise margin and provide sufficient
-cushion for additional noise introduced due to the dynamic nature of walking, we
-choose a threshold of $1.3 m/s^2$. If the absolute value of the Z-axis
-acceleration sample is less than this threshold, then the sample will be clamped
-to zero. 
+It is well known that while measuring real world information, sensors of all 
+kinds pick up noise from the environment that affects the readings of the 
+sensed variables. The MEMS accelerometer present on a typical smartphone is 
+no different. Figure \ref{fig:accel_static} graphs the sensor noise of 
+the accelerometer sensor for our device under test.
 
-As has been determined experimentally, steps taken by a human usually produce
-a pair of spikes - one positive and one negative with magnitude around $2 m/s^2$.
-By choosing this threshold value, we give maximal noise margin for step detection.
+The noise level for the accelerometer was determined to be always less
+than $0.6 m/s^2$. The acceleration peaks corresponding to actual steps usually
+lie around $2.0 m/s^2$. To allow for a reasonable noise margin and provide
+sufficient cushion for additional noise introduced due to the dynamic nature of
+walking, we choose a threshold of $1.3 m/s^2$ which is the mean value of the two
+peak values. If the absolute value of the Z-axis acceleration sample is less
+than this threshold, then the sample will be clamped to zero. For a smartphone
+with a similar accelerometer sensor but with different noise characteristics,
+the values of the threshold can be varied accordingly. 
 
-See figure [...] for a comparative estimation of step values versus sensor noise.
+Figure \ref{fig:accel_raw} graphs how the filtering process works by
+supressing sensor noise close to zero while allowing sensor values to 
+pass unaltered when they correspond to a step being taken.
 
-\subsection{Step size detection procedure}
+\subsection{Step detection procedure}
 
 \subsubsection{Zero Crossings}
 
 To detect actual steps taken by the subject holding the device, [ped. Nav.] 
 suggests using zero crossings. However, in the sensor data collected, a number
-of spurious zero crossings exist (primarily due to sensor noise). However, 
-even after sensor noise is clamped as per section \ref{sec:NoiseClamping}, 
-spurious zero crossings often arise due to variable motion of the subject.
+of spurious peaks and valleys exist (primarily due to sensor noise). However, 
+even after sensor noise is clamped as per Section \ref{sec:NoiseClamping}, 
+spurious peaks and valleys that arise due to variable motion of the subject 
+are not completely eliminated.
 
 \subsubsection{Peak and Valley hunting}
-Peak and Valley hunting procedure (better than zero crossings) for step detection.
-Robust to unexpected values.
 
-To have robust detection of steps, a state machine is maintained. The state 
-machine detects a peak and then waits for a trough. Subsequent
+Peak and Valley hunting procedure is an alternate method for step detection.
+In this method a 2-state machine is constructed according to Table
+\ref{tbl:peak_valley_state_table}. This method outputs a detected step at 
+the first positive peak in the accelerometer sensor data that corresponds to 
+the beginning of the next step. This is contrast to the zero-crossing method 
+that outputs the detection of a step at every negative to positive zero 
+crossing. 
+
 
 An internal state machine is used. The state machine has 2 states and a comparison
 is made between $A_{max}$ or $A_{min}$ and the sample value that forms the peak/trough
 whenever state transitions occur.
 
+\todo{Improve this area}
 \begin{table}[h]\centering
-    \caption{State table of the step detection state machine}
+    \caption{State table of the step detection state machine\label{tbl:peak_valley_state_table}}
     \begin{tabular}{cccc} \hline
     State & Accelerometer Value     & New State &  Action\\     \hline
-    $q_0$ & Positive Peak Detected  & $q_1$     & Update $A_{max}$ if peak is of larger magnitude \\
+    $q_0$ & Positive Peak Detected  & $q_1$     & Update $A_{max}$ if peak value  \\ 
+          &                         &           & is positive and of \\
+          &                         &           & a larger magnitude than \\
+          &                         &           & current $A_{max}$ \\
           & Other values            & $q_0$     & Ignore \\         \hline
-    $q_1$ & Negative Trough Detected & $q_0$    & Update $A_{min}$ if trough is negative \\ 
-          &                         &           & and of larger magnitude than $A_{min}$ \\
+    $q_1$ & Negative Trough Detected & $q_0$    & Update $A_{min}$ if trough \\
+          &                         &           & is negative and of larger \\ 
+          &                         &           & magnitude than $A_{min}$ \\
           & Other values            & $q_1$     & Ignore \\ \hline
     \end{tabular}
 \end{table}
@@ -83,39 +155,117 @@ The constant $C$ is a scaling factor that is used as a constant of proportionali
 to scale the step-values to real world distances.
 
 \section{Determining the Training Constant}
-A simple procedure was followed to determine the training constant for a user.
-The user was asked to locate himself using a QRCode before starting out along
-a straight line along a corridoor
 
-\section{Sensor fusion using Particle Filters}
+An experimental method was used to determine the training constant for each
+user.
 
-A background on particle filters has already been given.
 
 \subsection{Dynamical equations for system}
 
-The dynamical equations that govern the system are:
+Effectively, we can state that the basic system is being modelled by the
+following set of equations:
 
+\begin{equation}\label{eq:dr_eq}
+\begin{bmatrix}x_{i+1}\\
+y_{i+1}
+\end{bmatrix} = \begin{bmatrix}x_{i}\\
+y_{i}
+\end{bmatrix}  + d{}_{i} \begin{bmatrix}-cos(\theta_{i})\\
+sin(\theta_{i})
+\end{bmatrix} 
+\end{equation}
 
+For the case where the coordinate system for the map is $x$ positive towards right and $y$  positive downwards with TrueNorth  of the map pointing upwards.
 
-\subsection{Accelerometer}
+This dynamical representation is overtly simplistic because it doesn't take into account real world issues as seen in the groundwork section. The most important issue is the issue of sensor drift. The magnetometer is a rather inaccurate sensor and is rated to an accuracy of 5 degrees in static circumstances. There is also a recommendation to re-calibrate before use. This is required because this sensor suffers from a lot of sensor noise and drift. 
 
+Recalibration of the magnetometer involves moving it around in a pattern of 8. Effectively, that randomizes internal magnetic elements enough for magnetic saturation effects to be neutralized. Unfortunately, for a continuous use scenario like ours, recalibration of this sensor is not an option. Hence, we modify our dynamical equation to take this error into account.
 
-\subsection{Orientation}
+\begin{equation}
+\begin{bmatrix}x_{i+1}\\
+y_{i+1}
+\end{bmatrix} = \begin{bmatrix}x_{i}\\
+y_{i}
+\end{bmatrix}  + d{}_{i} \begin{bmatrix}-cos(\theta_{i}+\vartheta)\\
+sin(\theta_{i}+\vartheta)
+\end{bmatrix} 
+\end{equation}
 
-\subsection{Camera info}
-For first fix, we use QR codes. They are used whenever subject changes floors too.
-The QR codes provide information about the map of the floor, the current location
-and any additional information that is required by the tracking algorithm.
+In this dynamical equation, we have added an additional parameter $\vartheta$ which is a random variable that represents random white noise in the reading from the true value of the magnetometer.
 
-\subsection{Map Information}
+Besides the sensor noise that creeps into the values of the magnetometer, there are 2 other issues that need to be taken care of in our dynamical modelling of the dead reckoning system.
 
+\subsection{Accounting for orientation bias and noise}
 
+The first issue is an issue of bias in the angle readings from the magnetometer. This bias can creep in due to 2 different reasons - the first being specific, environmental magnetic fields which distort the actual detection of $TrueNorth$  in the system and the second being a bias that creeps in due to the way the user holds the smartphone in the palm of his hand and the offset thus produced. To take into account such offsets, we modify the dynamical equations as follows:
 
-\subsection{Wifi Information}
+\begin{equation}
+\begin{bmatrix}x_{i+1}\\
+y_{i+1}
+\end{bmatrix} = \begin{bmatrix}x_{i}\\
+y_{i}
+\end{bmatrix}  + d{}_{i} \begin{bmatrix}-cos(\theta_{i}+\theta_{b}+\vartheta)\\
+sin(\theta_{i}+\theta_{b}+\vartheta)
+\end{bmatrix} 
+\end{equation}
 
-\section{Accounting for orientation bias and noise}
+In this modified version of the dynamical equations, we have added a slowly
+varying term $\theta_{b}$ that represents an explicit bias in the readings from
+the magnetometer.
 
-\section{Accounting for varying step sizes}
+\subsection{Accounting for varying step sizes}
 
-\section{Barometer Information}
+The second issue at hand is step size variation and missing steps. To map
+accelerometer readings to step sizes, we have used the empirical equation
+provided by [ref]. However, this empirical equation doesn't take into account
+changes in step sizes due to changes in footwear or floor material. To account
+for this bias in step size detection, we introduce an additional parameter
+$d_{b}$ in the dynamical system. The new equations for the dynamical system are:
+
+\begin{equation}
+\begin{bmatrix}x_{i+1}\\
+y_{i+1}
+\end{bmatrix} = \begin{bmatrix}x_{i}\\
+y_{i}
+\end{bmatrix}  + (d{}_{i}+d_{b}) \begin{bmatrix}-cos(\theta_{i}+\theta_{b}+\vartheta)\\
+sin(\theta_{i}+\theta_{b}+\vartheta)
+\end{bmatrix} 
+\end{equation}
+
+In this representation, $d_{b}$ is a slowly varying bias variable on the step size.
+
+\section{Particle Filter Implementation of the Dynamical Equations}
+
+There are a number of ways in which you can transform these dynamical 
+equations to practice. An HMM based approach might be taken if a discrete
+output space is preferred. A particle filter approach is taken when the 
+output state space is continuous. Since we intend to keep the output space
+continuous, we choose the Particle filter implementation of the dynamical
+equations over the HMM implementation.
+
+\subsection{Algorithm for updates}
+
+\todo[inline]{Expand this section}
+
+\section{Fusing Map Information}
+
+\todo[inline]{Explain how map information can act as an error correcting 
+    tool for the system.}
+
+\section{Inherent limitations of the Particle filter approach}
+
+\begin{enumerate}
+\item Computational complexity
+\item Possibility of running out of valid successor states (effectively getting lost)
+\item Degeneracy of states
+\end{enumerate}
+
+\section{Additional heuristics to combat these limitations}
+
+The following heuristics are used to combat some of the limitations 
+described above.
+
+\section{Future enhancements}
+\subsection{Fusing Barometer Information}
+\todo[inline]{Propose sensor fusion for barometric sensors as and when they become available}
 

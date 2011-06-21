@@ -31,9 +31,16 @@ correspond to linear acceleration of the device) and the Rotation Vector Sensor
 is a composite sensor that fuses Gravity information derived from the
 3 axis Accelerometer and the magnetic field information derived from the
 3 axis Magnetic field sensor to orient the device in the 3 Dimensional World 
-Coordinate space. The actual method used to do so is described in the API 
-documentation [reference to API documentation] and further discussion is out of
-scope for this thesis.
+Coordinate space. The actual method used to do so is described in the API
+documentation \todo{Provide Reference}[reference to API documentation] and
+further discussion is out of scope for this thesis.
+
+\begin{figure}
+\centering
+    \includegraphics[height=3in]{figures/android_front}
+    \includegraphics[height=3in]{figures/android_back}
+\caption{Google Nexus S manufactured by Samsung}
+\end{figure}
 
 \section{Location Under Test}
 
@@ -63,15 +70,8 @@ for all the experiments detailed below.
 \end{figure}
 
 
-\section{Simple Dead Reckoning}
 
-As discussed in the Literature Review (Chapter \ref{chap:literature_review}) and
-in the Proposed Work (Chapter \ref{chap:proposed_method}), it is impossible to
-directly obtain displacement information by double integration of the
-accelerometer data. Hence, the step detection method was employed for tracking
-the motion of the device as held by a walking human.
-
-\subsection{Step detection procedure}
+\section{Step detection procedure}
 
 Step detection for dead reckoning was done using accelerometer sensor data.
 Two different methods were employed and the simple zero crossing method on 
@@ -132,7 +132,7 @@ lag of about half a step.
 \end{figure}
 
 
-\subsection{First Fix}
+\section{First Fix}
 
 For any dead reckoning algorithm, it is important to provide a good starting
 point. Low error in the starting location contributes to better
@@ -149,6 +149,19 @@ implemented:
     in the area under test.
 \end{enumerate}
 
+\missingfigure{QRCodes pasted on the wall}
+
+\subsection{Experimental setup}
+
+All the experments were performed with the same Android device (the Samsung 
+Nexus S) and with the same application software. Users were familiar with 
+touch screen phones and were well aware of the layout of the building. None of
+the users had had any prior exposure to the map of the building and did not 
+know the direction of True North. Details of the experiments performed 
+are specified in Sections \ref{sec:direct_selection} and \ref{sec:qrcode_selection}
+
+\subsection{Direct Selection of Location on a Map\label{sec:direct_selection}}
+
 Five test subjects were asked to mark out their current position on a
 map by simply touching the corresponding location on the map shown on the 
 touchscreen of the device. The map was shown at a fixed resolution to all 
@@ -156,15 +169,177 @@ test subjects in order to make their responses comparable.
 
 The test were also allowed to retry locating themselves on the map in case they
 were not satisfied with their initial results. All their location attempts were
-logged for later analysis. The results are summarized in 
+logged for later analysis.The following facts were observed during the process of 
+selection:
 
-\subsubsection{Direct Location on a Map}
+\begin{enumerate}
+\item Users had an initial difficulty in orienting themselves with regard to 
+    the map supplied.
+\item As the map contained blocks of rooms that were similar looking, users
+    made initial errors in orienting themselves. However, they attempted to 
+    correct their errors when the mistake was realized.
+\item Some users felt extremely frustrated by the direct selection procedure
+    primarily because they could not mark out their locations precisely due
+    to the large surface area of contact of their fingers with the touch
+    screen. The variability of selection of the contact point while using 
+    the touchscreen contributed to an increase in the number of attempts
+    required to correctly mark their positions on the map.
+\end{enumerate}
 
-\subsubsection{Camera based QRCode Method}
-QRCode acquisition was successful at distances ranging from 30 cm to 1 m using
-the Android phone. 
+\todo[inline]{Ask 5 people to select locations on a map and log data}
+\missingfigure{Table of error from true location}
+\missingfigure{Table of number of times attempted for satisfactory positioning}
 
-\subsection{Determining the Training Constant}
+\subsection{Camera based QRCode Method \label{sec:qrcode_selection}}
+
+To evaluate the efficiency of determining first fix via QRCodes in comparison 
+to the direct location selection method, an experiment was set up. 
+The experiment was performed in conjunction with the experment of 
+Section \ref{sec:direct_selection}, users were asked to locate themselves
+by snapping a QRCode pasted on the wall instead of marking their starting 
+location on a map.
+
+The users were then positioned at various distances from the QRCode and 
+asked whether they would make the effort to go to the QRCode to snap their
+starting location while using the application or whether they would prefer
+the manual method.
+
+The following observations were made regarding the QRCode method for first
+fix:
+
+\begin{enumerate}
+\item QRCode selection via the camera was a fast process, usually not requiring
+    more than 10 seconds on behalf of the user.
+\item Users were consistently located at distances less than 1 meter from 
+    the QRCode. In most cases, the users were at a distance of around 30 cm 
+    from the QRCode pasted on the wall. 
+\item There was an instance where poor lighting delayed the capture of the
+    QRCode and the QRCode could be successfully captured only after a 
+    fluorescent tubelight was switched on to provide adequate lighting.
+\end{enumerate}
+
+\missingfigure{Image of a person snapping the QRCode with the camera}
+
+\subsection{Comparison between the two methods}
+
+After processing the results of the experiments, it was determined that 
+users overwhelmingly preferred the QRCode method for first fix acquisition.
+They were willing to walk up to $5 m$ to the nearest QRCoded location in 
+order to take advantage of the facility.
+
+\todo[inline]{Insert survey results}
+
+\subsection{User Feedback}
+
+Users in their comments indicated that potential improvements to the 
+application were possible. For example, if the application could determine 
+roughly their current location and then provide just that subset of the map
+in which the user was located, the speed of providing the first fix location 
+by a manual method could be improved.
+
+\section{Determining the Training Constant}
+
+In a separate experiment, three test subjects were asked to walk between 
+2 QRCoded locations. The first fix was taken using the QRCode method and 
+the training constant was thus estimated based on the number of steps 
+detected and the known distance between the 2 QRCoded locations.
+
+The locations used for this test were along a corridoor and were about $30 m$
+apart. The tests were repeated thrice for each subject. The resulting 
+step constants are summarized in the table below.
+
+\todo[inline]{Determining training constant}
+\missingfigure{Table of training constant values}
+
+\section{Step variation analysis}
+
+To see the performance of the algorithm to step variations, an experiment 
+was performed wherein a test subject walked at three distinct speeds
+along a straight corridoor. The subject paused for a short while between 
+the three distinct segments to maintain separation of speeds.
+
+The three segments of the walk had the following
+characteristics:
+
+\begin{enumerate}
+\item The test subject walked with very light steps, almost shuffling along. 
+\item The test subject walked with regular steps along the corridoor.
+\item The test subject walked with large steps along the corridoor in a motion
+    that approximated running.
+\end{enumerate}
+
+The accelerometer graphs and the consequent step detections for this 
+experiment are shown in Figure \ref{fig:step_variation}. The tabulated
+results of the step detection process are shown in 
+Table \ref{tbl:step_variation}. Note that the poor performance for 
+shuffling steps is due to acceleration peaks not being sufficiently 
+distinguishable from sensor noise and for the fast heavy steps is 
+due to generation of spurious peaks while coming to an abrupt halt.
+A smooth motion doesn't generate such issues and thus the step 
+detection procedure is very accurate for that range.
+
+\begin{table}[tbph]
+    \centering
+    \begin{tabular}{|l|c|c|}
+        \hline
+        \hline
+        Step Segment & Actual Number of Steps & Steps Detected \\
+        \hline
+        Light Steps (Shuffle) & 10 & 5 \\
+        Regular steps & 10 & 10 \\
+        Fast (Heavy) steps & 15 & 18 \\
+        \hline
+        \hline
+    \end{tabular}
+    \caption{Step detections under step variations\label{tbl:step_variation}}
+\end{table}
+
+\begin{figure}
+    \centering
+    \includegraphics{figures/step_variation.png}
+    \caption{Difference in step sizes and the corresponding variations in 
+        step detection and step estimates\label{fig:step_variation}}
+\end{figure}
+
+\section{Test Paths}
+
+Five different test paths were used to test the performance of the system.
+The features of these paths are described below. The paths themselves
+are marked out in Figure \ref{fig:test_paths}.
+
+\begin{enumerate}
+\item Straight walk down a corridoor (A to B)
+\item Straight walk down a corridoor, a U turn followed by a straight walk 
+    to the starting point. (A to B and then B to A)
+\item Zig-Zag walk down a corridoor (A to B).
+\item A U shaped walk along all three corridoors. (A-B-C-D)
+\item A U shaped walk along all three corridoors followed by a U turn and a 
+    walk back to the starting location. (A-B-C-D-C-B-A)
+\end{enumerate}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=5in]{figures/test_paths.jpg}
+    \caption{Test paths for algorithm\label{fig:test_paths}}
+\end{figure}
+
+
+\section{Simple Dead Reckoning}
+
+As discussed in the Literature Review (Chapter \ref{chap:literature_review}) and
+in the Proposed Work (Chapter \ref{chap:proposed_method}), it is impossible to
+directly obtain displacement information by double integration of the
+accelerometer data. Hence, the step detection method was employed for tracking
+the motion of the device as held by a walking human. The steps are integrated
+with orientation information received from the magnetometer to create a 
+simple dead reckoning system in accordance with the dynamical equation 
+\eqref{eq:dr_eq}. The initial position for dead reckoning was obtained via
+QRCodes in accordance with the description in Section \ref{sec:QRCodes}.
+
+
+\subsection{Simple Dead Reckoning Results}
+\todo[inline]{Describe actual path and dead reckoning path}
+\missingfigure{Dead Reckoning path}
 
 \section{Plain Wifi Based Positioning}
 \subsection{Case 1: Dead reckoning with NN wifi positioning}
@@ -183,24 +358,31 @@ the Android phone.
 \subsection{Case 8: Simple heuristics to deal with impoverished samples}
 (retry, retry with greater inaccuracy)
 
-\section{Particle filter + Wifi data}
-TODO
-
-\subsection{Case 1: Use of Wifi data for accounting for drift errors}
-\subsection{Case 2: Use of Oriented Wifi data for accounting for drift errors}
-\subsection{Case 3: Use of clamped wifi data for accounting for drift errors}
-\subsection{Case 4: Use of area Restricted Wifi data for accounting for drift errors}
-
 \section{Signal Strength Map}
 
 TODO if time permits
 Wifi signal strength map developed using crowdsourced data for use in systems such as RedPin.
 
-\section{Issues faced}
-Incorrect step sizes yielded states in which no further progress was possible using data from the inertial sensors. Hence we had to resort to wifi data to get out of the blind spot.
+\section{Summary of Results}
+\todo[inline]{Which algorithms to pick based on the results, advantages and disadvantages}
 
-Limited processing power and near-realtime time constraints of operation constrain computational 
-complexity of the solution.
+\section{Issues faced}
+Incorrect step sizes yielded states in which no further progress was possible
+using data from the inertial sensors. Hence we had to resort to wifi data to get
+out of the blind spot.
+
+Limited processing power and near-realtime time constraints of operation
+constrain computational complexity of the solution.
 
 Surveying is the biggest issue in this system.
+
+Computational complexity and scaling issues.
+
+
+\section{Future Work: Particle filter + Wifi data}
+
+\subsection{Case 1: Use of Wifi data for accounting for drift errors}
+\subsection{Case 2: Use of Oriented Wifi data for accounting for drift errors}
+\subsection{Case 3: Use of clamped wifi data for accounting for drift errors}
+\subsection{Case 4: Use of area Restricted Wifi data for accounting for drift errors}
 

@@ -1,0 +1,262 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset Formula $\begin{bmatrix}x_{i+1}\\
+y_{i+1}
+\end{bmatrix}$
+\end_inset
+
+= 
+\begin_inset Formula $\begin{bmatrix}x_{i}\\
+y_{i}
+\end{bmatrix}$
+\end_inset
+
+ + 
+\begin_inset Formula $d{}_{i}$
+\end_inset
+
+
+\begin_inset Formula $\begin{bmatrix}-cos(\theta_{i})\\
+sin(\theta_{i})
+\end{bmatrix}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+For the case where the coordinate system for the map is 
+\begin_inset Formula $x$
+\end_inset
+
+ positive towards right and 
+\begin_inset Formula $y$
+\end_inset
+
+ positive downwards with 
+\begin_inset Formula $TrueNorth$
+\end_inset
+
+ of the map pointing upwards.
+\end_layout
+
+\begin_layout Standard
+This dynamical representation is overtly simplistic because it doesn't take
+ into account real world issues as seen in the groundwork section.
+ The most important issue is the issue of sensor drift.
+ The magnetometer is a rather inaccurate sensor and is rated to an accuracy
+ of 5 degrees in static circumstances.
+ There is also a recommendation to re-calibrate before use.
+ This is required because this sensor suffers from a lot of sensor noise
+ and drift.
+ 
+\end_layout
+
+\begin_layout Standard
+Recalibration of the magnetometer involves moving it around in a pattern
+ of 8.
+ Effectively, that randomizes internal magnetic elements enough for magnetic
+ saturation effects to be neutralized.
+ Unfortunately, for a continuous use scenario like ours, recalibration of
+ this sensor is not an option.
+ Hence, we modify our dynamical equation to take this error into account.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\begin{bmatrix}x_{i+1}\\
+y_{i+1}
+\end{bmatrix}$
+\end_inset
+
+= 
+\begin_inset Formula $\begin{bmatrix}x_{i}\\
+y_{i}
+\end{bmatrix}$
+\end_inset
+
+ + 
+\begin_inset Formula $d{}_{i}$
+\end_inset
+
+
+\begin_inset Formula $\begin{bmatrix}-cos(\theta_{i}+\phi_{mag})\\
+sin(\theta_{i}+\phi_{mag})
+\end{bmatrix}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In this dynamical equation, we have added an additional parameter 
+\begin_inset Formula $\phi_{mag}$
+\end_inset
+
+which is a random variable that represents random white noise in the reading
+ from the true value of the magnetometer.
+\end_layout
+
+\begin_layout Standard
+Besides the sensor noise that creeps into the values of the magnetometer,
+ there are 2 other issues that need to be taken care of in our dynamical
+ modelling of the dead reckoning system.
+\end_layout
+
+\begin_layout Standard
+The first issue is an issue of bias in the angle readings from the magnetometer.
+ This bias can creep in due to 2 different reasons - the first being specific,
+ environmental magnetic fields which distort the actual detection of 
+\begin_inset Formula $TrueNorth$
+\end_inset
+
+ in the system and the second being a bias that creeps in due to the way
+ the user holds the smartphone in the palm of his hand and the offset thus
+ produced.
+ To take into account such offsets, we modify the dynamical equations as
+ follows:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\begin{bmatrix}x_{i+1}\\
+y_{i+1}
+\end{bmatrix}$
+\end_inset
+
+= 
+\begin_inset Formula $\begin{bmatrix}x_{i}\\
+y_{i}
+\end{bmatrix}$
+\end_inset
+
+ + 
+\begin_inset Formula $d{}_{i}$
+\end_inset
+
+
+\begin_inset Formula $\begin{bmatrix}-cos(\theta_{i}+\theta_{b}+\phi_{mag})\\
+sin(\theta_{i}+\theta_{b}+\phi_{mag})
+\end{bmatrix}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In this modified version of the dynamical equations, we have added a slowly
+ varying term 
+\begin_inset Formula $\theta_{b}$
+\end_inset
+
+that represents an explicit bias in the readings from the magnetometer.
+\end_layout
+
+\begin_layout Standard
+The second issue at hand is step size variation.
+ To map accelerometer readings to step sizes, we have used the empirical
+ equation provided by [ref].
+ However, this empirical equation doesn't take into account changes in step
+ sizes due to changes in footwear or floor material.
+ To account for this bias in step size detection, we introduce an additional
+ parameter 
+\begin_inset Formula $d_{b}$
+\end_inset
+
+in the dynamical system.
+ The new equations for the dynamical system are:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\begin{bmatrix}x_{i+1}\\
+y_{i+1}
+\end{bmatrix}$
+\end_inset
+
+= 
+\begin_inset Formula $\begin{bmatrix}x_{i}\\
+y_{i}
+\end{bmatrix}$
+\end_inset
+
+ + 
+\begin_inset Formula $(d{}_{i}+d_{b})$
+\end_inset
+
+
+\begin_inset Formula $\begin{bmatrix}-cos(\theta_{i}+\theta_{b}+\phi_{mag})\\
+sin(\theta_{i}+\theta_{b}+\phi_{mag})
+\end{bmatrix}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In this representation, 
+\begin_inset Formula $d_{b}$
+\end_inset
+
+is a slowly varying bias variable on the step size.
+\end_layout
+
+\end_body
+\end_document

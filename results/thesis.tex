@@ -1,6 +1,10 @@
-\documentclass[12pt,a4paper,oneside]{book}
-\usepackage{fullpage}
+\documentclass[12pt,a4paper,twoside]{book}
+%\usepackage{fullpage}
+%\usepackage[twoside,bindingoffset=0.75in??,left=1.75in,right=0.9in]{geometry}
+\usepackage{todonotes}
 \usepackage[avantgarde]{quotchap}
+\usepackage{amsmath}
+\usepackage{setspace}
 \usepackage{graphicx}
 
 \pdfimageresolution 300
@@ -27,7 +31,12 @@
 
 \listoftables
 
+\clearpage
+\listoftodos
+
 \mainmatter
+
+%\onehalfspacing
 
 \input{introduction.tex}
 
@@ -45,7 +54,7 @@
 
 \backmatter
 
-% TODO: Put bibliography and appendices
+\todo[inline]{Put bibliography and appendices}
 
 
 \end{document}
