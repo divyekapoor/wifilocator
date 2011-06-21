@@ -9,24 +9,16 @@ set datafile separator ",";
 unset xtic;
 
 set title "Step Detection from Accelerometer Data";
-set xlabel "time";
-set ylabel "acceleration";
 plot accel_file using 1:(abs($3) < 1.3? 0: $3) with linespoints title "Clamped Acceleration", \
     step_file using 1:($3-2) with linespoints title "Steps";
 
-
 set output "accel_diff.png";
 set title "Difference Signal: Raw - Filtered Acceleration";
-set xlabel "time";
-set ylabel "acceleration";
 set yrange [-8:8];
 plot accel_file using 1:($3 - (abs($3) < 1.3? 0 : $3)) with linespoints title "Difference Signal";
 
 set output "accel_raw.png";
 set title "Raw Acceleration Sensor Data";
-set xlabel "time";
-set ylabel "raw acceleration";
-set y2label "clamped acceleration";
 set y2range [-8:24];
 set yrange [-24:8];
 set ytics nomirror;
