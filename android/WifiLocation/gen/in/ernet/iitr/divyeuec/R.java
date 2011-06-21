@@ -16,40 +16,52 @@ public final class R {
     public static final class drawable {
         public static final int floor=0x7f020000;
         public static final int floor3=0x7f020001;
-        public static final int icon=0x7f020002;
+        public static final int floor_bad_scale=0x7f020002;
+        public static final int icon=0x7f020003;
     }
     public static final class id {
-        public static final int bssid=0x7f060006;
-        public static final int btn_record_sample=0x7f06000a;
-        public static final int btn_wifi_record_sample=0x7f060014;
-        public static final int capabilities=0x7f060008;
-        public static final int frequency=0x7f060007;
-        public static final int map=0x7f060013;
-        public static final int map_position_x=0x7f060011;
-        public static final int map_position_y=0x7f060012;
-        public static final int num_samples=0x7f06000f;
-        public static final int rssi=0x7f060009;
-        public static final int sample_information=0x7f06000b;
-        public static final int sample_map_view=0x7f06000e;
-        public static final int sample_values=0x7f06000d;
-        public static final int ssid=0x7f060005;
-        public static final int threshold_slider=0x7f060003;
-        public static final int threshold_value=0x7f060004;
-        public static final int training_slider=0x7f060001;
-        public static final int training_value=0x7f060002;
-        public static final int txt_angle=0x7f06000c;
-        public static final int webview=0x7f060000;
-        public static final int wifi_sample_title=0x7f060010;
+        public static final int bssid=0x7f060008;
+        public static final int btn_export_db=0x7f06001b;
+        public static final int btn_import_db=0x7f06001c;
+        public static final int btn_next_x=0x7f060017;
+        public static final int btn_next_y=0x7f060019;
+        public static final int btn_prev_x=0x7f060016;
+        public static final int btn_prev_y=0x7f060018;
+        public static final int btn_record_sample=0x7f06000c;
+        public static final int btn_reset_db=0x7f06001d;
+        public static final int btn_wifi_record_sample=0x7f06001a;
+        public static final int capabilities=0x7f06000a;
+        public static final int frequency=0x7f060009;
+        public static final int logging_button=0x7f060006;
+        public static final int map=0x7f060015;
+        public static final int map_position_x=0x7f060013;
+        public static final int map_position_y=0x7f060014;
+        public static final int num_samples=0x7f060011;
+        public static final int rssi=0x7f06000b;
+        public static final int sample_information=0x7f06000d;
+        public static final int sample_map_view=0x7f060010;
+        public static final int sample_values=0x7f06000f;
+        public static final int sampleinfo=0x7f060000;
+        public static final int ssid=0x7f060007;
+        public static final int threshold_slider=0x7f060004;
+        public static final int threshold_value=0x7f060005;
+        public static final int training_slider=0x7f060002;
+        public static final int training_value=0x7f060003;
+        public static final int txt_angle=0x7f06000e;
+        public static final int webview=0x7f060001;
+        public static final int wifi_sample_title=0x7f060012;
     }
     public static final class layout {
-        public static final int dead_reckoning_activity=0x7f030000;
-        public static final int dead_reckoning_training_const_slider=0x7f030001;
-        public static final int launch_activity=0x7f030002;
-        public static final int wifi_list_item=0x7f030003;
-        public static final int wifi_locator_activity=0x7f030004;
-        public static final int wifi_record_samples_activity=0x7f030005;
-        public static final int wifi_samples_show_activity=0x7f030006;
-        public static final int wifi_site_survey_activity=0x7f030007;
+        public static final int blank=0x7f030000;
+        public static final int dead_reckoning_activity=0x7f030001;
+        public static final int dead_reckoning_training_const_slider=0x7f030002;
+        public static final int launch_activity=0x7f030003;
+        public static final int sensor_logger_activity=0x7f030004;
+        public static final int wifi_list_item=0x7f030005;
+        public static final int wifi_locator_activity=0x7f030006;
+        public static final int wifi_record_samples_activity=0x7f030007;
+        public static final int wifi_samples_show_activity=0x7f030008;
+        public static final int wifi_site_survey_activity=0x7f030009;
     }
     public static final class string {
         public static final int activity_list=0x7f040000;
@@ -59,8 +71,10 @@ public final class R {
         public static final int hello=0x7f040003;
         public static final int no_APs=0x7f040001;
         public static final int no_Activities=0x7f040002;
+        public static final int sensor_logger_activity=0x7f04000c;
         public static final int wifiSS=0x7f040005;
         public static final int wifi_record_samples_activity=0x7f040009;
+        public static final int wifi_recorder_activity=0x7f04000b;
         public static final int wifi_samples_show_activity=0x7f04000a;
         public static final int wifi_site_survey_activity=0x7f040008;
     }

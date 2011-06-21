@@ -20,7 +20,7 @@
   	/>
   	
   <SeekBar 
-  	android:max="5000"
+  	android:max="7000"
   	android:layout_width="fill_parent"
   	android:layout_height="wrap_content"
   	android:paddingTop="50dp"

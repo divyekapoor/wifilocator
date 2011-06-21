@@ -1,21 +1,19 @@
 package in.iitr.ernet.divyeuec.db;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileFilter;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.Scanner;
 
+import org.apache.commons.io.filefilter.WildcardFileFilter;
+
+import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
 
@@ -26,12 +24,13 @@ public class FileDB implements IFingerprintDB {
 
 	private static final FileDB mInstance = new FileDB();
 	private static final int KNN_CONSTANT = 7;
+	private ArrayList<LocationFingerprint> mAllSamples;
 	
 	private FileDB() {
 		
 	}
 	
-	public static FileDB getInstance() {
+	public static FileDB getInstance(Context ctx) {
 		return mInstance;
 	}
 	
@@ -60,6 +59,7 @@ public class FileDB implements IFingerprintDB {
 	
 	
 	// Locate fingerprints around a particular region
+	// TODO: Rewrite this whole thing
 	@Override
 	public List<LocationFingerprint> query(Float X, Float Y, Float angle) {
 		File samplesDir = new File(SAMPLES_DIR);
@@ -138,7 +138,7 @@ public class FileDB implements IFingerprintDB {
 
 	private File generateSampleFile(LocationFingerprint fingerprint) {
 		Date sampleTime = fingerprint.getmSampleTime();
-		File sampleFile = new File(SAMPLES_DIR, "sample_" + fingerprint.getmPrefix() + "."
+		File sampleFile = new File(SAMPLES_DIR, "sample_" + fingerprint.getmSampleName() + "."
 				+ Math.round(fingerprint.getmX() * 1000000) + "." + Math.round(fingerprint.getmY() * 1000000) + "."
 				+ Math.round(fingerprint.getmAngle()) + "." + sampleTime.getDate() + "-" + sampleTime.getMonth()
 				+ "-" + (sampleTime.getYear() + 1900) + "-" + sampleTime.getHours() + "-"
@@ -166,16 +166,38 @@ public class FileDB implements IFingerprintDB {
 
 	@Override
 	public List<LocationFingerprint> getAllSamples() {
-		Log.d(TAG, "getAllSamples called");
-		File sampleDir = new File(SAMPLES_DIR);
-		File[] fingerprintFilesJSON = sampleDir.listFiles(sampleFileFilter());
-		Log.d(TAG, "total files: " + fingerprintFilesJSON.length);
-		
-		ArrayList<LocationFingerprint> allSamples = new ArrayList<LocationFingerprint>();
-		for(File f : fingerprintFilesJSON) {
-			Log.d(TAG, "Opening file " + f.getName());
-			allSamples.add(new LocationFingerprint(f));
+		if(mAllSamples == null) {
+			// Log.d(TAG, "getAllSamples called");
+			File sampleDir = new File(SAMPLES_DIR);
+			File[] fingerprintFilesJSON = sampleDir.listFiles(sampleFileFilter());
+			// Log.d(TAG, "total files: " + fingerprintFilesJSON.length);
+			
+			ArrayList<LocationFingerprint> allSamples = new ArrayList<LocationFingerprint>();
+			for(File f : fingerprintFilesJSON) {
+				// Log.d(TAG, "Opening file " + f.getName());
+				allSamples.add(new LocationFingerprint(f));
+			}
+			mAllSamples = allSamples;
+			return allSamples;
+		} else {
+			return mAllSamples;
 		}
-		return allSamples;
+	}
+	
+	@Override
+	public void close() {
+		mAllSamples = null;
+	}
+	
+	@Override
+	public boolean resetDB() {
+		boolean result = true;
+		FileFilter wildcardFilter = new WildcardFileFilter("sample_*.json");
+		File sampleDir = new File(SAMPLES_DIR);
+		File[] fingerprintFilesJSON = sampleDir.listFiles(wildcardFilter);
+		for(int i = 0; i < fingerprintFilesJSON.length; ++i) {
+			result = fingerprintFilesJSON[i].delete() && result;
+		}
+		return result;
 	}
 }

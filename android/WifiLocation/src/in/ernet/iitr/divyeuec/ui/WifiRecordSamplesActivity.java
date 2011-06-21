@@ -28,6 +28,12 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+/**
+ * This Activity is used to record data corresponding to a particular location.
+ * The X, Y and SampleName parameters need to be supplied by the calling activity.
+ * This is used for systematically surveying an area.  
+ * 
+ */
 public class WifiRecordSamplesActivity extends Activity implements IOrientedWifiListingUpdateCallback {
 	
 	private static final String TAG = "WifiRecordSamplesActivity";
@@ -82,7 +88,8 @@ public class WifiRecordSamplesActivity extends Activity implements IOrientedWifi
 				// can also issue Wifi Scans of it's own accord, whose results will
 				// be seen by us. Occasionally, this might cause the detection of
 				// a previously (subsystem) initiated scan to be recorded as the 
-				// sample value, but it is assumed that 
+				// sample value, but it is assumed that the scan would have been initiated
+				// in a period of interest and that the race condition doesn't matter.
 				mRecordSample = true;
 				mOrientedWifiListing.refresh();
 			}
@@ -121,7 +128,7 @@ public class WifiRecordSamplesActivity extends Activity implements IOrientedWifi
 	private LocationFingerprint persistSample(float angle, Date now,
 			List<Map<String, String>> scanResults) {
 		LocationFingerprint locationFingerprint = new LocationFingerprint(LocationFingerprint.RAVINDRA_BHAWAN_MAP_ID, now, angle, mSampleX, mSampleY, scanResults, mSampleName);
-		if(!PersistenceFactory.getInstance().persist(locationFingerprint)) {
+		if(!PersistenceFactory.getInstance(this).persist(locationFingerprint)) {
 			Toast.makeText(this, "Persistence failed!", Toast.LENGTH_SHORT).show();
 			return null;
 		}

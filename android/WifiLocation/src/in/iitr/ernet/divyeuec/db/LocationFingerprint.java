@@ -9,20 +9,16 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeSet;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.util.Log;
-import android.util.Pair;
 
 public class LocationFingerprint {
-	private static final int MIN_RSSI_VALUE_DBM = -92;
 	public static final int RAVINDRA_BHAWAN_MAP_ID = 1;
 	private static final String TAG = "LocationFingerprint";
 	
@@ -94,102 +90,10 @@ public class LocationFingerprint {
 		}
 	}
 	
-	public float distance(LocationFingerprint other) {
-		// Euclidean distance between fingerprints
-		JSONArray myMacAddrArray = getmMacAddrArray();
-		JSONArray otherMacAddrArray = other.getmMacAddrArray();
-		
-		TreeSet<String> myMacAddrs = toTreeSet(myMacAddrArray);
-		TreeSet<String> otherMacAddrs = toTreeSet(otherMacAddrArray);
-		
-		List<String> commonAPs = intersect(myMacAddrs, otherMacAddrs);
-		Pair<List<String>, List<String>> differAPs = difference(myMacAddrs, otherMacAddrs); 
-		
-		int numMatch = commonAPs.size();
-		Log.d(TAG, "Number of samples matched: " + numMatch);
-		float error = 0;
-		for(String AP : commonAPs) {
-			Float rssi1 = getmAPRSSI(AP);
-			Float rssi2 = other.getmAPRSSI(AP);
-			error += (rssi1-rssi2)*(rssi1 - rssi2);
-		}
-		
-		for(String AP : differAPs.first) {
-			Float rssi = getmAPRSSI(AP);
-			error += (rssi - MIN_RSSI_VALUE_DBM)*(rssi - MIN_RSSI_VALUE_DBM);
-		}
-		
-		for(String AP : differAPs.second) {
-			Float rssi = other.getmAPRSSI(AP);
-			error += (rssi - MIN_RSSI_VALUE_DBM)*(rssi - MIN_RSSI_VALUE_DBM);
-		}
-		
-		return (float)Math.sqrt((double)error);
-		
-	}
-
-	private Pair<List<String>, List<String>> difference(
-			TreeSet<String> myMacAddrs, TreeSet<String> otherMacAddrs) {
-		
-		ArrayList<String> leftDifference = leftDifference(myMacAddrs, otherMacAddrs);
-		ArrayList<String> rightDifference = leftDifference(otherMacAddrs, myMacAddrs);
-		
-		return new Pair<List<String>, List<String>>(leftDifference, rightDifference);
-	}
-
-	private ArrayList<String> leftDifference(TreeSet<String> myMacAddrs,
-			TreeSet<String> otherMacAddrs) {
-		ArrayList<String> leftDifference = new ArrayList<String>();
-		
-		for(String s: myMacAddrs) {
-			if(!otherMacAddrs.contains(s))
-				leftDifference.add(s);
-		}
-		
-		return leftDifference;
-	}
-
-	private List<String> intersect(TreeSet<String> myMacAddrs,
-			TreeSet<String> otherMacAddrs) {
-		
-		ArrayList<String> common = new ArrayList<String>();
-		String s1 = null, s2 = null;
-		boolean first = true;
-		for(Iterator<String> it1 = myMacAddrs.iterator(), it2 = otherMacAddrs.iterator(); it1.hasNext() && it2.hasNext(); ) {
-			if(first) {
-				s1 = it1.next();
-				s2 = it2.next();
-				first = false;
-			}
-			
-			int compareVal = s1.compareTo(s2);
-			if(compareVal == 0) {
-				common.add(s1);
-				s1 = it1.next();
-				s2 = it2.next();
-			} else if(compareVal > 0) {
-				s2 = it2.next();
-			} else {
-				s1 = it1.next();
-			}
-		}
-		
-		return common;
-	}
-
-	private TreeSet<String> toTreeSet(JSONArray myMacAddrArray) {
-		TreeSet<String> array1 = new TreeSet<String>();
-		
-		try {
-			for(int i = 0; i < myMacAddrArray.length(); ++i) {
-				array1.add(myMacAddrArray.getString(i));
-			}
-		} catch(JSONException e) {
-			Log.e(TAG, "Bug in Mac Address serialized file?", e);
-			e.printStackTrace();
-			throw new RuntimeException(e);
-		}
-		return array1;
+	
+	public LocationFingerprint(JSONObject fingerprintData) {
+		// Note: The data is trusted and not verified. So be prepared for exceptions
+		deserialize(fingerprintData);
 	}
 
 	@Override
@@ -197,6 +101,18 @@ public class LocationFingerprint {
 		return getmFingerprintData().toString();
 	}
 	
+	/**
+	 * Note: Use this function with care to get a JSON representation of the Location fingerprint.
+	 * @param mapId The map with which this fingerprint is associated
+	 * @param sampleTime The time at which the fingerprint was taken
+	 * @param angle The azimuth orientation angle at which the sample was taken
+	 * @param x The X location of the sample point on the map (0-1 coordinate system)
+	 * @param y The Y location of the sample point on the map (0-1 coordinate system)
+	 * @param wifiSample The actual Wifi Sample received
+	 * @param prefix Any sample name
+	 * @return JSON representation of the fingerprint with these details included.
+	 * @throws JSONException
+	 */
 	private JSONObject serialize(int mapId, Date sampleTime, float angle,
 			float x, float y, List<Map<String, String>> wifiSample,
 			String prefix) throws JSONException {
@@ -346,7 +262,7 @@ public class LocationFingerprint {
 		this.mFingerprintData = mFingerprintData;
 	}
 
-	public String getmPrefix() {
+	public String getmSampleName() {
 		try {
 			return mFingerprintData.getString(KEY_SAMPLE_NAME);
 		} catch (JSONException e) {
@@ -356,7 +272,7 @@ public class LocationFingerprint {
 		}
 	}
 
-	public void setmPrefix(String mPrefix) {
+	public void setmSampleName(String mPrefix) {
 		try {
 			mFingerprintData.put(KEY_SAMPLE_NAME, mPrefix);
 		} catch (JSONException e) {

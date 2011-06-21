@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent"
+  android:orientation="vertical">
+  <TextView 
+    	android:layout_height="wrap_content"
+    	android:layout_width="wrap_content"
+    	android:text="Sensor Logging"
+    	android:textSize="28dp"
+    	android:textStyle="bold"
+    	android:typeface="sans"
+    	/>
+   	<View
+   		android:layout_width="fill_parent"
+   		android:layout_height="1dp"
+   		android:background="#cccccc" />
+   	
+   	<Button
+   		android:id="@+id/logging_button"
+   		android:layout_width="fill_parent"
+   		android:layout_height="wrap_content"
+   		android:paddingTop="20dp"
+   		android:text="Start Logging"
+   		/>
+   	
+</LinearLayout>

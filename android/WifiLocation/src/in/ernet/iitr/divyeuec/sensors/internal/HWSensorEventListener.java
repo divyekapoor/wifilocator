@@ -187,13 +187,13 @@ public class HWSensorEventListener implements SensorEventListener {
 	@Override
 	public void onSensorChanged(SensorEvent event) {
 		synchronized (this) {
-			long deltaT = -event.timestamp; // in nanoseconds
+			long deltaT = event.timestamp; // in nanoseconds
 			switch (event.sensor.getType()) {
 			case Sensor.TYPE_LINEAR_ACCELERATION:
 				if (mLastAccelTimestamp == 0) {
 					mLastAccelTimestamp = event.timestamp;
 				}
-				deltaT += mLastAccelTimestamp;
+				deltaT -= mLastAccelTimestamp;
 				mLastAccelTimestamp = event.timestamp;
 				mPrevAccel = mAccel;
 				mAccel = event.values.clone();
@@ -209,7 +209,7 @@ public class HWSensorEventListener implements SensorEventListener {
 				if (mLastGyroTimestamp == 0) {
 					mLastGyroTimestamp = event.timestamp;
 				}
-				deltaT += mLastGyroTimestamp;
+				deltaT -= mLastGyroTimestamp;
 				mLastGyroTimestamp = event.timestamp;
 				mAngularVelocity = event.values.clone();
 				// updateAngles(deltaT);
@@ -224,7 +224,8 @@ public class HWSensorEventListener implements SensorEventListener {
 				if (mLastGravityTimestamp == 0) {
 					mLastGravityTimestamp = event.timestamp;
 				}
-				deltaT += mLastGravityTimestamp;
+				deltaT -= mLastGravityTimestamp;
+				mLastGravityTimestamp = event.timestamp;
 				mGravity = event.values.clone();
 				updateRotationMatrices();
 				
@@ -237,7 +238,8 @@ public class HWSensorEventListener implements SensorEventListener {
 				if (mLastMagneticFieldTimestamp == 0) {
 					mLastMagneticFieldTimestamp = event.timestamp;
 				}
-				deltaT += mLastMagneticFieldTimestamp;
+				deltaT -= mLastMagneticFieldTimestamp;
+				mLastMagneticFieldTimestamp = event.timestamp;
 				mMagneticField = event.values.clone();
 				updateRotationMatrices();
 				
@@ -334,7 +336,7 @@ public class HWSensorEventListener implements SensorEventListener {
 	}
 
 	public long getmLastGyroTimestamp() {
-		return mLastGyroTimestamp;
+			return mLastGyroTimestamp;
 	}
 
 	public String getmDisplacement() {
@@ -347,7 +349,7 @@ public class HWSensorEventListener implements SensorEventListener {
 
 	public String getmAccel() {
 		return toJSON(mAccel).toString();
-	}
+	}	
 
 	public String getmAngularVelocity() {
 		return toJSON(mAngularVelocity).toString();

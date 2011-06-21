@@ -32,12 +32,12 @@ public class SampleMapView extends ImageView {
 		super.onDraw(canvas);
 		Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		paint.setColor(Color.rgb(0, 180, 180));
-		paint.setStrokeWidth(3.f);
+		paint.setStrokeWidth(1.f);
 		for(float[] sample : getSamples()) {
 			float x = getWidth()*sample[0];
 			float y = getHeight()*sample[1];
 			double radAngle = sample[2]*2*Math.PI/360;
-			canvas.drawLine(Math.round(x), Math.round(y), Math.round(x + EPS*Math.sin(radAngle)), Math.round(y + EPS*Math.cos(radAngle)), paint);
+			canvas.drawLine(Math.round(x), Math.round(y), Math.round(x + EPS*Math.sin(radAngle)), Math.round(y - EPS*Math.cos(radAngle)), paint);
 			
 		}
 	}

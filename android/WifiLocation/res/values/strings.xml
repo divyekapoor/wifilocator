@@ -11,10 +11,19 @@
     <string name="wifi_site_survey_activity">Wifi Site Survey Activity</string>
     <string name="wifi_record_samples_activity">Wifi Site Survey Activity</string>
     <string name="wifi_samples_show_activity">Wifi Samples Show Activity</string>
+    <string name="wifi_recorder_activity">Wifi Recorder Activity</string>
+    <string name="sensor_logger_activity">Sensor Logger Activity</string>
     <string-array name="activities">
     	<item>WifiLocator Activity</item>
-    	<item>Dead Reckoning Activity</item>
+    	<item>Dead Reckoning</item>
+    	<item>Wifi Snapped Reckoning</item>
+    	<item>Oriented Wifi Snapped Reckoning</item>
+    	<item>Clamped Wifi Snapped Reckoning</item>
+    	<item>Clamped Orientation Penalized Wifi Snapped Reckoning</item>
     	<item>Wifi Site Survey Activity</item>
     	<item>Wifi Samples Show Activity</item>
+    	<item>Wifi Recorder Activity</item>
+    	<item>Particle Filtered Reckoning Activity</item>
+    	<item>Sensor Logger Activity</item>
     </string-array>
 </resources>

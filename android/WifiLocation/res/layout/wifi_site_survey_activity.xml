@@ -80,11 +80,70 @@
   	android:background="#ff0000"
   	/>
   
-  <Button
-  	android:text="Record"
+  <LinearLayout
   	android:layout_width="wrap_content"
   	android:layout_height="wrap_content"
-  	android:id="@+id/btn_wifi_record_sample"
-  	/>
+  	android:orientation="horizontal"
+  	>
+	  <Button
+	  	android:text="Prev X"
+	  	android:layout_width="wrap_content"
+	  	android:layout_height="wrap_content"
+	  	android:id="@+id/btn_prev_x"
+	  	/>
+  	  
+  	  <Button
+	  	android:text="Next X"
+	  	android:layout_width="wrap_content"
+	  	android:layout_height="wrap_content"
+	  	android:id="@+id/btn_next_x"
+	  	/>
+	  
+	  <Button
+	  	android:text="Prev Y"
+	  	android:layout_width="wrap_content"
+	  	android:layout_height="wrap_content"
+	  	android:id="@+id/btn_prev_y"
+	  	/>
+	  	
+  	<Button
+	  	android:text="Next Y"
+	  	android:layout_width="wrap_content"
+	  	android:layout_height="wrap_content"
+	  	android:id="@+id/btn_next_y"
+	  	/>
+  </LinearLayout>
+  
+  <LinearLayout
+  	android:layout_width="wrap_content"
+  	android:layout_height="wrap_content"
+  	android:orientation="horizontal"
+  	>
+	  <Button
+	  	android:text="Record"
+	  	android:layout_width="wrap_content"
+	  	android:layout_height="wrap_content"
+	  	android:id="@+id/btn_wifi_record_sample"
+	  	/>
+	  	
+	  <Button
+	  	android:text="Export DB"
+	  	android:layout_width="wrap_content"
+	  	android:layout_height="wrap_content"
+	  	android:id="@+id/btn_export_db"
+	  	/>
+	  <Button
+	  	android:text="Import DB"
+	  	android:layout_width="wrap_content"
+	  	android:layout_height="wrap_content"
+	  	android:id="@+id/btn_import_db"
+	  	/>
+  	  <Button
+  	  	android:text="Reset DB"
+  	  	android:layout_width="wrap_content"
+  	  	android:layout_height="wrap_content"
+  	  	android:id="@+id/btn_reset_db"
+  	  	/>
+  </LinearLayout>
   	
 </LinearLayout>

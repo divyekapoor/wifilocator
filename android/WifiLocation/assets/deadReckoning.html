@@ -35,7 +35,7 @@ p {
 	width:640px;
 	height:480px;
 
-	background:url(images/640.png) rgb(180,180,0)  0 0;
+	background:url(images/floor.png) rgb(180,180,0)  0 0;
 }
 .inline {
 	display:inline;
@@ -62,7 +62,7 @@ $(document).ready(function() {
 	var $accelPlot = $.plot($accel, [ [0,0], [1,1] ], options);
 
 	
-	var TIMEOUT_INTERVAL = 100; // in ms
+	var TIMEOUT_INTERVAL = 1000; // in ms
 	
 	var error = function (e, context) {
 		if(!context) { 
@@ -98,7 +98,7 @@ $(document).ready(function() {
 	
 	var update = function () {
 		try {
-			var steps = sensorData.getStepDisplacement(); // return value as array string
+			var steps = sensorData.getLocationJSON(); // return value as array string (0-1 coordinate system)
 			var stepCount = sensorData.getStepCount();
 			var angle = sensorData.getAngle();
 			var trainingConst = sensorData.getTrainingConstant();
@@ -117,7 +117,7 @@ $(document).ready(function() {
 			// -- $accelPlot.setupGrid(); -- not needed as axes scale doesn't change
 			// $accelPlot.draw();
 			
-			updateCanvas(eval(steps));
+			updateCanvas(steps);
 		} catch(e) {
 			error(e, "update");
 		}
@@ -128,7 +128,7 @@ $(document).ready(function() {
 	
 	var rotation_angle = 10*2.0*Math.PI/360.0;
 	var drawNorth = function(ctx, rotation_angle) {
-		log('called', 'drawNorth');
+		// log('called', 'drawNorth');
 		// Draw the North line
 		ctx.save();
 		ctx.strokeStyle = "blue";
@@ -149,26 +149,46 @@ $(document).ready(function() {
 	};
 	
 	var startPosInit = function(event) {
-		var d = document.documentElement;
-		var offset = $(this).offset();
-		
-		var x = event.pageX - offset.left;
-		var y = event.pageY - offset.top;
-		ctx.save();
-		//ctx.fillRect(0, 0, 10, 10); // black
-		ctx.translate(x, y);
-		//ctx.fillStyle = "green";
-		ctx.transform(1,0,0,-1,0,0); // flip the Y axis to correspond to true north.
-		//ctx.fillRect(0, 0, 10, 10); // green
-		ctx.rotate(rotation_angle);
-		ctx.beginPath();
-		ctx.moveTo(0,0);
-		ctx.strokeStyle = "red";
-		ctx.fillStyle = "black";
-		ctx.lineWidth = "3px";
-		ctx.fillRect(-2, -2, 4, 4); // box at origin
-		ctx.stroke();
-		// ctx.restore();
+		try {
+			log('Trying to set initial location.', 'startPosInit');
+			
+			var d = document.documentElement;
+			var offset = $(this).offset();
+			
+			var x = event.pageX - offset.left;
+			var y = event.pageY - offset.top;
+			
+			// Record the starting position on a 0-1 float scale with the 
+			// sensorData javascript object (the DeadReckoning Algorithm)
+			// to link it up with a real world location
+			log('Before setting start position.', 'startPosInit');
+			sensorData.setStartPos(x*1.0/ctx.canvas.width, y*1.0/ctx.canvas.height);
+			log('Before setting location', 'startPosInit');
+			sensorData.setLocation(x*1.0/ctx.canvas.width, y*1.0/ctx.canvas.height); // 0-1 coordinate system 
+			log('DeadReckoning made aware of location.', 'startPosInit');
+			
+			ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+			
+			//ctx.save();
+			//ctx.fillRect(0, 0, 10, 10); // black
+			//ctx.translate(x, y);
+			//ctx.fillStyle = "green";
+			//ctx.transform(1,0,0,-1,0,0); // flip the Y axis to correspond to true north.
+			//ctx.fillRect(0, 0, 10, 10); // green
+			//ctx.rotate(rotation_angle);
+			//ctx.beginPath();
+			//ctx.moveTo(0,0);
+			ctx.strokeStyle = "#6666ff";
+			ctx.fillStyle = "black";
+			ctx.lineWidth = "3px";
+			ctx.fillRect(-2, -2, 4, 4); // box at origin
+			ctx.fillRect(x, y, 4, 4);
+			ctx.beginPath();
+			//ctx.stroke();
+			//ctx.restore();
+		} catch(e) {
+			error(e, 'startPosInit');
+		}
 	};
 	
 	var initCanvas = function() {
@@ -186,7 +206,7 @@ $(document).ready(function() {
 				// log('Click to locate start position', 'map.onload');
 				$(canvas).click(startPosInit);
 			};
-			map.src = 'images/640.png';
+			map.src = 'images/floor.png';
 		} catch(e) {
 			error(e, "initCanvas");
 		}
@@ -198,14 +218,39 @@ $(document).ready(function() {
 	} catch(e) {
 		error(e, 'scalingFactor');
 	}
-	var updateCanvas = function(location) {
-		var width = 4, height = 4;
-		ctx.lineTo(scalingFactor*location[0], scalingFactor*location[1]);
-		ctx.stroke();
-		ctx.fillRect(scalingFactor*location[0] - width/2, scalingFactor*location[1] - height/2, width, height);
+	var updateCanvas = function(currentLocation) {
+		try {
+			var width = 2, height = 2, i;			
+			ctx.clearRect(0,0,ctx.canvas.width, ctx.canvas.height);
+			ctx.fillStyle = "black";
+			
+			drawNorth(ctx, rotation_angle);
+			
+			var path = eval(sensorData.getmPathJSON());
+			var pathLength = path.length;
+			
+			if(pathLength == 0)
+				return;
+			
+			ctx.beginPath();
+			ctx.moveTo(ctx.canvas.width*path[0][0], ctx.canvas.height*path[0][1]);
+			for(i = 1; i < pathLength; ++i) {
+				ctx.lineTo(ctx.canvas.width*path[i][0], ctx.canvas.height*path[i][1]);
+				ctx.fillRect(ctx.canvas.width*path[i][0] - width/2.0, ctx.canvas.height*path[i][1] - height/2.0, width, height);
+			}
+			
+			//ctx.lineTo(ctx.canvas.width*location[0], ctx.canvas.height*location[1]); // negative sign to account for coordinate system
+			ctx.stroke();
+			ctx.closePath();
+			
+			ctx.fillRect(path[pathLength-1][0]*ctx.canvas.width - width/2.0, path[pathLength-1][1]*ctx.canvas.height - height/2.0, width, height);
+		} catch(e) {
+			error(e, 'updateCanvas');
+		}
 		
 	};
 	
+	log('Before initCanvas');
 	initCanvas();
 	setTimeout(update, TIMEOUT_INTERVAL);
 		
@@ -218,7 +263,6 @@ $(document).ready(function() {
 <h1>Dead Reckoning Data</h1>
 <div class="mar5">
 	<p class="red" id="error"></p>
-	<p class="green" id="log"></p>
 	<div>Step Count: <div class="inline" id="step-count"></div></div>
 	<div>Steps: <div class="inline" id="steps"></div></div>
 	<div>Angle: <div class="inline" id="angle"></div></div>
@@ -227,6 +271,7 @@ $(document).ready(function() {
 </div>
 
 <canvas class="graph canvas-area mar5" id="canvas"></canvas>
+<p class="green" id="log"></p>
 <div class="graph" id="accel"></div>
 
 

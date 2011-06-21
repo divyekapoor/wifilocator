@@ -24,7 +24,7 @@ public class WifiSamplesShowActivity extends Activity {
 
 		mNumSamples = (TextView) findViewById(R.id.num_samples);
 		mSampleMap = (SampleMapView) findViewById(R.id.sample_map_view);
-		List<LocationFingerprint> allSamples = PersistenceFactory.getInstance().getAllSamples();
+		List<LocationFingerprint> allSamples = PersistenceFactory.getInstance(this).getAllSamples();
 		ArrayList<float[]> sampleLocations = new ArrayList<float[]>();
 		for(LocationFingerprint fingerprint : allSamples) {
 			sampleLocations.add(new float[] { fingerprint.getmX(), fingerprint.getmY(), fingerprint.getmAngle()});
