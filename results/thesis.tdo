@@ -1,30 +1,33 @@
-\contentsline {todo}{{Show the use of an Accelerometer to the system}}{8}
-\contentsline {todo}{{Show the use of a Magnetometer to the system}}{8}
-\contentsline {todo}{{Add information about the message format for embedding data inside the QRCode}}{9}
-\contentsline {todo}{{How is map info an input to the algorithm. Expand.}}{9}
-\contentsline {todo}{{The case for using Wifi information to correct tracking drift}}{9}
-\contentsline {todo}{{Provide reference}}{9}
-\contentsline {todo}{{Write a short recap on the step counting approach}}{10}
-\contentsline {todo}{{Improve this area}}{11}
-\contentsline {todo}{{Describe additional randomization added before next loop}}{14}
-\contentsline {todo}{{Expand this section}}{15}
-\contentsline {todo}{{Explain how map information can act as an error correcting tool for the system.}}{15}
-\contentsline {todo}{{Propose sensor fusion for barometric sensors as and when they become available}}{15}
-\contentsline {todo}{{Figures for this entire chapter have to be rebuilt}}{17}
-\contentsline {todo}{{Enter datasheet notes here and cite}}{18}
-\contentsline {todo}{{Insert values for Standard deviation here}}{18}
-\contentsline {todo}{{Improve figure with more APs and path description.}}{22}
-\contentsline {todo}{{Describe the setup better.}}{23}
-\contentsline {todo}{Figure: {Architecture of system}}{25}
-\contentsline {todo}{Figure: {List of major classes}}{25}
-\contentsline {todo}{Figure: {Their interactions}}{25}
-\contentsline {todo}{{Provide Reference}}{28}
-\contentsline {todo}{Figure: {QRCodes pasted on the wall}}{33}
-\contentsline {todo}{Figure: {Image of a person snapping the QRCode with the camera}}{35}
-\contentsline {todo}{{Insert survey results}}{35}
-\contentsline {todo}{{Determining training constant}}{36}
-\contentsline {todo}{Figure: {Table of training constant values}}{36}
-\contentsline {todo}{Figure: {comparison table between results published and our methods}}{46}
-\contentsline {todo}{Figure: {CDF of the errors of the methods (will take some time)}}{46}
-\contentsline {todo}{{Which algorithms to pick based on the results, advantages and disadvantages}}{46}
-\contentsline {todo}{{Put bibliography and appendices}}{51}
+\contentsline {todo}{{Think of a good starting to your thesis}}{1}
+\contentsline {todo}{Figure: {Show a typical AR image (sourced and cited)}}{4}
+\contentsline {todo}{{Improve this?}}{5}
+\contentsline {todo}{{Show the use of an Accelerometer to the system}}{14}
+\contentsline {todo}{{Show the use of a Magnetometer to the system}}{14}
+\contentsline {todo}{{Add information about the message format for embedding data inside the QRCode}}{15}
+\contentsline {todo}{{How is map info an input to the algorithm. Expand.}}{15}
+\contentsline {todo}{{The case for using Wifi information to correct tracking drift}}{15}
+\contentsline {todo}{{Provide reference}}{15}
+\contentsline {todo}{{Write a short recap on the step counting approach}}{16}
+\contentsline {todo}{{Improve this area}}{17}
+\contentsline {todo}{{Describe additional randomization added before next loop}}{20}
+\contentsline {todo}{{Expand this section}}{21}
+\contentsline {todo}{{Explain how map information can act as an error correcting tool for the system.}}{21}
+\contentsline {todo}{{Propose sensor fusion for barometric sensors as and when they become available}}{21}
+\contentsline {todo}{{Figures for this entire chapter have to be rebuilt}}{23}
+\contentsline {todo}{{Enter datasheet notes here and cite}}{24}
+\contentsline {todo}{{Insert values for Standard deviation here}}{24}
+\contentsline {todo}{{Improve figure with more APs and path description.}}{28}
+\contentsline {todo}{{Describe the setup better.}}{29}
+\contentsline {todo}{Figure: {Architecture of system}}{31}
+\contentsline {todo}{Figure: {List of major classes}}{31}
+\contentsline {todo}{Figure: {Their interactions}}{31}
+\contentsline {todo}{{Provide Reference}}{34}
+\contentsline {todo}{Figure: {QRCodes pasted on the wall}}{39}
+\contentsline {todo}{Figure: {Image of a person snapping the QRCode with the camera}}{41}
+\contentsline {todo}{{Insert survey results}}{41}
+\contentsline {todo}{{Determining training constant}}{42}
+\contentsline {todo}{Figure: {Table of training constant values}}{42}
+\contentsline {todo}{Figure: {comparison table between results published and our methods}}{52}
+\contentsline {todo}{Figure: {CDF of the errors of the methods (will take some time)}}{52}
+\contentsline {todo}{{Which algorithms to pick based on the results, advantages and disadvantages}}{52}
+\contentsline {todo}{{Enable this appendix later}}{56}
