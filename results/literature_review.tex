@@ -1,4 +1,69 @@
 \chapter{Literature Review\label{chap:literature_review}}
- Done partially  in other files
+
+\section{Location! Location! Location!}
+
+Knowing and finding where we are or where we should be is a very frequent 
+task that is performed by us multiple times a day. We solve this problem 
+in a variety of ways:
+
+\begin{enumerate}
+\item Use our prior knowledge and mental map of our surroundings
+\item Ask around
+\end{enumerate}
+
+\section{Indoor Positioning}
+
+Indoor positioning has been a topic of active research for the past decade with
+the first research system using RF signals for distance estimation and indoor
+positioning being produced by Microsoft Research (RADAR, 2000)\cite{RADAR}. Of
+course, systems like Active Badge\cite{ActiveBadge} have been developed as far
+back as 1992 to locate targets indoors but they have shown limited utility on
+account of the requirement to deploy specialized sensors for detecting the radio
+tags deployed within the system.
+
+Since RADAR, a number of improvements have been made in the core algorithms and
+technologies for positioning. Over time, indoor positioning has progressed from
+simply using RF signals to using ubiquitous 802.11 Access Points as radio
+sources. With the development of UWB (Ultra Wide Band) technology, very fine
+grained ranging and tracking results have been obtained over target distances of
+the order of a few hundred feet from the radio source. 
+
+However, the primary scale of interest for commercial exploitation of indoor
+positioning and tracking is of the order of the size of warehouses and malls
+(approximately of the order of $2500 m^2$) with an accuracy that is preferably
+of the order of a few meters. The target applications for such a scenario are
+inventory location and tracking; location based services and personalized offers
+from businesses based on physical proximity to their shops or other points of
+sale. The ultimate target to be achieved in this line of research can be
+paraphrased as:
+
+\begin{quote}
+Create a low complexity, low cost indoor positioning system that is
+maintainable, reasonably accurate and highly scalable.
+\end{quote}
+
+UWB, unfortunately, does not scale easily to such large spaces without requiring
+that a significant number of sensors and repeaters be installed in the target
+positioning area specifically for this purpose. It is also an expensive
+technology. On the other hand, IEEE 802.11 AP based positioning has low
+complexity and cost and it has a large installed base, thus making it attractive
+for positioning purposes as a source of radio signals.
+
+Thus it is interesting to explore the limitations of accuracy, scalability and
+maintainability of indoor positioning systems that are based on IEEE 802.11
+Access Points.
+
+
+\section{Indoor Tracking}
+
+Once having worked with indoor positioning systems, it is but natural to ask:
+Can we extend all the technology developed for indoor positioning to track 
+objects and devices? Also, can we do it fast enough to provide a near-realtime
+experience?
+
+Research shows that the answer to both the questions is in the affirmative
+and papers as far back as 2000 \cite{RADAR} have attempted to achieve this 
+
+
 \section{Research gaps}
 

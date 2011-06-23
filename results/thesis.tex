@@ -1,6 +1,6 @@
 \documentclass[12pt,a4paper,twoside]{book}
 %\usepackage{fullpage}
-%\usepackage[twoside,bindingoffset=0.75in??,left=1.75in,right=0.9in]{geometry}
+%\usepackage[twoside,bindingoffset=0.5in,left=1in,right=1in]{geometry}
 \usepackage{todonotes}
 \usepackage[avantgarde]{quotchap}
 \usepackage{amsmath,amssymb}
@@ -23,16 +23,18 @@
 
 \chapter{Abstract}
 
-
 \tableofcontents
 \clearpage
 
 \listoffigures
+\addcontentsline{toc}{chapter}{List of figures}
 
 \listoftables
+\addcontentsline{toc}{chapter}{List of tables}
 
 \clearpage
 \listoftodos
+
 
 \mainmatter
 
@@ -54,9 +56,16 @@
 
 \input{summary.tex}
 
+\appendix
+
+\todo[inline]{Enable this appendix later}
+%\input{appendix-all_test_results.tex}
+
+\input{appendix-survey_form.tex}
+
 \backmatter
 
-\todo[inline]{Put bibliography and appendices}
-
+\bibliographystyle{IEEEtran}
+\bibliography{IEEEabrv,mybib}
 
 \end{document}

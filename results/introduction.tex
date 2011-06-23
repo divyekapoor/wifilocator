@@ -1,4 +1,163 @@
 \chapter{Introduction}
- Done partially  in other files
+
+\todo[inline]{Think of a good starting to your thesis}
+The world is an exciting place today. We are surrounded by technology that has
+woven itself seamlessly into our lives. Today, many of us see the time on our
+mobile phones, connect with friends and family through mobile versions of
+popular social networks accessed through our smartphones. We talk to people
+across the globe using that same mobile device and the smartphone doubles up as
+a gaming console and eBook reader. The availability of a GPS sensor on 
+smartphones has been a growing trend for the past few years and is now nearly
+a de facto standard. Implementation of algorithms produced by researchers
+over the past two decades on smartphones has resulted in tracking capability
+that is quite accurate and suitable for navigation at outdoor locations. 
+In fact, latest generation devices like the Samsung Nexus S even ship 
+with a beta mobile application that doubles up as a standard car based GPS 
+navigation device. So, while engineers at companies are working furiously 
+to solve technical challenges for accurate tracking and navigation outdoors,
+a different problem looms on the horizon: 
+
+\begin{quote}
+How do we take such tracking and navigational aids for mobiles indoors where GPS
+based systems are virtually useless?
+\end{quote}
+
+This thesis will analyze this question and show multiple systems that 
+provide indoor positioning and tracking using not much more than a
+cutting edge smartphone. But before moving further, let me state my reasons
+for picking this up as my dissertation proposal.
+
+
 \section{Motivation}
 
+For my dissertation, I wished to take up a topic that was current,
+technologically intensive and had a broad scope of application. I had prior
+exposure to location based services and map matching algorithms via my seminar
+report\cite{SEMINAR} in 2010 and I was firmly convinced that Location Based
+Services are going to play a very valuable part in the evolving future of mobile
+devices. To enable a future that has relevant location based content, 
+reliability of location of the user - both indoors and outdoors is a high 
+priority. The outdoor location and tracking problem was being solved 
+by using GPS, map matching and other filtering techniques. Long distance 
+navigational aids were commercially available and the field is rather mature.
+In contrast, the field of indoor positioning was highly fragmented, 
+technologically diverse with no clear winners and few commercial offerings. 
+The area was thus ripe for research.
+
+\section{Potential Applications}
+
+There are numerous potential applications for research in this area. Some are
+obvious - Indoor navigation and tracking, applications as navigational aids for
+the differently abled, and even location based services that aim to improve
+customer experiences in malls and shopping complexes. However, some of 
+the more interesting applications of this technology are in fields that 
+are just opening up to research and implementation. 
+
+\subsection{Navigational aids for the abled and differently abled}
+
+Having a stable, highly accurate tracking solution is a prerequisite to 
+provide navigational aids in unfamiliar surroundings like a customer at 
+a mall or inside a huge departmental store. Visitors to huge office complexes
+could also benefit with such navigational aids. The biggest beneficiaries
+of such technology are the differently abled - who will be able to 
+leverage such tools in coordination with highly mature devices customized 
+to their needs so that they can move in indoor surroundings with just as 
+much confidence as they do while using other navigational aids like GPS 
+outdoors.
+
+
+\subsection{Inventory tracking and retreival}
+
+There are a number of large industries (eg. shipping industry, online ecommerce
+vendors, private couriers, wholesalers etc.) that invest heavily in large
+warehouses. One of their primary concerns is inventory management and retreival.
+Most of the companies in these industries use some form of inventory tracking 
+software that tracks what is present in the warehouses. They also evolve
+conventions for storage that allow for easy retrieval of inventory. An indoor
+tracking and navigation solution integrated with the inventory system can help 
+workers easily and efficiently locate objects present in their warehouses and 
+reduce incidents of misplacements or loss.
+
+\subsection{Augmented Reality and Reality Fusion Gaming}
+
+Among all the applications of indoor tracking - this is one that holds the 
+greatest excitement.Augmented reality can be defined concisely as:
+\begin{quote}
+A technology that superimposes a computer-generated image on a user's view of
+the real world, thus providing a composite view. (Adapted from \cite{SciDict})
+\end{quote}
+
+The field of AR is not new, however, technology has advanced to the point that
+AR applications can now be built to run on smartphones while providing
+exceptional engagement and interactivity. Researchers at Georgia Tech University
+demonstrated such integration through a two player interactive AR game running
+on an Android device at the 2010 Uplinq conference. The game was playable
+anywhere provided a simple mat denoting the gaming area was placed on the floor.
+The virtual characters (or sprites) were then created and layered on a camera
+view of the mat. The two players could interact with the characters virtually
+and their view of the sprites was altered in near real-time as they moved around
+the mat. Another major application of AR to mobile devices has been shown by 
+Layar wherein they overlay 3D models and informative content directly onto 
+a user's view of a location. 
+
+Integration of a stable indoor tracking solution with such AR applications will
+allow the development of a new class of applications where a user's action and
+location in real-life will correspond to a sprite's action in the virtual world
+thus opening up arenas for AR based first person shooters etc. The possibilities
+opened up by such technology are immense and limited only by imagination.
+
+\missingfigure{Show a typical AR image (sourced and cited)}
+
+\section{Problem Statement}
+
+All the applications mentioned above put different constraints of accuracy, 
+deployability, mobility and scalability. To progress on the goal of a highly 
+mobile, accurate, scalable, indoor tracking solution, we need to limit our 
+scope to a well defined analytical problem. Therefore, the scope of this thesis 
+is restricted formally by the problem statement below: 
+
+\begin{quote}
+Develop and characterize a smartphone based particle filter sensor fusion
+approach for near-realtime indoor tracking of pedestrians. \todo{Improve this?}
+\end{quote}
+  
+\section{Organization of the Thesis}
+
+The thesis is split into various chapters for convenience.
+
+\begin{itemize}
+
+\item Chapter \ref{chap:literature_review} details the flow of ideas and prior
+work by researchers in this area.
+
+\item Chapter \ref{chap:proposed_method} specifies the specific methods proposed
+by the author for implementation of an indoor tracking system. The methods
+detail the modifications proposed for implementation on a mobile device as well
+as the choices guiding the approach.
+
+\item Chapter \ref{chap:groundwork} specifies the field work that was done to
+characterize the MEMS sensors and Wifi receiver on the smartphone and includes
+the results of a project that implemented an indoor positioning system based on
+the received signal strengths from different Wifi Access Points. This work was
+done to determine a choice of suitable parameters for the algorithms specified
+in chapter \ref{chap:proposed_method}.
+
+\item Chapter \ref{chap:implementation_details} discusses the implementation
+details of the algorithms on an Android device and explains the architectural
+organization of the entire codebase.
+
+\item Chapter \ref{chap:results} discusses the performance of various components
+of the solution and shows the performance of the final proposed method
+contrasted with a naive dead reckoning approach and a Wifi based indoor tracking
+approach.
+
+\item Chapter \ref{chap:summary} finally summarizes the experiences derived from
+the thesis and describes scope for future work in this area.
+
+\item There are 2 appendices which include additional test results which were
+too voluminous to include in the main text of this thesis. 
+
+\item The papers and other sources of information used in this thesis are listed
+in the bibliography.
+
+\end{itemize}
