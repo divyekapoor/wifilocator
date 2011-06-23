@@ -21,15 +21,22 @@ tracking approaches.
 
 Given the choice of hardware, we are constrained to use only specific 
 data sources for our algorithm. The sections below detail the data 
-sources used by the algorithm.
+sources used by the algorithm. Characterizations of these data sources
+has already been done in Chapter \ref{chap:groundwork}
 
 \subsection{Accelerometer}
 
-\todo[inline]{Show how Accelerometer can be sensor fused}
+\todo[inline]{Show the use of an Accelerometer to the system}
+
+\section{What Doesn’t work}
+Acceleration of the human body is too slow compared to gravity. Simple orientation changes produce high changes in acceleration along axes which are very difficult to filter out.
+Numerical integration generates errors too quickly. With a high sampling rate, errors balloon.
+Using the gyroscope for step detection (similar to foot mounted devices [insert reference]) – doesn’t work.
+
 
 \subsection{Orientation}
 
-\todo[inline]{Show how Orientation can be sensor fused}
+\todo[inline]{Show the use of a Magnetometer to the system}
 
 \subsection{Camera info\label{sec:QRCodes}}
 QRCodes are a kind of 2 dimensional bar code
@@ -48,13 +55,12 @@ factor of the map, Wifi AP information, navigation information etc.
 
 
 \subsection{Map Information}
-\todo[inline]{Show how Map Information can be sensor fused}
+\todo[inline]{How is map info an input to the algorithm. Expand.}
 
 
 \subsection{Wifi Information}
 
-\todo[inline]{Show how wifi information can be sensor fused}
-\todo[inline]{Which cases is such sensor fusion useful?}
+\todo[inline]{The case for using Wifi information to correct tracking drift}
 
 
 \section{Dead reckoning with step counts}
@@ -147,20 +153,43 @@ whenever state transitions occur.
 Reference [A. Engineers] provides this empirical relationship between acceleration
 values and step size.
 
-\begin{equation}
+\begin{equation}\label{eq:step_size}
  Step-size = C \sqrt[4]{A_{max} - A_{min}}
 \end{equation}
 
 The constant $C$ is a scaling factor that is used as a constant of proportionality
-to scale the step-values to real world distances.
+to scale the step-values to real world distances and $A_{max}$ and $A_{min}$
+represent maximum and minimum acceleration values corresponding to the 
+peaks and troughs associated with a step.
+
 
 \section{Determining the Training Constant}
 
 An experimental method was used to determine the training constant for each
-user.
+user. It involved the user to perform a short walk between 2 QRCoded locations
+present in a straight line along a corridoor.
+Since, the QRCodes represent fixed locations in the real world, the actual 
+distance between them can be found using simple Euclidean geometry. From 
+simple step counting, we are able to figure out the number of steps taken.
+Also, by means of the step size formula mentioned in \eqref{eq:step_size},
+we can estimate the distance travelled based purely on the accelerometer
+values. We can then find the training constant by simply plugging in 
+the values into the following equation:
+
+\begin{equation}
+C=\frac{\sqrt{(x_{2}-x_{1})^{2}+(y_{2}-y_{1})^{2}}}{\sum_{n=1}^{stepcount}\sqrt[4]{(A_{max_{i}}-A_{min_{i}})}}
+\end{equation}
+
+Here,\\
+\begin{tabular}{l l}
+$C$                         & is the training constant   \\
+$(x_1, y_1), (x_2, y_2)$    & are the anchor point locations provided by the QRCodes \\
+$A_{max_{i}}, A_{min_{i}}$  & represent the maximum and minimum \\
+                            & acceleration values corresponding to the $i-th$ step.\\
+\end{tabular}
 
 
-\subsection{Dynamical equations for system}
+\section{Dynamical equations for system}
 
 Effectively, we can state that the basic system is being modelled by the
 following set of equations:
@@ -234,6 +263,10 @@ sin(\theta_{i}+\theta_{b}+\vartheta)
 
 In this representation, $d_{b}$ is a slowly varying bias variable on the step size.
 
+\subsection{Limiting particle degeneracy}
+
+\todo[inline]{Describe additional randomization added before next loop}
+
 \section{Particle Filter Implementation of the Dynamical Equations}
 
 There are a number of ways in which you can transform these dynamical 
@@ -260,7 +293,7 @@ equations over the HMM implementation.
 \item Degeneracy of states
 \end{enumerate}
 
-\section{Additional heuristics to combat these limitations}
+\section{Heuristics to combat these limitations}
 
 The following heuristics are used to combat some of the limitations 
 described above.

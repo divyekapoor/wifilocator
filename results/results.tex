@@ -65,7 +65,7 @@ for all the experiments detailed below.
 
 \begin{figure}
     \centering
-    \includegraphics[width=6in]{figures/ravindra_map.png}
+    \includegraphics[width=5in]{figures/ravindra_map.png}
     \caption{A map of the experimental environment\label{fig:ravindra_map}}
 \end{figure}
 
@@ -186,9 +186,9 @@ selection:
     required to correctly mark their positions on the map.
 \end{enumerate}
 
-\todo[inline]{Ask 5 people to select locations on a map and log data}
-\missingfigure{Table of error from true location}
-\missingfigure{Table of number of times attempted for satisfactory positioning}
+%\todo[inline]{Ask 5 people to select locations on a map and log data}
+%\missingfigure{Table of error from true location}
+%\missingfigure{Table of number of times attempted for satisfactory positioning}
 
 \subsection{Camera based QRCode Method \label{sec:qrcode_selection}}
 
@@ -246,7 +246,7 @@ detected and the known distance between the 2 QRCoded locations.
 
 The locations used for this test were along a corridoor and were about $30 m$
 apart. The tests were repeated thrice for each subject. The resulting 
-step constants are summarized in the table below.
+step constants were taken as the average of the 3 runs.
 
 \todo[inline]{Determining training constant}
 \missingfigure{Table of training constant values}
@@ -301,7 +301,7 @@ detection procedure is very accurate for that range.
         step detection and step estimates\label{fig:step_variation}}
 \end{figure}
 
-\section{Test Paths}
+\section{Test Paths\label{sec:test_paths}}
 
 Five different test paths were used to test the performance of the system.
 The features of these paths are described below. The paths themselves
@@ -338,30 +338,177 @@ QRCodes in accordance with the description in Section \ref{sec:QRCodes}.
 
 
 \subsection{Simple Dead Reckoning Results}
-\todo[inline]{Describe actual path and dead reckoning path}
-\missingfigure{Dead Reckoning path}
 
-\section{Plain Wifi Based Positioning}
-\subsection{Case 1: Dead reckoning with NN wifi positioning}
-\subsection{Case 2: Dead reckoning with KNN averaging}
-\subsection{Case 3: Dead reckoning with clamped wifi positioning}
+One of the well known weaknesses of the dead reckoning approach is that it
+diverges quickly from the ground truth unless corrective measures are taken.
+As a basic control for the results, a simple dead reckoning based 
+tracking algorithm was developed. 
 
-\section{Particle Filter Performance}
-\subsection{Case 1: Probability of crossing walls is 0}
-\subsection{Case 2: Probability of crossing walls is finite}
-\subsection{Case 3: Resampling of impoverished data points with duplication}
-\subsection{Case 4: Resampling with introduction of Gaussian noise}
-\subsection{Case 4a: Use of averaged data points v/s random weighted data point}
-\subsection{Case 5: Accounting for bias in orientation sensor}
-\subsection{Case 6: Accounting for step size bias.}
-\subsection{Case 7: Simple post processing of output.??}
-\subsection{Case 8: Simple heuristics to deal with impoverished samples}
-(retry, retry with greater inaccuracy)
+Figure \ref{fig:dr_path1} shows the quick divergence of the algorithm
+from the expected path A-B. In fact, at the end of a simple straight walk of 
+around $30 m$, the estimate for the location has diverged a lot from the 
+actual location. It should also be noted that the path taken passes through
+rooms and walls and thus, doesn't look like a natural path for the user.
 
-\section{Signal Strength Map}
+Figure \ref{fig:dr_path5} shows the extreme divergence that takes place 
+over long distances. Table \ref{tbl:dr_error_growth} chronicles the 
+error growth that takes place for this path at the turning points of the path.
+It is amply clear that Simple Dead Reckoning is not suitable for tracking
+if implemented as-is.
 
-TODO if time permits
-Wifi signal strength map developed using crowdsourced data for use in systems such as RedPin.
+\begin{table}[bph]
+\centering
+\begin{tabular}{l c c}
+\hline
+\hline
+Location    & Distance Travelled    & Error \\
+\hline
+A           & 0                     & 0 \\
+B           & 30 m                  & 3.761 m \\
+C           & 56 m                  & 4.982 m \\
+D           & 92 m                  & 5.416 m \\
+\hline
+\end{tabular}
+\caption{Error growth over distance for Simple Dead Reckoning\label{tbl:dr_error_growth}}
+\end{table}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=4in]{figures/dr_path1}
+    \caption{Performance of Dead Reckoning for Test Path 1\label{fig:dr_path1}}
+\end{figure}
+ 
+\begin{figure}
+    \centering
+    \includegraphics[width=4in]{figures/dr_path5}
+    \caption{Performance of Dead Reckoning for Test Path 5\label{fig:dr_path5}}
+\end{figure}
+ 
+ 
+
+\section{Reckoning with NN Wifi correction}
+
+As per our groundwork described in Section \ref{sec:knn_pos} we know that the 
+mean error for positioning using KNN is around $2.8 m$ with a standard deviation
+that is nearly the same as the mean. Given the large errors incurred by 
+the dead reckoning solution, we wish to analyze the performance of Dead 
+Reckoning after Wifi data is integrated into the system.
+
+\subsection{Wifi Survey}
+
+We carried out a Wifi Survey of the test area and collected 1562 samples by 
+carefully laying down a $1 m \times 1 m$ grid and collected samples. 8
+different samples were collected per grid point at orientations that were
+detected to be 45 degrees apart by the onboard magnetometer. By relying on
+the magnetometer itself to specify orientation, the effect of local magnetic
+fields was taken into account during the survey. However, sensor noise causes
+the angle values actually recorded with the Wifi Signal Strength data to vary 
+from the expected orientation of the user.
+
+\subsection{Tracking Performance}
+
+While implementing and testing out the implementation of the KNN based 
+tracking solution, the resource and scaling limitations of the system 
+came to fore. 
+
+Because of it being a ``lazy" algorithm that consults the entire 
+training dataset on every query for a position, the KNN algorithm
+is computationally very intensive. Queries for obtaining a position based
+on Wifi information was a slow process that even disrupted the UI of the 
+application due to its heavy workload. Optimizations involving cacheing 
+of data and short-circuiting the distance calculation step based on the 
+orientation angle of the training sample viz a viz the current device 
+orientation were implemented. With these optimizations, we were able 
+to successfully run a hybrid Dead Reckoning system that utilized 
+Wifi Access Point Received Signal Strengths and Step motion information
+to track the device.
+
+The performance of the algorithm was again judged based on the test paths 
+mentioned in Section \ref{sec:test_paths}. Figure \ref{fig:nn_path1} shows
+the track for Test path 1. A quick glance will indicate that the 
+tracked endpoints are reasonably accurate (error < 2m), however, 
+the subjective nature of the tracked path is very poor.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=5in]{figures/nn_path1}
+    \caption{Performance of the KNN algorithm for Test Path 1\label{fig:nn_path1}}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=5in]{figures/nn_path5}
+    \caption{Performance of the KNN algorithm for Test Path 5\label{fig:nn_path5}}
+\end{figure}
+
+
+%\subsection{Case 2: Dead reckoning with KNN averaging}
+%\subsection{Case 3: Dead reckoning with clamped wifi positioning}
+
+\section{Reckoning with Integrated Map Information}
+
+The results of the Wifi corrected reckoning as well as the data collected 
+as part of the implementation of the KNN positioning system indicates that 
+the location information utilizing Wifi data is very unstable. On the other
+hand there is significant drift if we depend solely on the accelerometer
+and the magnetometer to provide intertial tracking. In order to get 
+better accuracy from the system, we require constant feedback from the 
+environment. A way to achieve that is to use the fact that the device 
+holder is always moving through ``passable" spaces on the map. Any motion
+contrary to the allowed locations on the map would indicate tracking drift 
+and a feedback loop would be set up to correct for such errors.
+
+In this context, the particle filter's performance is analyzed with the
+same test tracks as the other two algorithms. 
+
+As can be seen amply in Figure \ref{fig:pf_path2} and Figure \ref{fig:pf_path4}
+the tracking performance of this algorithm is excellent. The drift errors of the 
+dead reckoning solution are compensated for by the map information
+which ensures that only states consistent with the motion of the device 
+are retained. Long term behaviour of the algorithm is also remarkably 
+stable. Even after moving close to 100 m, the algorithm was able to 
+maintain a tracking error of less than 1 m. This is illustrated in 
+Figure \ref{fig:pf_path4}.
+
+
+\begin{figure}
+    \centering
+    \includegraphics[width=5in]{figures/pf_path2}
+    \caption{Performance of Reckoning with Map information for Test Path 2.\label{fig:pf_path2}}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=5in]{figures/pf_path4}
+    \caption{Performance of the Reckoning algorithm for Test Path 4.\label{fig:pf_path4}}
+\end{figure}
+
+%\subsection{Case 1: Probability of crossing walls is 0}
+%\subsection{Case 2: Probability of crossing walls is finite}
+%\todo[inline]{Should I even do it? It should come out with poorer results.}
+
+%\subsection{Case 3: Resampling of impoverished data points with duplication}
+%\subsection{Case 4: Resampling with introduction of Gaussian noise}
+%\subsection{Case 4a: Use of averaged data points v/s random weighted data point}
+%\subsection{Case 5: Accounting for bias in orientation sensor}
+%\subsection{Case 6: Accounting for step size bias.}
+%\subsection{Case 8: Simple heuristics to deal with impoverished samples}
+%(retry, retry with greater inaccuracy, wifi)
+
+\section{Comparison with published results}
+
+With additional information at hand as well as suitable modifications to the 
+dynamical equations of the system and care in avoiding particle degeneracy,
+a significantly better accuracy has been achieved by this system as compared
+to previous published works. 
+
+The comparison of the 3 implemented methods can be done via the cumulative
+distribution function which maps the percentage of sample points 
+expected to be below a given error distance. 
+
+\missingfigure{comparison table between results published and our methods}
+
+\missingfigure{CDF of the errors of the methods (will take some time)}
 
 \section{Summary of Results}
 \todo[inline]{Which algorithms to pick based on the results, advantages and disadvantages}
@@ -378,11 +525,9 @@ Surveying is the biggest issue in this system.
 
 Computational complexity and scaling issues.
 
-
-\section{Future Work: Particle filter + Wifi data}
-
-\subsection{Case 1: Use of Wifi data for accounting for drift errors}
-\subsection{Case 2: Use of Oriented Wifi data for accounting for drift errors}
-\subsection{Case 3: Use of clamped wifi data for accounting for drift errors}
-\subsection{Case 4: Use of area Restricted Wifi data for accounting for drift errors}
-
+\begin{figure}
+    \centering
+    \includegraphics[width=5in]{figures/pf_bad.png}
+    \caption{Sometimes, the recovery process leads to a sequence of states 
+        which is equivalent to getting lost.\label{fig:pf_bad}}
+\end{figure}

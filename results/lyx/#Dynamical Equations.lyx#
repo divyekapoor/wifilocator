@@ -259,5 +259,16 @@ In this representation,
 is a slowly varying bias variable on the step size.
 \end_layout
 
+\begin_layout Standard
+\begin_inset Formula 
+\[
+C=\frac{\sqrt{(x_{2}-x_{1})^{2}+(y_{2}-y_{1})^{2}}}{\sum_{n=1}^{stepcount}\sqrt[4]{(A_{max_{i}}-A_{min_{i}})}}
+\]
+
+\end_inset
+
+
+\end_layout
+
 \end_body
 \end_document
