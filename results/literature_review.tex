@@ -140,7 +140,7 @@ Ladd et al (2003, 2005)\cite{Ladd}  took up a different approach to the problem 
 
 In 2006, King et al\cite{King} provided the first description of any system that utilized digital compasses to determine user orientation. Their probabilistic algorithm utilized Bayes’ Rule and an assumed Gaussian distribution of signal strengths around the reference points to generate location candidates. Orientation information from digital compass measurements was used to limit the dataset to only those samples in the training set that had a similar orientation as the current test datapoint. Simple averaging of the resulting most probable data points was returned to the user as the most likely location. Bayes' rule was used for localization and no tracking applications were evaluated.
 
-With the number of systems attempting to provide indoor positioning and tracking solutions ballooning, IEEE published a survey\cite{Survey2007} by Hui Liu et al which compared the accuracies and features of the variety of indoor positioning systems. This paper contains a huge list of positioning and tracking systems and a concise description of the ideas and methodologies behind them.
+With the number of systems attempting to provide indoor positioning and tracking solutions ballooning, IEEE published a survey\cite{Survey2007} by Hui Liu et al which compared the accuracies and features of the variety of indoor positioning systems. Interested readers may refer to the survey paper for a huge list of positioning and tracking systems and a concise description of the ideas and methodologies behind them as well as a comparative analysis of their features. Such comparisons have been omitted here for the sake of brevity.
 
 \subsection{INS and Wifi Integration}
 
@@ -153,41 +153,31 @@ devices. A way to cut down this number of particles must be
 found.\cite{Evennou}
 \end{quote}
 
-Another major system of this kind was published by Hui Wang et al\cite{Wang} which fused Wifi Received Signal Strength Information (RSSI) with a step counting algorithm and map information to develop a pedestrian tracking algorithm based on particle filters. Their system was reported to have a mean error of $4.3 m$ with a standard deviation in error of $2.8 m$ in comparison to a pure KNN based system with a mean error of $6.44 m$ and a standard deviation of $6.84 m$. Though the reported accuracy of their system was poor, the paper had a number of interesting ideas.
+Another major system of this kind was published by Wang et al (2007)\cite{Wang} which fused Wifi Received Signal Strength Information (RSSI) with a step counting algorithm and map information to develop a pedestrian tracking algorithm based on particle filters. Their system was reported to have a mean error of $4.3 m$ with a standard deviation in error of $2.8 m$ in comparison to a pure KNN based system with a mean error of $6.44 m$ and a standard deviation of $6.84 m$. Though the reported accuracy of their system was poor, the paper had a number of interesting ideas.
 
-\subsection{Improvements to Wifi Signal Strength Based Methods}
-
-Over the course of 2007 and 2008, research focus shifted away from optimizing the core positioning algorithm for greater accuracy. The major hurdle in largescale deployment of such systems was the requirement to train the system with the location fingerprints a priori. Crowdsourcing methods were developed to create a database of Wifi fingerprints based on cooperative user actions. These are detailed 
+To the best of the author's knowledge, none of these systems were ever implemented on a mobile device.
 
 \subsection{Smartphone based Indoor Positioning and Tracking Systems}
 
+Not many examples of such systems are found. Redpin\cite{Redpin} was an implementation of a Wifi based room level accurate system on a Nokia N95. Subsequent work has produced an iPhone and a buggy Android client for the Redpin server based system - both of which are available in the public subversion repository of the project. Work on this system is ongoing and is concentrating on Wifi as its primary source of positioning information.
+
+Anthea \cite{Anthea} implemented a Wifi based compressive sensing method for indoor positioning and tracking as part of a Masters thesis in 2010. A simple dead reckoning scheme with error correction based on multiple mobile devices on the same pedestrian has been proposed by \cite{NUSJin} in March 2011. Lukianto, Honniger and Sternberg\cite{Lukianto} claim to be developing an implementation on a Nokia N900 (released 2010) but have not published any algorithms or results. (Note: the author was unaware of these systems at the time of system design and implementation given that they are so recent in nature).
 
 
+\section{Research Gaps}
+
+Based on a review of a wide variety of papers besides those mentioned in the previous section, the following issues have been identified:
+
+\begin{itemize}
+\item Many systems make assumptions of log-normal decay of signals strengths from Wireless Access Points. Such assumptions are not valid as per the research done in \cite{KStats} and verified as part of the groundwork described in Chapter \ref{chap:groundwork}.
+\item A decade of research on Wifi assisted indoor positioning system has not provided a satisfactory increase in accuracy of positioning using Wifi data. Even the best systems report errors of the order of $2 m$ with a very high standard deviations.
+\item The lower limit of resolution for a Wifi assisted system is 1 wavelength. For systems based on the $2.4 Ghz$ IEEE 802.11 standard, this limit is approximately $0.125 m$ in the absence of noise. However, given the amount of noise incurred in the Wifi Signal Strengths (as evaluated in Chapter \ref{chap:groundwork}), it is unlikely that this limit will ever be reached and we shall have to be content with systems that give at best error bounds of around 10x the theoretical maximum resolution.
+\item Very few systems appreciate the enormous informative content present in maps and the possibility of using map information for continuous error correction in systems. 
+\item None of the dead reckoning solutions being implemented on mobile devices are aiming to use map information in any way to aid tracking.
+\item Nearly all the indoor positioning systems were aiming to use Wifi data in some way to decrease the error of their systems. However, this may not always be appropriate.
+\end{itemize}
+
+The proposed work aims to improve upon prior work in this area and demonstrate the implementation of indoor positioning systems using a modern Android based smartphone. The discussion of the proposed algorithms is in Chapter \ref{chap:proposed_method}.
 
 
-3.3 Towards Zero Configuration Systems (2007-2010)
-
-Over the course of 2007 and 2008, research focus shifted away from optimizing the core positioning algorithm for greater accuracy. The major hurdle in largescale deployment of such systems was the requirement to train the system with the location fingerprints a priori. 
-Philip Bolliger’s RedPin system  was one of the first few systems that took indoor positioning onto mobile handsets. The system was implemented as a client server application running on a Nokia N95 mobile handset which was communicating with a Java + MySQL based locator application on a server. It was also one of the first systems to successfully demonstrate some degree of sensor fusion across Bluetooth, GSM and WiFi. However, the algorithms used for positioning were very simple (using a simple Boolean distance measure) and the accuracy requirements were not stringent. However, one of the big contributions of the system was the idea that a fingerprint pattern can be developed over time with increasing accuracy if a sufficient number of people are using the system. This led to the idea of Zero Configuration Systems that can be used to bootstrap positioning in an unknown building given just a map and a few initial location fingerprints.
-During the same period, progress was being made on the signal processing approach to indoor positioning by Lim et al by determining how many measurements are required to sufficiently determine the parameter n in the path loss equation when deploying an IEEE 802.11 based network. They’ve utilized Singular Value Decomposition (SVD) based methods to generate a distance estimate from the path loss equation and requires just a single measurement from co-located access points to bootstrap the system. This method, however, does not take into account orientation and uses a path loss equation for the RSS distribution which is incorrect as per the statistical investigations in .
-Barry, Fisher and Chang (2009)  made a beautiful study of the way a collaborative, user supplied training data system can provide progressively increasing accuracy. Their system was operating with 200 untrained users spanning 5 buildings over a period of 1 year wherein it was able to perform over 1,000,000 localizations with over 8,700 user generated training datapoints. In over 94% cases, they were able to localize to within 10m. This was a major advancement. The major ideas presented in the paper were the way that users were incentivized to contribute to the system’s fingerprint location and the performance of the system was measured in terms of coverage and accuracy. However, the accuracy results were quite poor as compared to King’s results.
-
-MIT CSAIL and Nokia Research Labs have also taken up this line of research. Their paper “Growing an Organic Indoor Location System” published in 2010 describes how crowdsourcing techniques similar to the ones described in  can be used to generate the training dataset. They have also used clustering techniques to filter out outliers from the training dataset. Crowdsourcing ensures that the system will evolve with changing environmental conditions. The authors Park et al have used probabilistic techniques to estimate accuracy and have fixed empirical thresholds on spatial uncertainties to govern if the system will prompt the user to provide a location estimate. However, their entire paper doesn’t have a single mention of orientation information being used for determining location. 
-
-4. Research Gaps
-
-As has been mentioned continuously in the accompanying Literature review, most researchers have failed to take into account the characteristics of the 2.4 GHz signals used by the IEEE 802.11 systems. Hence, the following research gaps have been identified:
-1) No system (whether probabilistic or otherwise) has taken orientation into account as part of the core algorithm to determine position. King et al  have used orientation information, but only to prune the dataset on which they have to apply their core probabilistic algorithm.
-2) No studies have taken place on the effect of selective fading of some base stations on the accuracy of positioning algorithms – whether signal processing based or location fingerprint based.
-3) Crowdsourcing techniques to source the initial location fingerprints for a system do not incorporate models of trust to prevent misuse and the feeding of false/malicious localization information to the system.
-4) No system has attempted to integrate the indoor location system with larger systems such as the internet via Geolocation APIs exposed by modern browsers.
-5) Sensor fusion techniques for greater accuracy in positioning have not yet been applied to crowdsourced data.
-
-There is a need to address these issues over the long term. Given the enormous scope of these projects and the long incubation or training periods required for systems to begin giving accurate results, it is expected that filling these research gaps will take a significant amount of time.
-
-5. Proposed work 
-
-The proposed work for the dissertation is to solve a subset of the research gaps identified. Specifically, it is intended that orientation information and sensor fusion will be integrated into a Bayesian approach akin to the approach of King et al, Ladd et al  and Krumm and Horvitz  that leverages some aspects of crowdsourcing described in Park et al  and Bollinger. 
-
-\section{Research gaps}
 
