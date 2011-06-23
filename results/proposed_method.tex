@@ -106,7 +106,7 @@ Figure \ref{fig:accel_raw} graphs how the filtering process works by
 supressing sensor noise close to zero while allowing sensor values to 
 pass unaltered when they correspond to a step being taken.
 
-\subsection{Step detection procedure}
+\subsection{Step detection procedure\label{sec:step_detection}}
 
 \subsubsection{Zero Crossings}
 
@@ -185,7 +185,8 @@ Here,\\
 $C$                         & is the training constant   \\
 $(x_1, y_1), (x_2, y_2)$    & are the anchor point locations provided by the QRCodes \\
 $A_{max_{i}}, A_{min_{i}}$  & represent the maximum and minimum \\
-                            & acceleration values corresponding to the $i-th$ step.\\
+                            & acceleration values corresponding to the $i^{th}$ step.\\
+$stepcount$                 & The number of steps detected by the algorithm in section \ref{sec:step_detection} \\
 \end{tabular}
 
 
@@ -204,11 +205,21 @@ sin(\theta_{i})
 \end{bmatrix} 
 \end{equation}
 
-For the case where the coordinate system for the map is $x$ positive towards right and $y$  positive downwards with TrueNorth  of the map pointing upwards.
+For the case where the coordinate system for the map is $x$ positive towards
+right and $y$ positive downwards with TrueNorth of the map pointing upwards.
 
-This dynamical representation is overtly simplistic because it doesn't take into account real world issues as seen in the groundwork section. The most important issue is the issue of sensor drift. The magnetometer is a rather inaccurate sensor and is rated to an accuracy of 5 degrees in static circumstances. There is also a recommendation to re-calibrate before use. This is required because this sensor suffers from a lot of sensor noise and drift. 
+This dynamical representation is overtly simplistic because it doesn't take into
+account real world issues as seen in the groundwork section. The most important
+issue is the issue of sensor drift. The magnetometer is a rather inaccurate
+sensor and is rated to an accuracy of 5 degrees in static circumstances. There
+is also a recommendation to re-calibrate before use. This is required because
+this sensor suffers from a lot of sensor noise and drift. 
 
-Recalibration of the magnetometer involves moving it around in a pattern of 8. Effectively, that randomizes internal magnetic elements enough for magnetic saturation effects to be neutralized. Unfortunately, for a continuous use scenario like ours, recalibration of this sensor is not an option. Hence, we modify our dynamical equation to take this error into account.
+Recalibration of the magnetometer involves moving it around in a pattern of 8.
+Effectively, that randomizes internal magnetic elements enough for magnetic
+saturation effects to be neutralized. Unfortunately, for a continuous use
+scenario like ours, recalibration of this sensor is not an option. Hence, we
+modify our dynamical equation to take this error into account.
 
 \begin{equation}
 \begin{bmatrix}x_{i+1}\\
@@ -246,7 +257,7 @@ the magnetometer.
 
 The second issue at hand is step size variation and missing steps. To map
 accelerometer readings to step sizes, we have used the empirical equation
-provided by [ref]. However, this empirical equation doesn't take into account
+provided by \todo{ref}[ref]. However, this empirical equation doesn't take into account
 changes in step sizes due to changes in footwear or floor material. To account
 for this bias in step size detection, we introduce an additional parameter
 $d_{b}$ in the dynamical system. The new equations for the dynamical system are:
@@ -261,7 +272,8 @@ sin(\theta_{i}+\theta_{b}+\vartheta)
 \end{bmatrix} 
 \end{equation}
 
-In this representation, $d_{b}$ is a slowly varying bias variable on the step size.
+In this representation, $d_{b}$ is a slowly varying bias variable on the step
+size.
 
 \subsection{Limiting particle degeneracy}
 
@@ -285,7 +297,7 @@ equations over the HMM implementation.
 \todo[inline]{Explain how map information can act as an error correcting 
     tool for the system.}
 
-\section{Inherent limitations of the Particle filter approach}
+\section{Limitations of the Particle filter approach}
 
 \begin{enumerate}
 \item Computational complexity

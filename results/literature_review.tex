@@ -4,11 +4,12 @@
 
 Knowing and finding where we are or where we should be is a very frequent 
 task that is performed by us multiple times a day. We solve this problem 
-in a variety of ways:
+in a variety of ways (in decreasing order of efficiency):
 
 \begin{enumerate}
 \item Use our prior knowledge and mental map of our surroundings
 \item Ask around
+\item Move around randomly till we either figure out where we are or 
 \end{enumerate}
 
 \section{Indoor Positioning}
@@ -26,16 +27,12 @@ technologies for positioning. Over time, indoor positioning has progressed from
 simply using RF signals to using ubiquitous 802.11 Access Points as radio
 sources. With the development of UWB (Ultra Wide Band) technology, very fine
 grained ranging and tracking results have been obtained over target distances of
-the order of a few hundred feet from the radio source. 
+the order of a few hundred feet from the radio source.\cite{UWBRanging} 
 
 However, the primary scale of interest for commercial exploitation of indoor
 positioning and tracking is of the order of the size of warehouses and malls
 (approximately of the order of $2500 m^2$) with an accuracy that is preferably
-of the order of a few meters. The target applications for such a scenario are
-inventory location and tracking; location based services and personalized offers
-from businesses based on physical proximity to their shops or other points of
-sale. The ultimate target to be achieved in this line of research can be
-paraphrased as:
+of the order of a few meters. Ultimately, the following goal needs to be met:
 
 \begin{quote}
 Create a low complexity, low cost indoor positioning system that is
@@ -53,7 +50,6 @@ Thus it is interesting to explore the limitations of accuracy, scalability and
 maintainability of indoor positioning systems that are based on IEEE 802.11
 Access Points.
 
-
 \section{Indoor Tracking}
 
 Once having worked with indoor positioning systems, it is but natural to ask:
@@ -64,6 +60,134 @@ experience?
 Research shows that the answer to both the questions is in the affirmative
 and papers as far back as 2000 \cite{RADAR} have attempted to achieve this 
 
+\section{Progression of Ideas}
+
+In this section, I will explain in brief the progression of ideas in this 
+research area and a small summary of the results of major papers in the 
+field.
+
+\section{Early work (2000-2003)}
+
+Bahl and Padmanabhan\cite{RADAR} (2000) proposed RADAR as the first system to utilize RF signals to achieve indoor positioning using a PC. They used a WaveLAN NIC to get signal strength and SNR values from a received and from statistical data collected they were able to carry out indoor location and tracking. Their work is seminal and forms the base of indoor localization 
+methods. The central ideas in their paper were twofold:
+
+\begin{enumerate}
+\item Treat the problem as a signal processing problem that aims to compensate for free space path loss and other multipath and obstructive effects of the RF source signals by using a propagation model, thus allowing the use of trilateration for positioning. OR
+\item Treat the problem as a nearest neighbor problem for a set of predefined signal samples associated with fixed locations in the target area. This was called the location fingerprinting method.
+\end{enumerate}
+
+These ideas were central to the research carried out over the next few years.
+
+Kotanen, Hannikainen, Leppakoski et al\cite{Kotanen} (2003) took forward RADAR by exploring alternative radio sources and produced an indoor positioning system using Bluetooth devices as their radio source. Their major contribution was the use of Kalman Filters and other signal processing techniques to improve the accuracy of the location estimate. The major limitation of this method for achieving the stated objectives is that Bluetooth capable “anchor points” are not deployed in sufficiently large numbers and a Bluetooth based indoor location technology would require additional hardware deployment and does not have sufficient range to justify the extra cost and complexity of the solution.
+
+Other systems created during this period include SpotOn\cite{SpotON} by Intel Research which took indoor localization to 3 dimensions using RFID tags. All systems in this period had significant accuracy limitations with best case accuracies 
+approaching $3 m$.
+
+\section{Wifi Positioning Algorithm Maturation (2004-2006)}
+
+2004 was a year when indoor positioning really started to generate research interest. The primary progress during this period was the analysis of signal characteristics of IEEE 802.11 systems in the 2.4 GHz band as well as the maturation of approaches to positioning based on probabilistic and fuzzy models.
+
+\subsection{Analysis of the properties of Wifi RSSI}
+
+Kaemarungsi and Krishnamurthy\cite{KStats} (2004)  did a thorough study of the properties exhibited by IEEE 802.11 signals in the 2.4 GHz ISM band as they apply to a real world positioning scenario in this paper. Their major contribution was the statistical analysis of Received Signal Strength datasets. Kaemarungsi and Krishnamurthy first collected data from a single access point to determine the impact of the presence of a user as well as the statistical properties of the dataset (the statistical distribution, the signal stationarity, the variation of the signal at different times of the day etc.). After a thorough analysis, they extended their analysis to datasets generated from multiple access points to determine the degree of independence of signals from the different access points and the similarity of the statistical properties of the access points in a multi-access point scenario. The final part of their work dealt with the differences between RSS fingerprints of two locations to identify commonalities and differences between fingerprints. The major results of their work are summarized in Table \ref{tbl:RSSStats}.
+
+\begin{table}
+\centering
+\begin{tabular}{p{2in} p{3in}}
+\hline
+\hline
+Statistical Property & Variations \\
+\hline
+
+Effect of User’s presence &
+Upto 5 dBm variation in the properties \\
+
+Effect of User’s body on Standard Deviation &
+Increases from 0.68 dBm to 3.00 dBm \\
+
+Effect of User’s orientation &
+Deviations of upto 10 dBm including complete loss of signal strength for Line of Sight obstruction in low signal strength scenarios \\
+
+Statistical Distribution &
+Although other published results claim a lognormal distribution of RSS values they fail to mention the presence or absence of a user. As per the authors, in the presence of a user, the lognormal distribution is violated with no clear distribution fit. \\
+
+Standard Deviation &
+Except when a user’s orientation blocks an Access Point, the standard deviation values at a particular point are relatively stable. \\
+
+Stationarity of the RSS &
+The RSS distribution was found to be fairly stable and exhibited ergodic properties at small time scales but stationarity was violated over longer time scales of the order of hours due to environmental changes. \\
+
+RSS Correlation between APs &
+Fairly uncorrelated, nearly independent \\
+
+Interference from multiple APs on same channel & 
+Nearly independent on account of MAC layer avoiding simultaneous broadcasts \\
+
+Clustering of RSS values &
+RSS values corresponding to different APs show significant clustering behaviour around radio sources and may thus be used with a discriminant to distinguish between locations. Also, the number of distinct tuples for each location are fewer than the number of samples. \\
+
+\hline
+\end{tabular}
+\caption{Kaemarungsi and Krishnamurthy Analysis Results of RSS datasets (summarized from \cite{KStats})\label{tbl:RSSStats}}
+\end{table}
+
+These results are very important as subsequent systems have failed to take the results of this paper into account while designing their algorithms. Their results as well as the groundwork done as part of this thesis forms a significant informing factor for choosing appropriate algorithms for the problem.
+
+
+\subsection{Orientation Augmented Positioning and Tracking Systems}
+
+Ladd et al (2003, 2005)\cite{Ladd}  took up a different approach to the problem of indoor localization and tracking – they preferred to use the probabilistic viewpoint and take an approach keeping in mind its practical application in robotics. Their paper, published in 2003 as part of IEEE MOBICOM and later in a revised form in 2005 by Springer used a fairly advanced probabilistic model to predict the position of a robot. They used a Bayesian Inference Algorithm to generate probability values for motion and position. They also attempted to coarsely estimate the orientation of a user based on the sample data provided to compensate for orientation effects mentioned in \cite{KStats}. Their model – though fairly complex and quite accurate – is solely built upon a Wifi sample dataset augmented by rudimentary orientation information (discretized to 8 directions) and assumes a gaussian distribution of Wifi signal strengths around a sample (an assumption which is not valid according to \cite{KStats}). However, its central ideas are excellent and the results were the best among its contemporaneous systems.
+
+In 2006, King et al\cite{King} provided the first description of any system that utilized digital compasses to determine user orientation. Their probabilistic algorithm utilized Bayes’ Rule and an assumed Gaussian distribution of signal strengths around the reference points to generate location candidates. Orientation information from digital compass measurements was used to limit the dataset to only those samples in the training set that had a similar orientation as the current test datapoint. Simple averaging of the resulting most probable data points was returned to the user as the most likely location. Bayes' rule was used for localization and no tracking applications were evaluated.
+
+With the number of systems attempting to provide indoor positioning and tracking solutions ballooning, IEEE published a survey\cite{Survey2007} by Hui Liu et al which compared the accuracies and features of the variety of indoor positioning systems. This paper contains a huge list of positioning and tracking systems and a concise description of the ideas and methodologies behind them.
+
+\subsection{INS and Wifi Integration}
+
+The location system that I found the most interesting and suitable for application to the task at hand was the integration of an Intertial Navigation System (INS) with Wifi measurements done by Frederic Evennou and Francois Marx of the R\&D division of TECH/IDEA, France Telecom. Their paper \cite{Evennou} attempted to fuse an inertial navigation system using  accelerometer and gyroscope data with Wifi location fingerprints for continuous tracking of a user. Their reported accuracy of $1.53 m$ was significantly better than that of pure Wifi location fingerprinting solutions reported previously. However, in their work, they reported that the particle filter used was extremely intensive computationally and was thus not suitable for implementation on mobile devices. To quote:
+
+\begin{quote}
+Due to the large number of particles, the
+algorithm is too complex to be implemented on handheld
+devices. A way to cut down this number of particles must be
+found.\cite{Evennou}
+\end{quote}
+
+Another major system of this kind was published by Hui Wang et al\cite{Wang} which fused Wifi Received Signal Strength Information (RSSI) with a step counting algorithm and map information to develop a pedestrian tracking algorithm based on particle filters. Their system was reported to have a mean error of $4.3 m$ with a standard deviation in error of $2.8 m$ in comparison to a pure KNN based system with a mean error of $6.44 m$ and a standard deviation of $6.84 m$. Though the reported accuracy of their system was poor, the paper had a number of interesting ideas.
+
+\subsection{Improvements to Wifi Signal Strength Based Methods}
+
+Over the course of 2007 and 2008, research focus shifted away from optimizing the core positioning algorithm for greater accuracy. The major hurdle in largescale deployment of such systems was the requirement to train the system with the location fingerprints a priori. Crowdsourcing methods were developed to create a database of Wifi fingerprints based on cooperative user actions. These are detailed 
+
+\subsection{Smartphone based Indoor Positioning and Tracking Systems}
+
+
+
+
+
+3.3 Towards Zero Configuration Systems (2007-2010)
+
+Over the course of 2007 and 2008, research focus shifted away from optimizing the core positioning algorithm for greater accuracy. The major hurdle in largescale deployment of such systems was the requirement to train the system with the location fingerprints a priori. 
+Philip Bolliger’s RedPin system  was one of the first few systems that took indoor positioning onto mobile handsets. The system was implemented as a client server application running on a Nokia N95 mobile handset which was communicating with a Java + MySQL based locator application on a server. It was also one of the first systems to successfully demonstrate some degree of sensor fusion across Bluetooth, GSM and WiFi. However, the algorithms used for positioning were very simple (using a simple Boolean distance measure) and the accuracy requirements were not stringent. However, one of the big contributions of the system was the idea that a fingerprint pattern can be developed over time with increasing accuracy if a sufficient number of people are using the system. This led to the idea of Zero Configuration Systems that can be used to bootstrap positioning in an unknown building given just a map and a few initial location fingerprints.
+During the same period, progress was being made on the signal processing approach to indoor positioning by Lim et al by determining how many measurements are required to sufficiently determine the parameter n in the path loss equation when deploying an IEEE 802.11 based network. They’ve utilized Singular Value Decomposition (SVD) based methods to generate a distance estimate from the path loss equation and requires just a single measurement from co-located access points to bootstrap the system. This method, however, does not take into account orientation and uses a path loss equation for the RSS distribution which is incorrect as per the statistical investigations in .
+Barry, Fisher and Chang (2009)  made a beautiful study of the way a collaborative, user supplied training data system can provide progressively increasing accuracy. Their system was operating with 200 untrained users spanning 5 buildings over a period of 1 year wherein it was able to perform over 1,000,000 localizations with over 8,700 user generated training datapoints. In over 94% cases, they were able to localize to within 10m. This was a major advancement. The major ideas presented in the paper were the way that users were incentivized to contribute to the system’s fingerprint location and the performance of the system was measured in terms of coverage and accuracy. However, the accuracy results were quite poor as compared to King’s results.
+
+MIT CSAIL and Nokia Research Labs have also taken up this line of research. Their paper “Growing an Organic Indoor Location System” published in 2010 describes how crowdsourcing techniques similar to the ones described in  can be used to generate the training dataset. They have also used clustering techniques to filter out outliers from the training dataset. Crowdsourcing ensures that the system will evolve with changing environmental conditions. The authors Park et al have used probabilistic techniques to estimate accuracy and have fixed empirical thresholds on spatial uncertainties to govern if the system will prompt the user to provide a location estimate. However, their entire paper doesn’t have a single mention of orientation information being used for determining location. 
+
+4. Research Gaps
+
+As has been mentioned continuously in the accompanying Literature review, most researchers have failed to take into account the characteristics of the 2.4 GHz signals used by the IEEE 802.11 systems. Hence, the following research gaps have been identified:
+1) No system (whether probabilistic or otherwise) has taken orientation into account as part of the core algorithm to determine position. King et al  have used orientation information, but only to prune the dataset on which they have to apply their core probabilistic algorithm.
+2) No studies have taken place on the effect of selective fading of some base stations on the accuracy of positioning algorithms – whether signal processing based or location fingerprint based.
+3) Crowdsourcing techniques to source the initial location fingerprints for a system do not incorporate models of trust to prevent misuse and the feeding of false/malicious localization information to the system.
+4) No system has attempted to integrate the indoor location system with larger systems such as the internet via Geolocation APIs exposed by modern browsers.
+5) Sensor fusion techniques for greater accuracy in positioning have not yet been applied to crowdsourced data.
+
+There is a need to address these issues over the long term. Given the enormous scope of these projects and the long incubation or training periods required for systems to begin giving accurate results, it is expected that filling these research gaps will take a significant amount of time.
+
+5. Proposed work 
+
+The proposed work for the dissertation is to solve a subset of the research gaps identified. Specifically, it is intended that orientation information and sensor fusion will be integrated into a Bayesian approach akin to the approach of King et al, Ladd et al  and Krumm and Horvitz  that leverages some aspects of crowdsourcing described in Park et al  and Bollinger. 
 
 \section{Research gaps}
 
