@@ -13,6 +13,17 @@ its noise floor and the degree of separation between signal and noise.
 Figure \ref{fig:accel_static} shows a plot of the accelerometer's raw output 
 along the Z axis for a stationary device kept on a table. 
 
+The noise level for the accelerometer was determined to be always less
+than $0.6 m/s^2$. The acceleration peaks corresponding to actual steps usually
+lie around $2.0 m/s^2$. To allow for a reasonable noise margin and provide
+sufficient cushion for additional noise introduced due to the dynamic nature of
+walking, we choose a threshold of $1.3 m/s^2$ which is the mean value of the two
+peak values. If the absolute value of the Z-axis acceleration sample is less
+than this threshold, then the sample will be clamped to zero. For a smartphone
+with a similar accelerometer sensor but with different noise characteristics,
+the values of the threshold can be varied accordingly. 
+
+
 \begin{figure}\centering
     \includegraphics{figures/accel_static.png}
     \caption{Accelerometer Z axis readings when device stationary\label{fig:accel_static}}
@@ -211,6 +222,14 @@ This was work done as part of the project. Results are included here.
 
 \subsection{Improvements}
 Use of SVM is likely to improve the accuracy further at room level. [Redpin]
+
+
+\section{Dead Reckoning by direct integration: What doesn't work}
+\section{What Doesn't work}
+\todo{Fix this!}
+Acceleration of the human body is too slow compared to gravity. Simple orientation changes produce high changes in acceleration along axes which are very difficult to filter out.
+Numerical integration generates errors too quickly. With a high sampling rate, errors balloon.
+Using the gyroscope for step detection (similar to foot mounted devices [insert reference]) – doesn’t work.
 
 
 \section{Other issues}

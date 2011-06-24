@@ -1,19 +1,7 @@
 \chapter{Literature Review\label{chap:literature_review}}
 
-\section{Location! Location! Location!}
-
-Knowing and finding where we are or where we should be is a very frequent 
-task that is performed by us multiple times a day. We solve this problem 
-in a variety of ways (in decreasing order of efficiency):
-
-\begin{enumerate}
-\item Use our prior knowledge and mental map of our surroundings
-\item Ask around
-\item Move around randomly till we either figure out where we are or 
-\end{enumerate}
-
-\section{Indoor Positioning}
-
+\section{Technologies for Unaided Indoor Positioning}
+\todo{Keep section or remove?}
 Indoor positioning has been a topic of active research for the past decade with
 the first research system using RF signals for distance estimation and indoor
 positioning being produced by Microsoft Research (RADAR, 2000)\cite{RADAR}. Of
@@ -44,13 +32,17 @@ that a significant number of sensors and repeaters be installed in the target
 positioning area specifically for this purpose. It is also an expensive
 technology. On the other hand, IEEE 802.11 AP based positioning has low
 complexity and cost and it has a large installed base, thus making it attractive
-for positioning purposes as a source of radio signals.
+for positioning purposes as a source of radio signals. 
 
 Thus it is interesting to explore the limitations of accuracy, scalability and
 maintainability of indoor positioning systems that are based on IEEE 802.11
 Access Points.
 
+Other technologies for indoor positioning include laser range finding, 
+ultrasound ranging etc. \todo{cite papers?}
+
 \section{Indoor Tracking}
+\todo{Keep section or remove?}
 
 Once having worked with indoor positioning systems, it is but natural to ask:
 Can we extend all the technology developed for indoor positioning to track 
@@ -62,9 +54,20 @@ and papers as far back as 2000 \cite{RADAR} have attempted to achieve this
 
 \section{Progression of Ideas}
 
-In this section, I will explain in brief the progression of ideas in this 
-research area and a small summary of the results of major papers in the 
-field.
+The progression of ideas in this field spans a decade of intensive research. 
+However, the central themes can be easily summarized:
+
+\begin{itemize}
+\item Initial seminal work was done on indoor location and tracking based on RF signal strength data.
+\item The work was improved with the aid of more powerful filters and better algorithms and was applied to different signal sources such as Wifi and Bluetooth.
+\item Analysis of Wifi signals indicated a strong effect of orientation on the sample data. This observation was incorporated into various systems to improve indoor localization accuracy.
+\item The advent of Microelectromechanical Systems (MEMS) allowed the development of compact accelerometers on chips and subsequently gyroscopes have also been created. These were sufficient for the development of portable, low cost, Inertial Navigation Systems. (INS) An attempt was made to merge the benefits of an INS with a Wifi based approach to indoor localization. 
+\item Particle filters were explored for indoor localization.
+\item Implementation of Wifi RSSI based indoor positioning and tracking systems on mobile devices start to appear.
+\end{itemize}
+
+Subsequent sections of this chapter describe the papers and their important
+ideas and limitations in greater detail in a chronological format.
 
 \section{Early work (2000-2003)}
 
@@ -142,7 +145,7 @@ In 2006, King et al\cite{King} provided the first description of any system that
 
 With the number of systems attempting to provide indoor positioning and tracking solutions ballooning, IEEE published a survey\cite{Survey2007} by Hui Liu et al which compared the accuracies and features of the variety of indoor positioning systems. Interested readers may refer to the survey paper for a huge list of positioning and tracking systems and a concise description of the ideas and methodologies behind them as well as a comparative analysis of their features. Such comparisons have been omitted here for the sake of brevity.
 
-\subsection{INS and Wifi Integration}
+\section{INS and Wifi Integration (2006-2008)}
 
 The location system that I found the most interesting and suitable for application to the task at hand was the integration of an Intertial Navigation System (INS) with Wifi measurements done by Frederic Evennou and Francois Marx of the R\&D division of TECH/IDEA, France Telecom. Their paper \cite{Evennou} attempted to fuse an inertial navigation system using  accelerometer and gyroscope data with Wifi location fingerprints for continuous tracking of a user. Their reported accuracy of $1.53 m$ was significantly better than that of pure Wifi location fingerprinting solutions reported previously. However, in their work, they reported that the particle filter used was extremely intensive computationally and was thus not suitable for implementation on mobile devices. To quote:
 
@@ -153,13 +156,13 @@ devices. A way to cut down this number of particles must be
 found.\cite{Evennou}
 \end{quote}
 
-Another major system of this kind was published by Wang et al (2007)\cite{Wang} which fused Wifi Received Signal Strength Information (RSSI) with a step counting algorithm and map information to develop a pedestrian tracking algorithm based on particle filters. Their system was reported to have a mean error of $4.3 m$ with a standard deviation in error of $2.8 m$ in comparison to a pure KNN based system with a mean error of $6.44 m$ and a standard deviation of $6.84 m$. Though the reported accuracy of their system was poor, the paper had a number of interesting ideas.
+Another major system of this kind was published by Wang et al (2007)\cite{Wang} which fused Wifi Received Signal Strength Information (RSSI) with a step counting algorithm based on \cite{Ladetto} and map information to develop a pedestrian tracking algorithm based on particle filters. Their system was reported to have a mean error of $4.3 m$ with a standard deviation in error of $2.8 m$ in comparison to a pure KNN based system with a mean error of $6.44 m$ and a standard deviation of $6.84 m$. Though the reported accuracy of their system was poor, the paper had a number of interesting ideas.
 
 To the best of the author's knowledge, none of these systems were ever implemented on a mobile device.
 
-\subsection{Smartphone based Indoor Positioning and Tracking Systems}
+\section{Smartphone based Indoor Positioning and Tracking Systems (2008-2011)}
 
-Not many examples of such systems are found. Redpin\cite{Redpin} was an implementation of a Wifi based room level accurate system on a Nokia N95. Subsequent work has produced an iPhone and a buggy Android client for the Redpin server based system - both of which are available in the public subversion repository of the project. Work on this system is ongoing and is concentrating on Wifi as its primary source of positioning information.
+Not many examples of such systems are found. Redpin\cite{Redpin} was an implementation of a Wifi based room level accurate system on a Nokia N95. The implementation was probably finished around 2008. Subsequent work has produced an iPhone and a slightly unstable Android client for the Redpin server based system - both of which are available in the public subversion repository of the project. Work on this system is ongoing and is concentrating on Wifi as its primary source of positioning information.
 
 Anthea \cite{Anthea} implemented a Wifi based compressive sensing method for indoor positioning and tracking as part of a Masters thesis in 2010. A simple dead reckoning scheme with error correction based on multiple mobile devices on the same pedestrian has been proposed by \cite{NUSJin} in March 2011. Lukianto, Honniger and Sternberg\cite{Lukianto} claim to be developing an implementation on a Nokia N900 (released 2010) but have not published any algorithms or results. (Note: the author was unaware of these systems at the time of system design and implementation given that they are so recent in nature).
 
