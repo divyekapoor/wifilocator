@@ -6,6 +6,51 @@ Before implementing any system, it is imperative to understand the data at hand
 so as to make correct analytical decisions. In this regard, groundwork was done
 to characterize all the input data sources.
 
+\section{Hardware}
+The hardware used to produce the results is the Samsung Nexus S (cobranded with
+Google) running Android 2.3.4. The official specifications of the device can be
+obtained from the manufacturer's website [link to website with reference] A
+short listing of the sensors present on the device is given below based on how
+the device reports the sensors via the software APIs:
+
+\begin{enumerate}
+\item KR3DM 3-axis Accelerometer
+\item AK8973 3-axis Magnetic field sensor
+\item AK8973 Orientation sensor
+\item GP2A Light sensor
+\item GP2A Proximity sensor
+\item K3G Gyroscope sensor
+\item Gravity Sensor
+\item Linear Acceleration Sensor
+\item Rotation Vector Sensor
+\item An 802.11 b/g/n compatible Wifi NIC
+\end{enumerate}
+
+It may be noted that of these sensors, the Gravity sensor, the Linear
+Acceleration Sensor and the Rotation Vector Sensor are derived sensors. They
+depend on filtering the raw data sensed via the accelerometer and the
+magnetometer to generate their sensed values. In essence, the Gravity sensor is
+a low pass filter over the accelerometer values (since gravity is essentially
+stable for the device at a particular orientation), the Linear Acceleration
+Sensor is a high pass filter over the accelerometer values (the high frequency
+changes in acceleration are presumed to occur due to device motion and thus
+correspond to linear acceleration of the device) and the Rotation Vector Sensor
+is a composite sensor that fuses Gravity information derived from the
+3 axis Accelerometer and the magnetic field information derived from the
+3 axis Magnetic field sensor to orient the device in the 3 Dimensional World 
+Coordinate space. The actual method used to do so is described in the API
+documentation \todo{Provide Reference}[reference to API documentation] and
+further discussion is out of scope for this thesis.
+
+\begin{figure}
+\centering
+    \includegraphics[height=3in]{figures/android_front}
+    \includegraphics[height=3in]{figures/android_back}
+\caption{Google Nexus S manufactured by Samsung}
+\end{figure}
+
+
+
 \section{Accelerometer}
 
 The MEMS accelerometer on the Nexus S was subject to simple tests to determine 
@@ -14,8 +59,8 @@ Figure \ref{fig:accel_static} shows a plot of the accelerometer's raw output
 along the Z axis for a stationary device kept on a table. 
 
 The noise level for the accelerometer was determined to be always less
-than $0.6 m/s^2$. The acceleration peaks corresponding to actual steps usually
-lie around $2.0 m/s^2$. To allow for a reasonable noise margin and provide
+than $0.6 m/s^2$. The acceleration peaks corresponding to regular walk steps 
+usually lie around $2.0 m/s^2$. To allow for a reasonable noise margin and provide
 sufficient cushion for additional noise introduced due to the dynamic nature of
 walking, we choose a threshold of $1.3 m/s^2$ which is the mean value of the two
 peak values. If the absolute value of the Z-axis acceleration sample is less
@@ -31,30 +76,27 @@ the values of the threshold can be varied accordingly.
 
 \section{Magnetometer}
 
-The Nexus S comes with a built in [insert smartphone chip info] MEMS magnetometer.
+The Nexus S comes with a built in MEMS magnetometer.
 It measures the local magnetic field strength in $\mu T$.
-
-\subsection{Accuracy}
-
-The datasheet for the sensor rates the device to the following specifications:
-\todo{Enter datasheet notes here and cite}
 
 In practical tests, the performance is reasonable but the magnetometer has a 
 lot of sensor noise and suffers from sensor bias. For example, rotation of 
 the smartphone through large angles introduces bias in the readings from the 
-magnetometer. Similary, the magnetometer shows an offset when the device is 
+magnetometer. Similary, the magnetometer shows a small offset when the device is 
 turned through 360 degrees.
 
-Figures 
+Figures \ref{fig:angle_stationary_table} and \ref{fig:angle_handheld_standing}
+show the behaviour of sensor readings under the 2 circumstances when the 
+device is on a table and when it is held in the palm of the hand of a user.
 
 \begin{figure}\centering
     \includegraphics{figures/angle_stationary_table.png}
-    \caption{Derived azimuth angle when smartphone on table}
+    \caption{Derived azimuth angle when smartphone on table\label{fig:angle_stationary_table}}
 \end{figure}
 
 \begin{figure}\centering
     \includegraphics{figures/angle_handheld_standing.png}
-    \caption{Derived azimuth angle when smartphone held in hand}
+    \caption{Derived azimuth angle when smartphone is held in the hand\label{fig:angle_handheld_standing}}
 \end{figure}
 
 

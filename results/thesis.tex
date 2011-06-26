@@ -1,11 +1,13 @@
-\documentclass[12pt,a4paper,twoside]{book}
+\documentclass[11pt,a4paper,twoside]{book}
 %\usepackage{fullpage}
-\usepackage[twoside,bindingoffset=0.6in]{geometry} %,left=1in,right=1in
-\usepackage{todonotes}
-\usepackage[avantgarde]{quotchap}
-\usepackage{amsmath,amssymb}
-\usepackage{setspace}
-\usepackage{graphicx}
+\usepackage[twoside,bindingoffset=0.6in,left=1.2in,right=1.2in]{geometry} %,left=1in,right=1in % margins
+\usepackage{todonotes} % Todo
+\usepackage[avantgarde]{quotchap} % Chapter headings
+\usepackage{amsmath} % Math formatting 
+\usepackage{amssymb} % "    "
+\usepackage{setspace} % Spacing of the thesis
+\usepackage{graphicx} % Includegraphics
+\usepackage{algorithm2e} % Algorithms
 
 \pdfimageresolution 300
 
@@ -27,10 +29,13 @@
 \clearpage
 
 \listoffigures
-\addcontentsline{toc}{chapter}{List of figures}
+\addcontentsline{toc}{chapter}{List of Figures}
 
 \listoftables
-\addcontentsline{toc}{chapter}{List of tables}
+\addcontentsline{toc}{chapter}{List of Tables}
+
+\listofalgorithms
+\addcontentsline{toc}{chapter}{List of Algorithms}
 
 \clearpage
 \listoftodos
@@ -58,13 +63,14 @@
 
 \appendix
 
-%\todo[inline]{Enable this appendix later}
-\input{appendix-all_test_results.tex}
+\todo[inline]{Enable this appendix later}
+%\input{appendix-all_test_results.tex}
 
 \input{appendix-survey_form.tex}
 
 \backmatter
 
+\singlespace
 \bibliographystyle{IEEEtran}
 \bibliography{IEEEfull,mybib}
 

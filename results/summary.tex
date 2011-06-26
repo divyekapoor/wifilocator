@@ -1,8 +1,4 @@
 \chapter{Summary and Future Work\label{chap:summary}}
-Use and evaluation of SVM as a suitable architecture for the Wifi data.
-Better integration of information from the camera.
-Integration of information using a Barometric sensor would be useful for detecting elevation changes. A system for the same is proposed but the experimental results were not obtained. 
-
 
 \section{Particle filter + Wifi data}
 
@@ -11,6 +7,34 @@ Integration of information using a Barometric sensor would be useful for detecti
 \subsection{Case 3: Use of clamped wifi data for accounting for drift errors}
 \subsection{Case 4: Use of area Restricted Wifi data for accounting for drift errors}
 \subsection{Case 7: Simple post processing of output.??}
+
+
+\section{Limitations}
+
+User moving backwards. (Uses more computation, destroys the averaging procedure)
+
+
+\section{Future enhancements}
+
+There is a lot of scope for improving a number of aspects of the 
+algorithms proposed. For example, we need to look at improving $MapSelect$,
+integrating information from barometric sensors as and when they are made
+available on handheld devices. We also need to figure out how to modify
+the information to be put into first fix QRCodes to link up maps of 
+the same building.
+
+On the implementation front, performance of the solution, though 
+adequate, can be significantly improved.
+Improvements can be achieved by leveraging thread parallelism and a 
+producer consumer model to allow for higher system lag in the case of 
+a recovery event. The UI can be made event driven from the current 
+polling model to increase responsiveness.
+
+
+Use and evaluation of SVM as a suitable architecture for the Wifi data.
+Better integration of information from the camera.
+Integration of information using a Barometric sensor would be useful for detecting elevation changes. A system for the same is proposed but the experimental results were not obtained. 
+
 
 \section{Signal Strength Map}
 

@@ -35,53 +35,28 @@ the Samsung Nexus S which is co-branded with Google).
 \section{System Inputs\label{sec:system_inputs}}
 
 Given the choice of hardware, we are constrained to use only specific 
-data sources for our algorithm. The sections below detail the data 
-sources used by the algorithm. Characterizations of these data sources as well
+data sources for our algorithm. 
+The sensors available on a typical Android Smartphone are:
+\begin{enumerate}
+\item A 3-axis accelerometer for measuring acceleration of the device.
+\item A 3-axis magnetometer for measuring the surrounding magnetic field.
+\item A gyroscope for providing angular velocity information.
+\item A camera for providing visual information.
+\item A Wifi Network Card with the ability to provide measurements of the received signal strengths. (RSSI)
+\end{enumerate}
+
+Besides the sensors mentioned above, additional sources of information 
+that we can make available to the system are:
+
+\begin{enumerate}
+\item Map information detailing the test environment.
+\item A site survey of the test environment which provides Wifi location fingerprints augmented by 
+    orientation information of the reciever when the fingerprint was taken.
+\end{enumerate}
+
+Characterizations of these data sources as well
 as other relevant parameters will be done as ground-work in 
 Chapter \ref{chap:groundwork}.
-
-\subsection{Acceleration}
-
-Raw acceleration information is available on the Android device via samples 
-from a 3 axis MEMS accelerometer. The device reports the sensor as 
-a ``KR3DM 3-axis Accelerometer"\todo{Cite datasheet}. Thus acceleration values along all 3 axes
-are available.
-
-\subsection{Magnetic Field}
-
-Magnetic field information is available on the Android device via samples 
-from a 3 axis magnetometer. The device reports the device as an
-``AK8973 3-axis Magnetic field sensor".\todo{Cite datasheet}
-
-\subsection{Cameras}
-
-A 5 megapixel camera is present rear-facing on the Nexus S. A 0.6 megapixel
-front facing camera is also present on the device.\todo{Cite datasheet or official specs}
-
-\subsection{Wifi Receiver}
-
-A standard 802.11 b/g/n capable Wireless NIC is present on the device. Thus,
-it is compatible with both 2.4 GHz and 5 GHz frequency band IEEE 802.11 networks.
-
-\subsection{Additional Inputs}
-
-\subsubsection{Map Information}
-
-A blueprint of the test area was converted into a digital map using AutoCAD
-and the resulting map was exported as a high resolution image ($1600px \times 1280px$)
-and a low resolution version ($640px \times 480px$). Due to memory constraints, 
-the low resolution version of the map will be used for providing map information
-to the algorithm as it expands out to only 1.2MB in uncompressed form as 
-compared to 8.19MB for the higher resolution one. The additional memory 
-usage is significant as the Android OS severely limits the heap limits of 
-single applications. For some mobile devices, the heap limit is as low as
-16 MB.
-
-\subsubsection{Wifi Site Survey Information}
-
-It is possible to do a site survey of the test area to generate a database of
-Wifi fingerprints which may be used for implementing Wifi based positioning
-and tracking algorithms.
 
 \section{Device Limitations\label{sec:device_limitations}}
 
@@ -102,20 +77,19 @@ are:
     amount of inter sample processing that may be performed while 
 \end{itemize}
 
-\section{Background of Particle Filters}
-\todo[inline]{What/How much to write here and where to put in the thesis?}
+Keeping these limitations in mind, a particle filter based algorithm 
+for online indoor tracking is proposed. 
+
+\section{Background on Particle Filters}
+\todo{What/How much to write here and where to put in the thesis?}
 Particle filters belong to a class of Sequential Monte Carlo algorithms 
 that depend essentially approximating a probability distribution function based
 on a Monte Carlo simulation of the system using observation samples. In our 
-particular scenario, these filters are helping us approximate the probablity
-distribution $p(x_t|o_t,o_{t-1}\dots,o_0)$ where $x_t$ is the 2 dimensional
-location of a user or device at time $t$ and $o_0 \dots o_t$ represent the
-observations made about the system at the corresponding subscripted time points.
-
-As is clear from the above paragraph, the latent variables in the system (the
-$x_t$) are assumed to be continuous. This in contrast with the Hidden Markov 
-Model (HMM) approach that was used in \cite{Ladd} where they are assumed to be 
-discrete. However, both methods have their advantages and disadvantages.
+particular scenario, the filtering algorithm is helping us approximate the 
+probablity distribution $p(x_t|o_t,o_{t-1}\dots,o_0)$ where $x_t$ is the 2
+dimensional location of a user or device at time $t$ and $o_0 \dots o_t$
+represent the observations made about the system at the corresponding
+subscripted time points.
 
 Particle filters are a huge topic in and of themselves. Thus, in the interests
 of brevity, the reader is referred to the excellent expositions of particle 
@@ -127,46 +101,93 @@ tracking.
 \section{Proposed Method}
 
 Keeping the availability of the inputs described above as well as the device 
-limitations described in Section \ref{sec:device_limitations}, the following
-method is proposed:
+limitations described in Section \ref{sec:device_limitations}, a less 
+computationally intensive method is proposed in 
+Algorithm \ref{algo:proposed_method}.
 
-\begin{enumerate}
-\item A first-fix position estimate will be taken by means of manual input or 
-    via QRCodes through the smartphone camera.
-\item A step counting approach in accordance with a modified peak and 
-    valley approach and a step stride estimation in accordance with
-    \cite{ADXL202} will be used.
-\item A low complexity particle filter is used to implement the tracking 
-    algorithm. 
-\item Map information is used to provide means for correcting drift in the 
-    simple tracking algorithm.
-\item Additional "hidden" variables are used in the dynamical equations of the 
-    system to compensate for a constant sensor drift and small variations in 
-    the step size of the user. 
-\end{enumerate}
+\begin{algorithm}
+\SetKwInOut{Input}{Input}
+\Input{Sensor Events from device sensors}
+\KwResult{An estimate of the location of the device at any time through the variable $L$}
+\Begin{
+    $L \longleftarrow FirstFix()$ \;
+    $P \longleftarrow$ $N$ particles around $L$ corrupted by Gaussian Noise\;
+    \ForEach{$stepEvent$ from $sensors$}{
+        $P' \longleftarrow ApplyDynamicalEquations(P, stepEvent)$\;
+        $P' \longleftarrow MapSelect(P', P)$\;
+        \If{$P'$ is $\emptyset$}{
+            $R \longleftarrow PerfomRecovery(P)$\;
+            \If{$R$ is not $\emptyset$}{
+                $P \longleftarrow R$
+            }
+        }{
+            $P \longleftarrow P'$\;
+        }
+        $L \longleftarrow Mean(P)$\;
+    }
+}
+\caption{High Level View of the System\label{algo:proposed_method}}
+\end{algorithm}
+
+Algorithm \ref{algo:proposed_method} is very general. Also, though it is 
+stated in a sequential manner, the it needs to 
+be implemented in an event-driven fashion to allow for online tracking. 
+The \textbf{ForEach} loop in the algorithm is essentially an event loop 
+that depends on step detection.
+
+Procedures to determine $FirstFix$, detect steps from sensor data, 
+$ApplyDynamicalEquations$, $MapSelect$ and $PerfomRecovery$ are explained
+below.
+
+%\begin{enumerate}
+%\item A first-fix position estimate will be taken by means of manual input or 
+%    via QRCodes through the smartphone camera.
+%\item A step counting approach in accordance with a modified peak and 
+%    valley approach and a step stride estimation in accordance with
+%    \cite{ADXL202} will be used.
+%\item A low complexity particle filter is used to implement the tracking 
+%    algorithm. 
+%\item Map information is used to provide means for correcting drift in the 
+%    simple tracking algorithm.
+%\item Additional "hidden" variables are used in the dynamical equations of the 
+%    system to compensate for a constant sensor drift and small variations in 
+%    the step size of the user. 
+%\end{enumerate}
 
 Comparison of the proposed method will be done with 2 other algorithms, also
-implemented on the device: 
+implemented on the smartphone: 
 
 \begin{enumerate}
-\item A simple dead reckoning solution that does not incorporate any map information
-    or biasing variables.
-\item A simple Wifi based nearest neighbour algorithm incorporated as a 
-    drift correction method instead of map information and biasing variables.    
+\item A simple step based dead reckoning solution that directly uses sensor data.
+\item A simple step based dead reckoning solution with a Wifi based nearest neighbour algorithm incorporated as a 
+    drift correction method.    
 \end{enumerate}
 
-Detailed information about the proposed method is provided in the 
-subsequent sections.
+These algorithms are being implemented as control algorithms for comparisons
+in order to provide suitable comparative information since maps and test 
+environments differ substantially and make comparative analysis difficult.
 
 \section{First Fix\label{sec:first_fix}}
 
-Any dead reckoning system requires a high quality starting point. Two options
-are explored for providing the first fix implementation: 
+Dead reckoning refers to a method of position determination where the current
+location is estimated based on a known starting location and offsets from the
+known location measured via instruments.
+
+For any dead reckoning algorithm, it is important to provide a good starting
+point. Low error in the starting location contributes to better performance.
+Our proposed method is based on the dead reckoning concept and thus requires 
+a (reasonably) accurate starting point (also called a first fix).
+
+In order to provide the starting point to the algorithm two approaches are 
+proposed:
 
 \begin{enumerate}
-\item The user can directly select his or her current location on a map 
-    displayed on the mobile device, or
-\item The user can snap an image of a QRCode
+\item Directly choose the starting location on a map using the capacitive 
+    touchscreen
+\item Select the starting location based on QRCode recognition using the onboard
+    camera. The QRCodes were printed and pasted at specific locations 
+    in the test environment and the user is required to simply take a 
+    picture of it using the onboard camera.
 \end{enumerate}
 
 \subsection{QR Codes\label{sec:QRCodes}}
@@ -180,7 +201,8 @@ from URLs to Contact information. They can also contain plain text.
 For this application, we use the plain text information mode of QRCodes 
 to provide encoding of a human-readable text representation of map points. 
 This human and machine readable representation is achieved with the lightweight
-JSON representation. Details of the format chosen for this application is
+JavaScript Object Notation (JSON) representation. 
+Details of the format chosen for this application are
 mentioned below:
 
 \begin{figure}
@@ -199,7 +221,6 @@ distinguish itself from other data serialization formats. It also includes
 critical information about the point itself - the X and Y locations on 
 the relevant map as scaled on a 0-1 scale. A full description of the fields
 is given in Table \ref{tbl:QRCode_fields_table}.
-
 
 The fields are descriptive 
 and quite human readable. However, because they are in JSON, a basic 
@@ -226,58 +247,31 @@ fields.
 
 \begin{table}
 \centering
-\hrule
-\hrule
 \begin{tabular}{p{1.5in} p{4.5in}}
+\hline
+\hline
 Field Name      &       Field Description \\
-\hrule
+\hline
 Version         & Constant value 1. May be incremented if additional fields are added to the format. \\
-Type            & Represents the type of QRCode waypoint sample that was just acquired. Type "MapPoint"
-                    indicates that the QRCode represents a point on a Map. Alternative and 
-                    additional information can be provided by choosing other Types. For example, 
-                    a Type of "WifiAP" could be used to provide location information about 
-                    Wifi Access Points in the surroundings. \\
-MapURL          & This field always refers to a publicly available map associated with the environment where 
-                    the QRCode was pasted. A png map type has been indicated, but any other resource type that 
-                    a client is able to handle should be accepted. \\
-Scale           & Scale is an optional parameter of a MapPoint. It represents the scaling factor between distances
-                    on a map with distances in the real world. It can be omitted if it is expected that the 
-                    client will have some other way of figuring out the scale of the map based on information
-                    encoded within the map itself. \\
-X and Y         & These are values encoded in the real range [0-1] which represent the location of the QRCode
-                    on a map referred by it. These values are used for providing a first fix to the 
-                    reckoning algorithms.  \\
-\hrule
+Type            & Represents the type of QRCode waypoint sample that was just acquired. Type "MapPoint" indicates that the QRCode represents a point on a Map. Alternative and  additional information can be provided by choosing other Types. For example,  a Type of "WifiAP" could be used to provide location information about  Wifi Access Points in the surroundings. \\
+MapURL          & This field always refers to a publicly available map associated with the environment where  the QRCode was pasted. A png map type has been indicated, but any other resource type that  a client is able to handle should be accepted. \\
+Scale           & Scale is an optional parameter of a MapPoint. It represents the scaling factor between distances on a map with distances in the real world. It can be omitted if it is expected that the  client will have some other way of figuring out the scale of the map based on information encoded within the map itself. \\
+X and Y         & These are values encoded in the real range [0-1] which represent the location of the QRCode on a map referred by it. These values are used for providing a first fix to the  reckoning algorithms.  \\
+\hline
 \end{tabular}
 \caption{Explanation of the fields used in the QRCode Information Format\label{tbl:QRCode_fields_table}}
 \end{table}
 
-
-\section{Step counting}
-
-The acceleration of the human body as part of the act of walking is small and 
-very impulsive in nature. The motion of the torso of the body is governed 
-mostly by inertia. Unfortunately, the impulsive acceleration values are small 
-and lie buried in sensor noise. They are virtually indetectible using the MEMS 
-accelerometer supplied with the android device - Nexus S.
-
-To overcome this difficulty, the step count method of \cite{Wang} is adopted. 
-Under the assumption that step size varies very little over the course of 
-motion of the subject, an inertial navigation system may be created. An
-empirical formula from \cite{ADXL202} is used to correlate acceleration values from 
-the accelerometer to the step size estimates.
-
-\subsection{Noise filtering\label{sec:NoiseClamping}}
+\section{Noise filtering\label{sec:NoiseClamping}}
 
 It is well known that while measuring real world information, sensors of all 
 kinds pick up noise from the environment that affects the readings of the 
 sensed variables. The MEMS accelerometer present on a typical smartphone is 
-no different. Figure \ref{fig:accel_static} graphs the sensor noise of 
-the accelerometer sensor for our device under test.
+no different. 
 
 In general, we assume that the accelerometer sensor noise is below a small 
-threshold T when the device is static on a firm surface such as a table. 
-A higher threshold Q is required when the device is being kept at the palm of 
+threshold $T$ when the device is static on a firm surface such as a table. 
+A higher threshold $Q$ is required when the device is being kept at the palm of 
 a hand because of small noisy variations introduced by the palm itself.
 
 The filtering process uses a simple clamping mechanism. The filter 
@@ -292,45 +286,45 @@ NoiseFilter(a_i) =  \begin{cases} 0 & \text{if $|a_i| \le Q$,} \\
 The values of T and Q are determined as part of the groundwork in Chapter 
 \ref{chap:groundwork}.
 
-Figure \ref{fig:accel_raw} graphs how the filtering process works by
-supressing sensor noise close to zero while allowing sensor values to 
-pass unaltered when they correspond to a step being taken.
+The filtering process is very important for the step counting algorithms
+to detect accurate peaks.
 
+\section{Distance Estimation}
 
-\subsection{Step counting method}
+The acceleration of the human body as part of the act of walking is small and 
+very impulsive in nature. Unfortunately, the linear acceleration values
+produced by it are so small that they are virtually indetectible from the 
+sensor noise of the MEMS accelerometer of the Android device. However, the 
+act of putting a foot on the ground generates an impulse along the Z 
+axis of the accelerometer which is clearly distinguishable in the sensor 
+readings. Thus, we use the step count method described in
+\cite{Wang} and \cite{Ladetto} to detect motion of the user holding the device.
 
-The step counting method is described in \cite{Wang} is based on a similar 
-method devised for outdoor pedestrian navigation by \cite{Ladetto}. It is a
-simple formulation that counts the number of zero crossings based on a 
-filtered version of the raw accelerometer signal. However this method generates 
-step events at zero crossings which correspond to a body in motion. 
-Since each step has to be associated with an angle of motion, it might be 
-advantageous to ensure that step events are associated with points where 
-the foot of the user is on the ground, leading to better stability of angle 
-readings. Thus, the Peak and Valley hunting method of 
-Section \ref{sec:peak_and_valley} is proposed. The detection of steps from 
-accelerometer data can be visualized in Figure \ref{fig:accel_raw}.
+By relating the acceleration impulses to the size of a step, 
+an inertial navigation system may be created. An empirical formula 
+from \cite{ADXL202} is used to estimate step sizes from the readings sensed by
+the accelerometer. Details of all the methods used to achieve the same 
+follow:
 
 \subsection{Step detection procedure\label{sec:step_detection}}
 
 \subsubsection{Zero Crossings}
 
-To detect actual steps taken by the subject holding the device, Wang et al\cite{Wang} 
-suggests using zero crossings. However, in the sensor data collected, a number
-of spurious peaks and valleys exist (primarily due to sensor noise). However, 
-even after sensor noise is clamped as per Section \ref{sec:NoiseClamping}, 
-spurious peaks and valleys that arise due to variable motion of the subject 
-are not completely eliminated. Therefore we have unmatched crests and troughs
-present in the filtered accelerometer signal. However a simple 2 state 
-machine that keeps track of the sign of the past values since the previous 
-zero crossing is sufficient to raise step events whenever a negative to positive
-transition of sample values takes place. A separate method keeps track 
-of the $A_{max}$ and $A_{min}$ values that will be useful for step detection 
-later.
+This step counting method is described in \cite{Wang} is based on a similar 
+method devised for outdoor pedestrian navigation by \cite{Ladetto}. It is a
+simple formulation that counts the number of zero crossings of a 
+filtered version of the raw accelerometer signal which represent double the 
+number of steps taken. However, this method, when implemented, generates 
+step events at zero crossings which correspond to a body in motion.
+Since each step has to be associated with an angle of motion, it might be 
+advantageous to ensure that step events are associated with points where 
+the foot of the user is on the ground, leading to better stability of angle 
+readings. Thus, the Peak and Valley hunting method is also proposed. 
 
 \subsubsection{Peak and Valley hunting\label{sec:peak_and_valley}}
 
-Peak and Valley hunting procedure is an alternate method for step detection.
+The Peak and Valley hunting procedure is an alternate method being
+proposed for step detection.
 This method will detect the same number of crossings as the zero crossing 
 method but will raise the step events whenever the foot of the user 
 strikes the ground for the beginning of the next step. 
@@ -351,25 +345,20 @@ event being delivered to the application.
 
 \todo{Improve this area}
 \begin{table}[h]\centering
-    \caption{State table of the step detection state machine\label{tbl:peak_valley_state_table}}
-    \begin{tabular}{ccccc} \hline
+    \begin{tabular}{c p{2in} c p{3in}} \hline
     State & Accelerometer Value     & New State &  Action\\     \hline
-    $q_0$ & Positive Peak Detected  & $q_1$     & Update $A_{max}$ if peak value  \\ 
-          &                         &           & is positive and of \\
-          &                         &           & a larger magnitude than \\
-          &                         &           & current $A_{max}$ \\
+    $q_0$ & Positive Peak ($P$) Detected  & $q_1$     & Update $A_{max}$ if peak $P > A_{max}$. Output a step event if $flag = 1$. Reset $flag$ to 0.  \\ 
           & Other values            & $q_0$     & Ignore \\         \hline
-    $q_1$ & Negative Trough Detected & $q_0$    & Update $A_{min}$ if trough \\
-          &                         &           & is negative and of larger \\ 
-          &                         &           & magnitude than $A_{min}$ \\
+    $q_1$ & Negative Trough $T$ Detected & $q_0$    & Update $A_{min}$ if $T < A_{min}$. Set $flag$ to 1. \\
           & Other values            & $q_1$     & Ignore \\ \hline
     \end{tabular}
+    \caption{State table of the step detection state machine\label{tbl:peak_valley_state_table}}
 \end{table}
 
 \subsection{Step Size Estimation}
 
-Analog device engineers provides this empirical relationship between acceleration
-values and step size in \cite{ADXL202}:
+Engineers from Analog Device have published an empirical relationship between 
+acceleration values and step size in \cite{ADXL202}:
 
 \begin{equation}\label{eq:step_size}
  Step-size = C \sqrt[4]{A_{max} - A_{min}} \cite{ADXL202}
@@ -410,7 +399,7 @@ $stepcount$                 & The number of steps detected by the algorithm in s
 \end{tabular}
 
 
-\section{Dynamical equations for system}
+\section{Dynamical Equations for the System}
 
 With the preliminaries now out of the way, we can develop the dynamical model
 of our proposed solution. The basic step update equation for the system 
@@ -431,25 +420,20 @@ Here,\\
 $x_i, y_i$          &   represent location of the device after the $i^{th}$ step\\
 $x_0, y_0$          &   are the first fix values obtained via the methods of Section \ref{sec:first_fix}\\
 $d_i$               &   the predicted step distance as per the step estimate equation \eqref{eq:step_size}\\
+$\theta_i$          &   the angle associated with the detected step based on a magnetometer reading\\
 \end{tabular}
 
-These equations are written assuming a coordinate system for the map where $x$ positive towards
-right and $y$ positive downwards with $TrueNorth$ of the map pointing upwards.
-Effectively, this equation represents a raw dead reckoning solution 
+These equations are written assuming a coordinate system for the map where $x$
+positive towards right and $y$ positive downwards with $TrueNorth$ of the map
+pointing upwards. Effectively, this equation represents a raw dead reckoning
+solution. Unfortunately, these equations do nothing to counteract the biggest
+disadvantage of dead reckoning: unbounded error growth. The dynamical
+representation is also overtly simplistic because it fails to take into account
+other issues such as sensor drift and sensor bias. The magnetometer is the
+biggest culprit in this regard as it is highly sensitive to stray magnetic
+effects in the environment.
 
-This dynamical representation is overtly simplistic because it doesn't take into
-account real world issues as seen in the groundwork chapter (Chapter
-\ref{chap:groundwork}). The most important issue is the issue of sensor drift.
-The magnetometer is a rather inaccurate sensor and is rated to an accuracy of 5
-degrees in static circumstances.\todo{cite} There is also a recommendation to re-calibrate
-before use. This is required because this sensor suffers from a lot of sensor
-noise and drift. 
-
-Recalibration of the magnetometer involves moving it around in a pattern of 8.
-Effectively, that randomizes internal magnetic elements enough for magnetic
-saturation effects to be neutralized. Unfortunately, for a continuous use
-scenario like ours, recalibration of this sensor is not an option. Hence, we
-modify our dynamical equation to take this error into account.
+\subsection{Modelling Orientation Sensor Noise}
 
 \begin{equation}
 \begin{bmatrix}x_{i+1}\\
@@ -461,13 +445,20 @@ sin(\theta_{i}+\vartheta)
 \end{bmatrix} 
 \end{equation}
 
-In this dynamical equation, we have added an additional parameter $\vartheta$ which is a random variable that represents random white noise in the reading from the true value of the magnetometer.
+We modify the dynamical equation to add an additional parameter $\vartheta$
+which is a random variable that represents random variations akin to white noise
+in the reading from the true value of the magnetometer. $\theta_i$ now
+represents the true angle associated with the step motion.
 
-Besides the sensor noise that creeps into the values of the magnetometer, there are 2 other issues that need to be taken care of in our dynamical modelling of the dead reckoning system.
+\subsection{Accounting for Orientation Sensor Bias\label{sec:angle_bias}}
 
-\subsection{Accounting for orientation bias and noise}
-
-The first issue is an issue of bias in the angle readings from the magnetometer. This bias can creep in due to 2 different reasons - the first being specific, environmental magnetic fields which distort the actual detection of $TrueNorth$  in the system and the second being a bias that creeps in due to the way the user holds the smartphone in the palm of his hand and the offset thus produced. To take into account such offsets, we modify the dynamical equations as follows:
+Angular readings from the magnetometer often turn out to be biased from
+$TrueNorth$. This bias can creep in due to 2 different reasons - the first being
+specific, environmental magnetic fields which distort the actual detection of
+$TrueNorth$ in the system and the second being a bias that creeps in due to the
+way the user holds the smartphone in the palm of his hand and the offset thus
+produced. To take into account such offsets, we modify the dynamical equations
+as follows:
 
 \begin{equation}
 \begin{bmatrix}x_{i+1}\\
@@ -482,22 +473,29 @@ sin(\theta_{i}+\theta_{b_i}+\vartheta)\\
 \end{bmatrix} 
 \end{equation}
 
+\begin{equation}
+\theta_t \sim \mathcal{N}(0,\sigma_{angle})
+\end{equation}
+
 In this modified version of the dynamical equations, we have added a slowly
-varying term $\theta_{b_i}$ that represents an explicit bias in the readings from
-the magnetometer at the time of the $i^{th}$. This bias value is updated at 
+varying term $\theta_{b_i}$ that represents an explicit bias in the readings
+from the magnetometer at the time of the $i^{th}$. This bias value is updated at
 each step by altering it with a small gaussian noise of zero mean an a variance
-determined by the characteristics of the magnetometer. The choice of 
-variance (60 degrees) was made on the basis of the groundwork done. 
+determined by the characteristics of the magnetometer. The choice of
+$\sigma_{angle}$ was made on the basis of the groundwork done. Corrections
+for the sensor bias will be made when $MapSelect$ is applied to the particles by
+the overall algorithm.
 
-\subsection{Accounting for varying step sizes}
+\subsection{Accounting for Varying Step Sizes and Missing Steps\label{sec:step_bias}}
 
-The second issue at hand is step size variation and missing steps. To map
-accelerometer readings to step sizes, we have used the empirical equation
-provided by \cite{ADXL202}. However, this empirical equation doesn't take into account
-changes in step sizes due to changes in footwear or floor material as well as the 
-leads and lags produced due to a slightly incorrect calibration constant. To account
+The second issue at hand is step size variation and missing steps. Steps may
+be missed by the step detection procedures or phantom steps may be detected
+due to sensor noise or other events. Changes in step sizes due to changes in 
+footwear or floor material as well as the leads and lags produced due to a 
+slightly incorrect calibration constant also contribute to deviations of 
+apparent distance travelled versus the apparent distance travelled. To account
 for this bias in step size detection, we introduce an additional parameter
-$d_{b}$ in the dynamical system that accounts for step bias. 
+$d_{b}$ in the dynamical system that accounts for the step bias. 
 Thus, the new equations for the dynamical system are:
 
 \begin{equation}
@@ -516,15 +514,22 @@ d_{t}
 \end{bmatrix} 
 \end{equation}
 
+\begin{equation}
+d_{t} \sim \mathcal{N}(0, \sigma_{step})
+\end{equation}
+
 In this representation, $d_{b_i}$ is a slowly varying bias variable on the step
 size and the gaussian variance used during each update step is $d_t$. The 
 determination of the variance of $d_t$ again depends on sensor to sensor and 
-is evaluated empirically for our system to be close to $step_size/25$.
+is evaluated empirically for our system to be close to $step\_size/25$.
 
-Note that the equations mentioned in the sections above will work only if 
-the map information is dense enough to eventually eliminate groups of particles
-with incorrect orientations. This will have no effect other than slightly
-increasing the randomness of the variables $x_i$ and $y_i$ otherwise.
+Note that the equations mentioned in Sections \ref{sec:angle_bias} and
+\ref{sec:step_bias} will work only if the map information is dense enough to
+eventually eliminate groups of particles with incorrect orientations and 
+step drifts. Otherwise, the only effect of maintaining the bias variables will 
+be to slightly increase the variance of the variables $x_i$ and $y_i$.
+An explanation of how these bias variables actually help determine overall
+angle and step bias is provided in Section \ref{sec:overall_bias}
 
 \subsection{Ensuring particle diversity}
 
@@ -570,28 +575,26 @@ $P_{wall}$ &   represents the probability of selection of the particle if it cro
 $\alpha$ & is a parametric variable used to represent a line between the two points $p_{i+1}$ and $p_i$ \\
 \end{tabular}
 
-Wang et all suggest that a $P_{wall}$ of 0 be used as such a motion is impossible.
-Though simplistic, this approach works well by swiftly removing unreachable 
-particles. It is very light computationally too. 
-However, given our very limited budget for particles, it might not be prudent 
-to remove a particle simply because it was crossing a wall very close to a 
-door. Thus, more advanced map integration techniques may well be 
-envisaged with $P_{wall}$ varying based on the distance of the intersection
-point from the closest door in the wall. 
+Wang et all\cite{Wang} suggest that a $P_{wall}$ of 0 be used as such a motion
+is impossible. Though simplistic, this approach works well by swiftly removing
+unreachable particles. It is very light computationally too. However, given our
+very limited budget for particles, it might not be prudent to remove a particle
+simply because it was crossing a wall very close to a door. Thus, more advanced
+map integration techniques may well be envisaged with $P_{wall}$ varying based
+on the distance of the intersection point from the closest door in the wall. 
 
-\subsection{Determination of overall orientation and step biases}
+\subsection{Determination of overall orientation and step biases\label{sec:overall_bias}}
 
 The integration of map information with the dynamical equations of the system 
 via a selection function $MapSelect$ allows us to actually determine 
-at runtime the extent of sensor and step bias. 
-
-Let us define the following two terms:
+the extent of orientation and step bias. The idea behind it is simple. 
+However, before explaining it, let us define the following two terms:
 \begin{equation}
-\theta_b = \frac{\Sigma_{i} \theta_{b_i}}{N}
+\theta_b = \frac{\sum_{i} \theta_{b_i}}{N}
 \end{equation}
 
 \begin{equation}
-d_b = \frac{\Sigma_{i} d_{b_i}}{N}
+d_b = \frac{\sum_{i} d_{b_i}}{N}
 \end{equation}
 
 Here,\\
@@ -612,7 +615,7 @@ errant particles will be swiftly rejected by $MapSelect$ and we will
 get a highly accurate estimate of the degree of orientation bias present 
 in our system.
 
-The justification for step bias ($d_b$) lies in the fact that while
+The justification for step bias ($d_b$) lies similarly in the fact that while
 moving along corridoors, we will have accumulated
 a certain degree of step drift. This drift ensures that we are slightly 
 uncertain of our exact position along the corridoor after walking through it for a long time
@@ -625,52 +628,95 @@ obstacles immediately before and after the junctions on the map will cause
 a number of particles to be rejected by $MapSelect$. The values of $d_{b_i}$
 remaining represent the net bias in the step size of the system. Thus,
 their mean $d_b$ is a good representation of the step bias of the system.
-\todo{Read UPTO HERE! Rest of the section unfinished!}
 
 \subsection{Recovering from particle insufficiency}
-\todo[inline]{Recovering from lost states}
 
-A better approach might be the one presented in \cite{Widyawan} where the particle 
-filter itself backtracts to its parent state and retries with a different 
-set of decisions for its output in an attempt to recover a valid state. However, 
-the algorithm as proposed appears to have a large computational overhead as well
-as a large space requirement. Both of these are unfavourable for implementaion
-on mobile devices. However, no practical tests have been carried out to verify
-the same.
+Particle insufficiency is a weakness of particle filters. It arises if 
+no valid successor states $p_{i+1}$ can be found from the current set of 
+particles $p_i$ when the observation $o_i$ is taken into account and applied 
+to the dynamical equations of the system. (That is, all successor states 
+$p_{i+1}$, have $MapSelect(p_{i+1}, p_i) = 0$). This possibility is 
+further accentuated in resource constrained systems like ours which 
+have a hard limit on the maximum number of particles that can be 
+updated between two steps (since the algorithm is working in an online
+fashion with a location estimate being available after every step).
 
-\section{Particle Filter Implementation of the Dynamical Equations}
+The insufficiency of particles can be handled by a number of ways. 
+The simplest one is: increase the number of particles being updated at each 
+step and ensure enough particle diversity so that you always have 
+a few particles that survive incorrect decisions of the particle filter. 
 
-There are a number of ways in which you can transform these dynamical 
-equations to practice. An HMM based approach might be taken if a discrete
-output space is preferred. A particle filter approach is taken when the 
-output state space is continuous. Since we intend to keep the output space
-continuous, we choose the Particle filter implementation of the dynamical
-equations over the HMM implementation.
+Widyawan \cite{Widyawan} suggests an alternative method: maintaining particle
+history information so that an incorrect decision of the particle filter can be
+rolled back a few steps in the past and an alternative decision can be made that
+does not cause the particle filter to suffer particle insufficiency. However,
+the method suggested is expensive in terms of memory usage and computational
+cost.
 
-\subsection{Algorithm for updates}
+The recovery algorithm ($PerformRecovery$) being proposed is stated in 
+Algorithm \ref{algo:recovery}.
 
-\todo[inline]{Expand this section}
+\begin{algorithm}
+\dontprintsemicolon
+\linesnumbered
+\SetKw{Break}{break}
+\SetKwInOut{Input}{Input}
+\Input{A set of particles $P$ such that $ApplyDynamicalEquations(P)$ yields $\emptyset$, $\sigma_X$ and $\sigma_Y$ are the positioning errors of the Wifi based positioning system}
+\KwResult{A new set of particles $R$ which approximate the location of the device or $\emptyset$}
+\Begin{
+    \emph{Try to recover by finding particles in the surroundings by random sampling}\;
+    $retryCount \longleftarrow 0$\;
+    \While{$retryCount < 2$}{
+        \For{$j$ in $[1..N]$}{
+            $r_j \longleftarrow (\mathcal{N}(0, \sigma_X), \mathcal{N}(0, \sigma_Y))$\;
+            $selectParticle \longleftarrow false$\;
+            \ForEach{$p_i \in P$}{
+                \If{$MapSelect(r_j, p_i)$}{
+                    $selectParticle \longleftarrow true$\;
+                    \Break\;
+                }
+            }
+            \If{$selectParticle$ is $true$}{
+                $R \longleftarrow R \cup \{ r_j \}$\;
+            }
+        }
+        $R' \longleftarrow ApplyDynamicalEquations(R)$\;
+        \If{$R'$ is not $\emptyset$}{
+            \Return $R$\;
+        }
+        $retryCount \longleftarrow retryCount + 1$\;
+    }
+    \emph{We have failed to find suitable particles by random sampling, fall back on Wifi}\;
+    $wifiLocation \longleftarrow PerformWifiPositioning()$\;
+    \For{$j$ in $[1..N]$}{
+        \emph{Corrupt the wifi location with gaussian noise to approximate the error}\;
+        $r_j \longleftarrow wifiLocation + (\mathcal{N}(0, \sigma_X), \mathcal{N}(0, \sigma_Y))$\;
+        $R \longleftarrow R \cup \{ r_j \}$\;
+    }
+    $R' \longleftarrow ApplyDynamicalEquations(R)$\;
+    \If{$R'$ is not $\emptyset$}{
+        \Return $R$\;
+    }{
+        \emph{We've failed to find suitable particles, return failure and handle it by skipping the step information.}\;
+        \Return{$\emptyset$}\;
+    }
+}
+\caption{Recovery algorithm for particle insufficiency\label{algo:recovery}}
+\end{algorithm}
 
-\section{Fusing Map Information}
+There are a few interesting things to note about the recovery algorithm.
+The first being that it retries finding suitable particles. This is an 
+optimization as we don't want to spend too much effort at recovering 
+unless we really have to since the inner algorithm has an O($N \times |P|$) 
+complexity. In case we fail to recover directly from random sampling 
+around the location, we retry with Wifi Positioning data. If that fails 
+too, then we return an empty set. The system handles this failure by skipping 
+the step event (discarding it as possibly invalid sensor readings).
 
-\todo[inline]{Explain how map information can act as an error correcting 
-    tool for the system.}
+\section{Summary}
 
-\section{Limitations of the Particle filter approach}
+The above algorithms represent a lower complexity particle filter that 
+is proposed to be suitable for implementation on resource constrained 
+smartphones. The performance of the proposed methods is analyzed in 
+Chapter \ref{chap:results}.
 
-\begin{enumerate}
-\item Computational complexity
-\item Possibility of running out of valid successor states (effectively getting lost)
-\item Degeneracy of states
-\end{enumerate}
-
-\section{Heuristics to combat these limitations}
-
-The following heuristics are used to combat some of the limitations 
-described above.
-
-\section{Future enhancements}
-\subsection{Fusing Barometer Information}
-\todo[inline]{Propose sensor fusion for barometric sensors as and when they become available}
-
-Use of vector maps to improve particle filter performance.

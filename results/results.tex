@@ -1,4 +1,4 @@
-\chapter{Results\label{chap:results}}
+\chapter{Experiments and Results\label{chap:results}}
 
 \section{Hardware}
 The hardware used to produce the results is the Samsung Nexus S (cobranded with
@@ -17,6 +17,7 @@ the device reports the sensors via the software APIs:
 \item Gravity Sensor
 \item Linear Acceleration Sensor
 \item Rotation Vector Sensor
+\item An 802.11 b/g/n compatible Wifi NIC
 \end{enumerate}
 
 It may be noted that of these sensors, the Gravity sensor, the Linear
@@ -41,6 +42,53 @@ further discussion is out of scope for this thesis.
     \includegraphics[height=3in]{figures/android_back}
 \caption{Google Nexus S manufactured by Samsung}
 \end{figure}
+
+
+
+%\subsection{Acceleration}
+
+%Raw acceleration information is available on the Android device via samples 
+%from a 3 axis MEMS accelerometer. The device reports the sensor as 
+%a ``KR3DM 3-axis Accelerometer"\todo{Cite datasheet}. Thus acceleration values along all 3 axes
+%are available.
+
+%\subsection{Magnetic Field}
+
+%Magnetic field information is available on the Android device via samples 
+%from a 3 axis magnetometer. The device reports the device as an
+%``AK8973 3-axis Magnetic field sensor".\todo{Cite datasheet}
+
+%\subsection{Cameras}
+
+%A 5 megapixel camera is present rear-facing on the Nexus S. A 0.6 megapixel
+%front facing camera is also present on the device.\todo{Cite datasheet or official specs}
+
+%\subsection{Wifi Receiver}
+
+%A standard 802.11 b/g/n capable Wireless NIC is present on the device. Thus,
+%it is compatible with both 2.4 GHz and 5 GHz frequency band IEEE 802.11 networks.
+
+%\subsection{Additional Inputs}
+
+%\subsubsection{Map Information}
+
+%A blueprint of the test area was converted into a digital map using AutoCAD
+%and the resulting map was exported as a high resolution image ($1600px \times 1280px$)
+%and a low resolution version ($640px \times 480px$). Due to memory constraints, 
+%the low resolution version of the map will be used for providing map information
+%to the algorithm as it expands out to only 1.2MB in uncompressed form as 
+%compared to 8.19MB for the higher resolution one. The additional memory 
+%usage is significant as the Android OS severely limits the heap limits of 
+%single applications. For some mobile devices, the heap limit is as low as
+%16 MB.
+
+%\subsubsection{Wifi Site Survey Information}
+
+%It is possible to do a site survey of the test area to generate a database of
+%Wifi fingerprints which may be used for implementing Wifi based positioning
+%and tracking algorithms.
+
+
 
 \section{Location Under Test}
 
@@ -69,14 +117,9 @@ for all the experiments detailed below.
     \caption{A map of the experimental environment\label{fig:ravindra_map}}
 \end{figure}
 
+\section{Output of the Filtering Algorithm}
 
-
-\section{Step detection procedure}
-
-Step detection for dead reckoning was done using accelerometer sensor data.
-Two different methods were employed and the simple zero crossing method on 
-unfiltered data was used as control to estimate the increase in accuracy of the
-step detection procedure. A simple clamping technique was employed to filter the
+A simple clamping technique was employed to filter the
 raw acceleration as described in Section \ref{sec:NoiseClamping}.
 
 The effect of the clamping on the raw accelerometer data is shown in 
@@ -84,9 +127,30 @@ Figure \ref{fig:accel_raw}. Figure \ref{fig:accel_diff} shows the sensor noise
 that is rejected around zero enabling clean detection of peaks corresponding to
 the steps.
 
+\begin{figure}[tbph]
+    \centering
+    \includegraphics{figures/accel_raw.png}
+    \caption{Output of the Filtering algorithm \label{fig:accel_raw}}
+\end{figure}
+
+\begin{figure}[tbph]
+    \centering
+    \includegraphics{figures/accel_diff.png}
+    \caption{Rejected signal from the Accelerometer sensor \label{fig:accel_diff}}
+\end{figure}
+
+
+\section{Step detection procedure}
+
+The step detection procedures of Section \ref{sec:step_detection} were analyzed
+using sensor data of the accelerometer on the Android mobile phone. 
+The simple zero crossing method on unfiltered data was used as a control 
+algorithm to estimate the improvement in step detection.
+
 The comparative graph of the performance of the step detection procedures 
-is shown in Figure \ref{fig:csteps}. The correspondence to the ground truth
-is shown in Table \ref{tbl:step_table}.
+is shown in Figure \ref{fig:csteps}. Table \ref{tbl:step_table} shows how the 
+methods performed in relation with the actual number of steps detected.
+
 
 \begin{table}[tbph]
 \centering
@@ -99,7 +163,7 @@ is shown in Table \ref{tbl:step_table}.
 Simple Zero Crossings Count & 109 \\
 Zero Crossings on Filtered Data & 41 \\
 Peaks and Valley Method & 41 \\
-\textbf{Ground Truth} & \textbf{40} \\
+\textbf{Actual Number of Steps} & \textbf{40} \\
 \hline
 \hline
 \end{tabular}
@@ -119,37 +183,11 @@ lag of about half a step.
     \caption{Performance of Step Detection Algorithms\label{fig:csteps}}
 \end{figure}
 
-\begin{figure}[tbph]
-    \centering
-    \includegraphics{figures/accel_raw.png}
-    \caption{Performance of the Filtering algorithm \label{fig:accel_raw}}
-\end{figure}
-
-\begin{figure}[tbph]
-    \centering
-    \includegraphics{figures/accel_diff.png}
-    \caption{Rejected signal from the Accelerometer sensor \label{fig:accel_diff}}
-\end{figure}
-
 
 \section{First Fix}
 
-For any dead reckoning algorithm, it is important to provide a good starting
-point. Low error in the starting location contributes to better
-tracking performance.
-
-In order to provide the starting point to the algorithm two approaches were
-implemented:
-
-\begin{enumerate}
-\item Directly choose the starting location on a map using the capacitive 
-    touchscreen
-\item Select the starting location based on QRCode recognition using the onboard
-    camera. The QRCodes were printed and pasted at specific locations 
-    in the area under test.
-\end{enumerate}
-
-\missingfigure{QRCodes pasted on the wall}
+This section analyzes the two different methods of \ref{sec:first_fix}
+used for obtaining the first fix for the algorithm. 
 
 \subsection{Experimental setup}
 
@@ -165,7 +203,8 @@ are specified in Sections \ref{sec:direct_selection} and \ref{sec:qrcode_selecti
 Five test subjects were asked to mark out their current position on a
 map by simply touching the corresponding location on the map shown on the 
 touchscreen of the device. The map was shown at a fixed resolution to all 
-test subjects in order to make their responses comparable. 
+test subjects in order to make their responses comparable. Their positions 
+on the touchscreen were snapped to the nearest 1 m grid pixel for ease of use.
 
 The test were also allowed to retry locating themselves on the map in case they
 were not satisfied with their initial results. All their location attempts were
@@ -173,10 +212,10 @@ logged for later analysis.The following facts were observed during the process o
 selection:
 
 \begin{enumerate}
-\item Users had an initial difficulty in orienting themselves with regard to 
+\item Some users had an initial difficulty in orienting themselves with regard to 
     the map supplied.
-\item As the map contained blocks of rooms that were similar looking, users
-    made initial errors in orienting themselves. However, they attempted to 
+\item As the map contained blocks of rooms that were similar looking,
+    initial errors were made in orientation. However, they attempted to 
     correct their errors when the mistake was realized.
 \item Some users felt extremely frustrated by the direct selection procedure
     primarily because they could not mark out their locations precisely due
@@ -186,11 +225,24 @@ selection:
     required to correctly mark their positions on the map.
 \end{enumerate}
 
-%\todo[inline]{Ask 5 people to select locations on a map and log data}
-%\missingfigure{Table of error from true location}
-%\missingfigure{Table of number of times attempted for satisfactory positioning}
+\begin{table}
+\centering
+\begin{tabular}{p{0.8in} p{0.8in} p{3.4in}}
+\hline
+\hline
+User     & Retries & Comments \\
+\hline
+1               & 6                  & This user had difficulty orienting himself with respect to the map. \\
+2               & 0                  & -- \\
+3               & 2                  & -- \\
+4               & 2                  & -- \\
+5               & 15                 & This user had difficulty with the touchscreen contact areas. He was not a user of a touch screen phone. He also had an initial difficulty with orientating himself on the map. \\
+\hline
+\end{tabular}
+\caption{Number of Retries for a Satisfactory First Fix\label{tbl:num_loc_attempts}}
+\end{table}
 
-\subsection{Camera based QRCode Method \label{sec:qrcode_selection}}
+\subsection{QRCode Based Selection of Location\label{sec:qrcode_selection}}
 
 To evaluate the efficiency of determining first fix via QRCodes in comparison 
 to the direct location selection method, an experiment was set up. 
@@ -218,16 +270,32 @@ fix:
     fluorescent tubelight was switched on to provide adequate lighting.
 \end{enumerate}
 
-\missingfigure{Image of a person snapping the QRCode with the camera}
-
 \subsection{Comparison between the two methods}
 
 After processing the results of the experiments, it was determined that 
 users overwhelmingly preferred the QRCode method for first fix acquisition.
 They were willing to walk up to $5 m$ to the nearest QRCoded location in 
-order to take advantage of the facility.
+order to take advantage of the facility. The results of the comparative 
+survey are listed in Table \ref{tbl:QRCode_comparison_survey}.
 
-\todo[inline]{Insert survey results}
+\begin{table}
+\centering
+\begin{tabular}{p{0.8in} p{0.8in} p{0.8in} p{0.8in}}
+\hline
+\hline
+User Number & First fix by manual method (Ease of use: scale of 5) & First fix by QRCodes (Ease of Use: scale of 5) & Building familiarity required (scale of 5) \\
+\hline 
+1 & 1 & 5 & 5 \\
+2 & 2 & 3 & 4 \\ 
+3 & 2 & 4 & 5 \\
+4 & 3 & 5 & 4 \\
+5 & 1 & 5 & 4 \\
+\hline
+{\bf Mean} & {\bf 1.8} & {\bf 4.4} & {\bf 4.4} \\
+\hline
+\end{tabular}
+\caption{Comparison of QRCode based first fix with the Manual Marking Method\label{tbl:QRCode_comparison_survey}}
+\end{table}
 
 \subsection{User Feedback}
 
@@ -426,7 +494,7 @@ to track the device.
 The performance of the algorithm was again judged based on the test paths 
 mentioned in Section \ref{sec:test_paths}. Figure \ref{fig:nn_path1} shows
 the track for Test path 1. A quick glance will indicate that the 
-tracked endpoints are reasonably accurate (error < 2m), however, 
+tracked endpoints are reasonably accurate (error $<$ 2m), however, 
 the subjective nature of the tracked path is very poor.
 
 \begin{figure}
