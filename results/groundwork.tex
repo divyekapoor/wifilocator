@@ -56,7 +56,10 @@ further discussion is out of scope for this thesis.
 The MEMS accelerometer on the Nexus S was subject to simple tests to determine 
 its noise floor and the degree of separation between signal and noise.
 Figure \ref{fig:accel_static} shows a plot of the accelerometer's raw output 
-along the Z axis for a stationary device kept on a table. 
+along the Z axis for a stationary device kept on a table. The characteristics
+of the accelerometer signal are summarized in Table \ref{tbl:accel_chars}.
+As can be clearly observed, the signal degrades while in the palm of a 
+user who is standing.
 
 The noise level for the accelerometer was determined to be always less
 than $0.6 m/s^2$. The acceleration peaks corresponding to regular walk steps 
@@ -66,13 +69,32 @@ walking, we choose a threshold of $1.3 m/s^2$ which is the mean value of the two
 peak values. If the absolute value of the Z-axis acceleration sample is less
 than this threshold, then the sample will be clamped to zero. For a smartphone
 with a similar accelerometer sensor but with different noise characteristics,
-the values of the threshold can be varied accordingly. 
+the values of the threshold can be varied accordingly. For our purposes, 
+the threshold $Q$ is chosen as $1.3 m/s^2$.
 
 
 \begin{figure}\centering
     \includegraphics{figures/accel_static.png}
     \caption{Accelerometer Z axis readings when device stationary\label{fig:accel_static}}
 \end{figure}
+
+\begin{table}
+\centering
+\begin{tabular}{c c c c c c c}
+\hline
+\hline
+ & $a_{x,table}$ & $a_{y,table}$ & $a_{z,table}$ & $a_{x,hand-held}$ & $a_{y,hand-held}$ & $a_{z,hand-held}$ \\
+\hline
+Min & -0.180217 & -0.209914 & -0.352813 & -0.281559 & -0.238432 & \textbf{-0.571722} \\
+Median & -0.002995 & 0.001779 & 0.003011 & 0.004029 & -0.005922 & 0.003617 \\
+Mean & -0.002065 & -0.002809 & 0.004762 & 0.007291 & -0.003648 & -0.004827 \\
+Max & 0.206112 & 0.211490 & 0.306364 & 0.577652 & 0.207061 & \textbf{0.595963} \\
+Std. Dev & 0.06985715 & 0.06902411 & 0.08939619 & 0.1100473 & 0.08232208 & \textbf{0.1603238} \\
+\hline
+\end{tabular}
+\caption{Characterization of the Accelerometer (values in $m/s^2$)\label{tbl:accel_chars}}
+\end{table}
+
 
 \section{Magnetometer}
 
@@ -100,7 +122,19 @@ device is on a table and when it is held in the palm of the hand of a user.
 \end{figure}
 
 
-\todo[inline]{Insert values for Standard deviation here}
+\begin{table}
+\centering
+\begin{tabular}{c c c c}
+\hline
+\hline
+ & $\theta_{table}$ & $\theta_{standing}$ \\
+\hline
+Maximum Deviation & 8.138436 & 9.688619 \\
+Std. Dev. & 1.234318 & 1.521967 \\
+\hline
+\end{tabular}
+\caption{Characteristics of a Stationary Magnetometer (degrees)\label{tbl:angle_chars}}
+\end{table}
 
 These values are required to determine choice of parameters for the particle
 filter that will be introduced later.
@@ -137,17 +171,43 @@ introduces error in the inertial navigation system.
     \caption{Angle measurements when moving in opp directions.\label{fig:angle_180_corridoor}}
 \end{figure}
 
+\begin{table}
+\centering
+\begin{tabular}{c c c}
+\hline
+\hline
+ & Forward Path & Return Path \\
+\hline
+Angular Range (Max - Min) & 43.48589 & 32.7897 \\
+Standard Deviation & 8.307481 & 5.955799 \\
+\hline
+\end{tabular}
+\caption{Effect of Motion on Orientation Values\label{tbl:angle_motion}}
+\end{table}
 
+The values of Table \ref{tbl:angle_motion} indicate the maximum range of 
+values over which the angle varies during a walk along a straight corridoor. 
+These values are used to set the parameters $\theta_t$ in the algorithm.
+The angular range is large but the middle 50\% of the values lie 
+between 11 to 13 degrees apart which corresponds with the standard deviation
+values measured.
 
-\section{Wifi Signal Strength study}
+\section{Wifi Signal Strength Distribution}
+
+Wifi signals are used in our proposed system during the recovery process.
+Other systems and the control algorithms use Wifi for correcting positioning
+drift. Hence, it is important to understand the strengths and limitations of 
+Wifi based positioning. In order to do so, we need to first characterize
+the Wifi signal.
 
 The behaviour of the wifi signal strength distribution for a stationary laptop 
 and smartphone was analyzed to characterize the input wifi signal.
 
-\subsection{Short term duration}
+\subsubsection{Short term duration}
 
 Figure \ref{fig:closestAPshortterm} shows the variation of signal strength of 
-the closest AP for a smartphone placed within a room in a NON-LOS configuration.
+the closest AP for a smartphone placed within a room in a 
+Non-Line Of Sight configuration.
 
 \begin{figure}\centering
     \includegraphics{figures/short_term_wifi.png}
@@ -155,10 +215,12 @@ the closest AP for a smartphone placed within a room in a NON-LOS configuration.
 \end{figure}
 
 
+
 \subsection{During a thunderstorm}
 
 Figure \ref{fig:closestAPthunderstorm} shows the variation of signal strength of
-the closest AP for a smartphone placed in a room in NON-LOS configuration.
+the closest AP for a smartphone placed in the same room in a 
+NON-LOS configuration.
 
 \begin{figure}\centering
     \includegraphics{figures/wifi_thunderstorm.png}
@@ -167,18 +229,18 @@ the closest AP for a smartphone placed in a room in NON-LOS configuration.
 
 \subsection{7 day study}
 
-The Wifi AP RSSI values were monitored over a 7 day period (Jan 5 2011 - Jan 13 2011) from room S-152
-and the resulting signal strength data was analyzed.
+The Wifi Access Point RSSI values were monitored over a 7 day period 
+(Jan 5 2011 - Jan 13 2011) from room S-152 and the resulting signal strength 
+data was analyzed.
 
 \begin{figure}\centering
     \includegraphics{figures/histogram_00_1C_F0_CB_EC_92.png}
     \caption{Distribution of RSSI values for the closest AP (00:1C:F0:CB:EC:92) \label{fig:histogram_00_1C_F0_CB_EC_92}}
 \end{figure}
 
-As you can see in Figure \ref{fig:histogram_00_1C_F0_CB_EC_92}, the signal strength
-distribution is highly non-gaussian. This kind of distribution makes Kalman filters
-unsuitable for use as the assumptions of gaussian (linear) distribution of 
-input variables is unsatisfied.
+As you can see in Figure \ref{fig:histogram_00_1C_F0_CB_EC_92}, the signal 
+strength distribution for the closest access point is highly non-gaussian. This
+concurs with the conclusions of Kaemarungsi and Krishnamurthy in \cite{KStats}.
 
 \begin{figure}\centering
     \includegraphics{figures/histogram_00_1C_F0_CB_EC_95.png}
@@ -200,8 +262,9 @@ input variables is unsatisfied.
     \caption{3 hour moving average of RSSI values}
 \end{figure}
 
-Figure \ref{fig:histogram_00_19_5B_77_A5_EE} doesn't show such a pronounced non-gaussian
-nature whereas Figure \ref{fig:histogram_00_1C_F0_CB_EC_95} shows more leanings towards a
+In contrast, Figure \ref{fig:histogram_00_19_5B_77_A5_EE} doesn't show such a 
+pronounced non-gaussian nature whereas 
+Figure \ref{fig:histogram_00_1C_F0_CB_EC_95} shows more leanings towards a
 non-gaussian distribution.
 
 Figure \ref{fig:listplot_00_1C_F0_CB_EC_92} is the time domain plot of the signal strength
@@ -242,7 +305,7 @@ different orientations per point on the floor.
 \section{Implementation of a KNN based positioning solution for KNN accuracy\label{sec:knn_pos}}
 
 A KNN based location system was implemented to test location accuracy. 
-This was work done as part of the project. Results are included here.
+This was work done as part of the Masters project. Results are included here.
 
 \begin{table}[h]
     \centering
@@ -262,18 +325,5 @@ This was work done as part of the project. Results are included here.
 \end{table}
 
 
-\subsection{Improvements}
-Use of SVM is likely to improve the accuracy further at room level. [Redpin]
-
-
-\section{Dead Reckoning by direct integration: What doesn't work}
-\section{What Doesn't work}
-\todo{Fix this!}
-Acceleration of the human body is too slow compared to gravity. Simple orientation changes produce high changes in acceleration along axes which are very difficult to filter out.
-Numerical integration generates errors too quickly. With a high sampling rate, errors balloon.
-Using the gyroscope for step detection (similar to foot mounted devices [insert reference]) – doesn’t work.
-
-
-\section{Other issues}
-Sensor noise, instability and bias. Effect of gravity and orientation on readings. Weather.
-
+\section{Summary}
+\todo{Fill this}

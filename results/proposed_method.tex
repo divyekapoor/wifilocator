@@ -247,7 +247,7 @@ fields.
 
 \begin{table}
 \centering
-\begin{tabular}{p{1.5in} p{4.5in}}
+\begin{tabular}{p{1in} p{4in}}
 \hline
 \hline
 Field Name      &       Field Description \\
@@ -345,11 +345,11 @@ event being delivered to the application.
 
 \todo{Improve this area}
 \begin{table}[h]\centering
-    \begin{tabular}{c p{2in} c p{3in}} \hline
-    State & Accelerometer Value     & New State &  Action\\     \hline
+    \begin{tabular}{c p{1in} c p{2.7in}} \hline
+    State & Accel. Value     & New State &  Action\\     \hline
     $q_0$ & Positive Peak ($P$) Detected  & $q_1$     & Update $A_{max}$ if peak $P > A_{max}$. Output a step event if $flag = 1$. Reset $flag$ to 0.  \\ 
           & Other values            & $q_0$     & Ignore \\         \hline
-    $q_1$ & Negative Trough $T$ Detected & $q_0$    & Update $A_{min}$ if $T < A_{min}$. Set $flag$ to 1. \\
+    $q_1$ & Negative Trough ($T$) Detected & $q_0$    & Update $A_{min}$ if $T < A_{min}$. Set $flag$ to 1. \\
           & Other values            & $q_1$     & Ignore \\ \hline
     \end{tabular}
     \caption{State table of the step detection state machine\label{tbl:peak_valley_state_table}}
@@ -361,7 +361,7 @@ Engineers from Analog Device have published an empirical relationship between
 acceleration values and step size in \cite{ADXL202}:
 
 \begin{equation}\label{eq:step_size}
- Step-size = C \sqrt[4]{A_{max} - A_{min}} \cite{ADXL202}
+ Step-size = C \sqrt[4]{A_{max} - A_{min}}
 \end{equation}
 
 The constant $C$ is a scaling factor that is used as a constant of proportionality

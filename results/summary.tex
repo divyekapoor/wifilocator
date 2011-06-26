@@ -48,4 +48,20 @@ Wifi signal strength map developed using crowdsourced data for use in systems su
 
 \section{Analysis of Wifi signal strength distribution}
 
+-----
+\subsection{Improvements}
+Use of SVM is likely to improve the accuracy further at room level. [Redpin]
+
+
+\section{Dead Reckoning by direct integration: What doesn't work}
+\section{What Doesn't work}
+\todo{Fix this!}
+Acceleration of the human body is too slow compared to gravity. Simple orientation changes produce high changes in acceleration along axes which are very difficult to filter out.
+Numerical integration generates errors too quickly. With a high sampling rate, errors balloon.
+Using the gyroscope for step detection (similar to foot mounted devices [insert reference]) – doesn’t work.
+
+
+\section{Other issues}
+Sensor noise, instability and bias. Effect of gravity and orientation on readings. Weather.
+
 

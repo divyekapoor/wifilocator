@@ -1,50 +1,5 @@
 \chapter{Experiments and Results\label{chap:results}}
 
-\section{Hardware}
-The hardware used to produce the results is the Samsung Nexus S (cobranded with
-Google) running Android 2.3.4. The official specifications of the device can be
-obtained from the manufacturer's website [link to website with reference] A
-short listing of the sensors present on the device is given below based on how
-the device reports the sensors via the software APIs:
-
-\begin{enumerate}
-\item KR3DM 3-axis Accelerometer
-\item AK8973 3-axis Magnetic field sensor
-\item AK8973 Orientation sensor
-\item GP2A Light sensor
-\item GP2A Proximity sensor
-\item K3G Gyroscope sensor
-\item Gravity Sensor
-\item Linear Acceleration Sensor
-\item Rotation Vector Sensor
-\item An 802.11 b/g/n compatible Wifi NIC
-\end{enumerate}
-
-It may be noted that of these sensors, the Gravity sensor, the Linear
-Acceleration Sensor and the Rotation Vector Sensor are derived sensors. They
-depend on filtering the raw data sensed via the accelerometer and the
-magnetometer to generate their sensed values. In essence, the Gravity sensor is
-a low pass filter over the accelerometer values (since gravity is essentially
-stable for the device at a particular orientation), the Linear Acceleration
-Sensor is a high pass filter over the accelerometer values (the high frequency
-changes in acceleration are presumed to occur due to device motion and thus
-correspond to linear acceleration of the device) and the Rotation Vector Sensor
-is a composite sensor that fuses Gravity information derived from the
-3 axis Accelerometer and the magnetic field information derived from the
-3 axis Magnetic field sensor to orient the device in the 3 Dimensional World 
-Coordinate space. The actual method used to do so is described in the API
-documentation \todo{Provide Reference}[reference to API documentation] and
-further discussion is out of scope for this thesis.
-
-\begin{figure}
-\centering
-    \includegraphics[height=3in]{figures/android_front}
-    \includegraphics[height=3in]{figures/android_back}
-\caption{Google Nexus S manufactured by Samsung}
-\end{figure}
-
-
-
 %\subsection{Acceleration}
 
 %Raw acceleration information is available on the Android device via samples 
