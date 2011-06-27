@@ -9,3 +9,12 @@ thesis.blg
 .introduction.tex.properties.xml
 *.old
 *.loa
+*.aux
+*.lof
+*.log
+*.lot
+*.pdf
+*.toc
+*.bbl
+*.blg
+*.tdo

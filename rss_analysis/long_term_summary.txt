@@ -1,0 +1,140 @@
+Fri Jan  7 00:00:18 2011:    1  
+Fri Jan  7 00:00:41 2011:    1  
+Fri Jan  7 00:01:04 2011:    1  
+Fri Jan  7 00:01:27 2011:    1  
+Fri Jan  7 00:01:50 2011:    1  
+Fri Jan  7 00:02:33 2011:    1  
+(Other)                 :23333  
+Min.   :1.294e+09  
+1st Qu.:1.294e+09  
+Median :1.295e+09  
+Mean   :1.295e+09  
+3rd Qu.:1.295e+09  
+Max.   :1.295e+09  
+NA
+Min.   :1.294e+09  
+1st Qu.:1.294e+09  
+Median :1.295e+09  
+Mean   :1.295e+09  
+3rd Qu.:1.295e+09  
+Max.   :1.295e+09  
+NA
+Min.   :  -89.00  
+1st Qu.:  -84.00  
+Median :  -83.00  
+Mean   :  -82.91  
+3rd Qu.:  -82.00  
+Max.   :  -74.00  
+NA's   :10186.00  
+Min.   :  -85.00  
+1st Qu.:  -75.00  
+Median :  -73.00  
+Mean   :  -73.65  
+3rd Qu.:  -72.00  
+Max.   :  -63.00  
+NA's   :10986.00  
+Min.   :  -90.00  
+1st Qu.:  -87.00  
+Median :  -86.00  
+Mean   :  -85.84  
+3rd Qu.:  -85.00  
+Max.   :  -79.00  
+NA's   :22030.00  
+Min.   :  -87  
+1st Qu.:  -87  
+Median :  -87  
+Mean   :  -87  
+3rd Qu.:  -87  
+Max.   :  -87  
+NA's   :23338  
+Min.   :  -89.00  
+1st Qu.:  -88.00  
+Median :  -87.00  
+Mean   :  -86.55  
+3rd Qu.:  -85.75  
+Max.   :  -83.00  
+NA's   :23319.00  
+Min.   :  -89.00  
+1st Qu.:  -85.00  
+Median :  -84.00  
+Mean   :  -84.12  
+3rd Qu.:  -83.00  
+Max.   :  -80.00  
+NA's   :23275.00  
+Min.   :  -89.00  
+1st Qu.:  -83.00  
+Median :  -82.00  
+Mean   :  -82.05  
+3rd Qu.:  -81.00  
+Max.   :  -73.00  
+NA's   :10149.00  
+Min.   :  -89  
+1st Qu.:  -89  
+Median :  -89  
+Mean   :  -89  
+3rd Qu.:  -89  
+Max.   :  -89  
+NA's   :23338  
+Min.   :  -89.00  
+1st Qu.:  -88.25  
+Median :  -88.00  
+Mean   :  -88.00  
+3rd Qu.:  -87.75  
+Max.   :  -87.00  
+NA's   :23335.00  
+Min.   :  -89.00  
+1st Qu.:  -87.00  
+Median :  -86.00  
+Mean   :  -86.11  
+3rd Qu.:  -85.00  
+Max.   :  -82.00  
+NA's   :22938.00  
+Min.   :  -89.00  
+1st Qu.:  -88.00  
+Median :  -88.00  
+Mean   :  -87.50  
+3rd Qu.:  -86.75  
+Max.   :  -85.00  
+NA's   :23327.00  
+Min.   : -85.00  
+1st Qu.: -73.00  
+Median : -70.00  
+Mean   : -70.42  
+3rd Qu.: -68.00  
+Max.   : -54.00  
+NA's   :6067.00  
+Min.   :  -89.00  
+1st Qu.:  -85.00  
+Median :  -85.00  
+Mean   :  -84.67  
+3rd Qu.:  -84.00  
+Max.   :  -79.00  
+NA's   :20753.00  
+Min.   : -88.00  
+1st Qu.: -77.00  
+Median : -74.00  
+Mean   : -74.17  
+3rd Qu.: -72.00  
+Max.   : -60.00  
+NA's   :7440.00  
+Min.   : -82.00  
+1st Qu.: -66.00  
+Median : -60.00  
+Mean   : -60.62  
+3rd Qu.: -55.00  
+Max.   : -49.00  
+NA's   :6386.00  
+Min.   : -87.00  
+1st Qu.: -81.00  
+Median : -80.00  
+Mean   : -80.16  
+3rd Qu.: -79.00  
+Max.   : -74.00  
+NA's   :7150.00  
+Min.   :  -89.00  
+1st Qu.:  -88.75  
+Median :  -88.00  
+Mean   :  -88.07  
+3rd Qu.:  -88.00  
+Max.   :  -87.00  
+NA's   :23325.00  

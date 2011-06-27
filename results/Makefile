@@ -1,3 +1,9 @@
+dummy: *.tex figures/*
+	pdflatex dummy.tex
+	pdflatex dummy.tex
+	pdflatex dummy.tex
+	gnome-open dummy.pdf
+	
 all: *.tex figures/*
 	pdflatex thesis.tex
 	bibtex thesis.aux
