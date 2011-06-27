@@ -8,7 +8,7 @@ shows the most promise for accurate tracking of subjects in indoor tracking scen
 The results of \cite{Evennou} which implements a similar system integrating an INS 
 with Wifi data are very encouraging. However, we are cautioned 
 against the computational complexity of a particle filter based solution and its attendant
-implications while implementing the same on a mobile device. As we shall later
+implications while implementing the same on a mobile device by Evennou and Marx\cite{Evennou}. As we shall later
 see, these cautionary words are well founded.
 
 Our proposed method thus builds upon the work of Evennou and Marx\cite{Evennou}
@@ -77,19 +77,24 @@ are:
     amount of inter sample processing that may be performed while 
 \end{itemize}
 
-Keeping these limitations in mind, a particle filter based algorithm 
-for online indoor tracking is proposed. 
 
 \section{Background on Particle Filters}
 \todo{What/How much to write here and where to put in the thesis?}
 Particle filters belong to a class of Sequential Monte Carlo algorithms 
 that depend essentially approximating a probability distribution function based
-on a Monte Carlo simulation of the system using observation samples. In our 
-particular scenario, the filtering algorithm is helping us approximate the 
-probablity distribution $p(x_t|o_t,o_{t-1}\dots,o_0)$ where $x_t$ is the 2
-dimensional location of a user or device at time $t$ and $o_0 \dots o_t$
-represent the observations made about the system at the corresponding
-subscripted time points.
+on a Monte Carlo simulation of the system using observation samples. Particle 
+filters have been known to be very useful for tracking in systems where 
+probability distribution functions are either not completely known or hard 
+to sample. 
+
+In this case, our problem of indoor tracking is essentially the 
+determination of a latent variable $x_t$ which represents the position of the 
+user after we receive a series of observations ($o_0 \dots o_t$) from the 
+sensors on the Android device. Effectively, we wish to approximate the the 
+probablity distribution $p(x_t|o_t,o_{t-1}\dots,o_0)$ at any time instant $t$
+so that we may determine the position of the device using the expectation 
+function $E[x]$ on the probability distribution $p(x_t|o_t,o_{t-1}\dots,o_0)$
+and we wish to use a particle filter to help us do so.
 
 Particle filters are a huge topic in and of themselves. Thus, in the interests
 of brevity, the reader is referred to the excellent expositions of particle 
@@ -101,7 +106,7 @@ tracking.
 \section{Proposed Method}
 
 Keeping the availability of the inputs described above as well as the device 
-limitations described in Section \ref{sec:device_limitations}, a less 
+limitations described in Section \ref{sec:device_limitations} in mind, a less 
 computationally intensive method is proposed in 
 Algorithm \ref{algo:proposed_method}.
 
@@ -135,8 +140,8 @@ be implemented in an event-driven fashion to allow for online tracking.
 The \textbf{ForEach} loop in the algorithm is essentially an event loop 
 that depends on step detection.
 
-Procedures to determine $FirstFix$, detect steps from sensor data, 
-$ApplyDynamicalEquations$, $MapSelect$ and $PerfomRecovery$ are explained
+Procedures to determine \emph{FirstFix}, detect steps from sensor data, 
+\emph{MapSelect}, \emph{ApplyDynamicalEquations}, and \emph{PerfomRecovery} are explained
 below.
 
 %\begin{enumerate}
@@ -264,8 +269,8 @@ X and Y         & These are values encoded in the real range [0-1] which represe
 
 \section{Noise filtering\label{sec:NoiseClamping}}
 
-It is well known that while measuring real world information, sensors of all 
-kinds pick up noise from the environment that affects the readings of the 
+It is well known that while measuring real world information, most sensors
+ pick up noise from the environment that affects the readings of the 
 sensed variables. The MEMS accelerometer present on a typical smartphone is 
 no different. 
 
@@ -372,7 +377,7 @@ peaks and troughs associated with a step.
 This equation is used to obtain an estimate of the step size when a user 
 takes a step.
 
-\section{Determining the Training Constant}
+\subsection{Determining the Training Constant}
 
 The training constant for each user was determined experimentally. 
 Users were asked to perform a short walk between 2 QRCoded locations
@@ -555,7 +560,7 @@ unachievable states are quickly pruned and computational effort is
 redirected towards states with more likelihood. The integration of 
 map information is described in the subsequent section.
 
-\subsection{Integrating Map Information}
+\section{Integrating Map Information}
 
 Map information can be integrated into the system in a number 
 of ways. The simplest way to use map information as a selection 
@@ -583,18 +588,20 @@ simply because it was crossing a wall very close to a door. Thus, more advanced
 map integration techniques may well be envisaged with $P_{wall}$ varying based
 on the distance of the intersection point from the closest door in the wall. 
 
-\subsection{Determination of overall orientation and step biases\label{sec:overall_bias}}
+\section{Determination of overall orientation and step biases\label{sec:overall_bias}}
 
 The integration of map information with the dynamical equations of the system 
 via a selection function $MapSelect$ allows us to actually determine 
 the extent of orientation and step bias. The idea behind it is simple. 
 However, before explaining it, let us define the following two terms:
 \begin{equation}
-\theta_b = \frac{\sum_{i} \theta_{b_i}}{N}
+\displaystyle
+\theta_b = \frac{1}{N}\sum\limits_{i} \theta_{b_i}
 \end{equation}
 
 \begin{equation}
-d_b = \frac{\sum_{i} d_{b_i}}{N}
+\displaystyle
+d_b = \frac{1}{N}\sum\limits_{i} d_{b_i}
 \end{equation}
 
 Here,\\
@@ -629,7 +636,7 @@ a number of particles to be rejected by $MapSelect$. The values of $d_{b_i}$
 remaining represent the net bias in the step size of the system. Thus,
 their mean $d_b$ is a good representation of the step bias of the system.
 
-\subsection{Recovering from particle insufficiency}
+\section{Recovering from particle insufficiency}
 
 Particle insufficiency is a weakness of particle filters. It arises if 
 no valid successor states $p_{i+1}$ can be found from the current set of 

@@ -39,7 +39,7 @@ is a composite sensor that fuses Gravity information derived from the
 3 axis Accelerometer and the magnetic field information derived from the
 3 axis Magnetic field sensor to orient the device in the 3 Dimensional World 
 Coordinate space. The actual method used to do so is described in the API
-documentation \todo{Provide Reference}[reference to API documentation] and
+documentation \cite{AndroidSensorManager} and
 further discussion is out of scope for this thesis.
 
 \begin{figure}
@@ -107,18 +107,13 @@ the smartphone through large angles introduces bias in the readings from the
 magnetometer. Similary, the magnetometer shows a small offset when the device is 
 turned through 360 degrees.
 
-Figures \ref{fig:angle_stationary_table} and \ref{fig:angle_handheld_standing}
-show the behaviour of sensor readings under the 2 circumstances when the 
+Figure \ref{fig:angle_stationary_table}
+shows the behaviour of sensor readings under the 2 circumstances when the 
 device is on a table and when it is held in the palm of the hand of a user.
 
 \begin{figure}\centering
-    \includegraphics{figures/angle_stationary_table.png}
+    \includegraphics{figures/angle_stationary.png}
     \caption{Derived azimuth angle when smartphone on table\label{fig:angle_stationary_table}}
-\end{figure}
-
-\begin{figure}\centering
-    \includegraphics{figures/angle_handheld_standing.png}
-    \caption{Derived azimuth angle when smartphone is held in the hand\label{fig:angle_handheld_standing}}
 \end{figure}
 
 
@@ -144,13 +139,11 @@ filter that will be introduced later.
 Performing rotations in a slow and steady manner yields good results with little
 or no bias and sensor lag. See figure \ref{fig:angle_180_rotation_table} which 
 shows how the angle measurements behave when the rotated slowly and steadily.
-
-There is only a slight sensor lag and bias visible. However, at steady state,
-there is sensor noise of approximately 5 degrees present.
+There is only a slight sensor lag and bias visible.
 
 \begin{figure}\centering
     \includegraphics{figures/angle_180_rotation_table.png}
-    \caption{Rotation of the phone through 180 degrees with pauses at 90 degrees.\label{fig:angle_180_rotation_table}}
+    \caption{Rotation of the phone through 180 degrees (90 degree turns)\label{fig:angle_180_rotation_table}}
 \end{figure}
 
 
@@ -192,6 +185,35 @@ The angular range is large but the middle 50\% of the values lie
 between 11 to 13 degrees apart which corresponds with the standard deviation
 values measured.
 
+\section{Test Environment\label{sec:test_environment}}
+
+The location chosen for performing all experimental verification of the
+proposed work was Floor 3, Wing 7 and 8 of Ravindra Bhawan at the IIT Roorkee
+campus. The environment is suitable for this purpose due to a number of reasons:
+
+\begin{enumerate}
+\item There are a large number of Wifi Access Points in close proximity 
+    installed on the premises.
+\item Wifi Access Points of neighbouring wings and floors provide diversity
+    to the location fingerprints.
+\item Long corridoors of around 30-32 metres each provide long stretches of
+    similar environment for evaluation of algorithm performance over larger
+    distances.
+\end{enumerate}
+
+A map of the location is shown in Figure \ref{fig:ravindra_map}. The red lines
+indicate walls, blue lines indicate windows and green lines indicate doors.
+Wifi Access Points are marked with stars on the map. This map has been used
+for all the experiments detailed below and while determining the results as 
+stated in Chapter \ref{chap:results}.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=5in]{figures/ravindra_map_ap.png}
+    \caption{A map of the experimental environment\label{fig:ravindra_map}}
+\end{figure}
+
+
 \section{Wifi Signal Strength Distribution}
 
 Wifi signals are used in our proposed system during the recovery process.
@@ -206,25 +228,12 @@ and smartphone was analyzed to characterize the input wifi signal.
 \subsubsection{Short term duration}
 
 Figure \ref{fig:closestAPshortterm} shows the variation of signal strength of 
-the closest AP for a smartphone placed within a room in a 
+AP EC:95 for a smartphone placed within a room in a 
 Non-Line Of Sight configuration.
 
 \begin{figure}\centering
-    \includegraphics{figures/short_term_wifi.png}
-    \caption{Variation of RSSI for closest AP. \label{fig:closestAPshortterm}}
-\end{figure}
-
-
-
-\subsection{During a thunderstorm}
-
-Figure \ref{fig:closestAPthunderstorm} shows the variation of signal strength of
-the closest AP for a smartphone placed in the same room in a 
-NON-LOS configuration.
-
-\begin{figure}\centering
-    \includegraphics{figures/wifi_thunderstorm.png}
-    \caption{Variation of RSSI for closest AP during a thunderstorm. \label{fig:closestAPthunderstorm}}
+    \includegraphics{figures/wifi_short_term.png}
+    \caption{Variation of RSSI for AP EC:92 \label{fig:closestAPshortterm}}
 \end{figure}
 
 \subsection{7 day study}
@@ -233,9 +242,11 @@ The Wifi Access Point RSSI values were monitored over a 7 day period
 (Jan 5 2011 - Jan 13 2011) from room S-152 and the resulting signal strength 
 data was analyzed.
 
+\pdfimageresolution 72
+
 \begin{figure}\centering
     \includegraphics{figures/histogram_00_1C_F0_CB_EC_92.png}
-    \caption{Distribution of RSSI values for the closest AP (00:1C:F0:CB:EC:92) \label{fig:histogram_00_1C_F0_CB_EC_92}}
+    \caption{Distribution of RSSI values AP EC:92\label{fig:histogram_00_1C_F0_CB_EC_92}}
 \end{figure}
 
 As you can see in Figure \ref{fig:histogram_00_1C_F0_CB_EC_92}, the signal 
@@ -244,22 +255,19 @@ concurs with the conclusions of Kaemarungsi and Krishnamurthy in \cite{KStats}.
 
 \begin{figure}\centering
     \includegraphics{figures/histogram_00_1C_F0_CB_EC_95.png}
-    \caption{Distribution of RSSI values for the AP near S-170 (00:1C:F0:CB:EC:95) \label{fig:histogram_00_1C_F0_CB_EC_95}}
+    \caption{Distribution of RSSI values AP EC:95\label{fig:histogram_00_1C_F0_CB_EC_95}}
 \end{figure}
 
 \begin{figure}\centering
     \includegraphics{figures/histogram_00_19_5B_77_A5_EE.png}
-    \caption{Distribution of RSSI values for the AP near S-159 (00:19:5B:77:A5:EE) \label{fig:histogram_00_19_5B_77_A5_EE}}
+    \caption{Distribution of RSSI values for the AP A5:EE\label{fig:histogram_00_19_5B_77_A5_EE}}
 \end{figure}
 
-\begin{figure}\centering
-    \includegraphics{figures/listplot_00_1C_F0_CB_EC_92.png}
-    \caption{Point plot of RSSI values for the closest AP (00:1C:F0:CB:EC:92) \label{fig:listplot_00_1C_F0_CB_EC_92}}    
-\end{figure}
+\pdfimageresolution 300
 
 \begin{figure}\centering
     \includegraphics{figures/moving_average.png}
-    \caption{3 hour moving average of RSSI values}
+    \caption{3 hour moving average of RSSI values for the 7 day survey\label{fig:moving_average}}
 \end{figure}
 
 In contrast, Figure \ref{fig:histogram_00_19_5B_77_A5_EE} doesn't show such a 
@@ -267,45 +275,85 @@ pronounced non-gaussian nature whereas
 Figure \ref{fig:histogram_00_1C_F0_CB_EC_95} shows more leanings towards a
 non-gaussian distribution.
 
-Figure \ref{fig:listplot_00_1C_F0_CB_EC_92} is the time domain plot of the signal strength
-samples. As you can see, the samples can be spread over a large domain even if the 
-sample times differ by a couple of hours. Thus we can safely conclude that the 
-input wifi signal is a highly noisy source of information.
+Table \ref{tbl:wifi_signal_analysis} states the features of the signal with 
+respect to 3 different APs. However, this table does not state the entire 
+story. 
+
+Figure \ref{fig:moving_average} is the time domain plot of the signal strength
+samples smoothed as a moving average over 300 samples as received by a fixed 
+location. It is quite evident that the variations in the signal strength 
+are highly localized with significant peaks and valleys. Plots for other APs
+show this kind of clustering behaviour too but to a lower extent. 
+Given the uncorrelated nature of wifi signals, it is highly likely that 
+signal variations will not move in a correlated fashion and thus even 
+location fingerprinting based systems will find it very difficult to 
+create a distance function that will be able to estimate the location of a
+device reliably from the RSSI values given that the survey database will 
+always be subsampling the signal. 
+
+Thus it is quite evident that the input wifi signal is a highly noisy and
+unreliable source of information.
+
+
+\begin{table}
+\centering
+\begin{tabular}{c c c c c c c c c}
+\hline
+\hline
+ & Min & $1^{st}$ quartile & Median & Mean & $3^{rd}$ quartile & Max & NA & SD\\
+\hline
+AP EC:92 & -82.00 & -66.00 & -60.00 & -60.62 & -55.00 & -49.00 & 27.36\% & 6.638592\\
+AP EC:95 & -87.00 & -81.00 & -80.00 & -80.16 & -79.00 & -74.00 & 30.64\% & 1.691343\\
+AP A5:EE & -89.00 & -83.00 & -82.00 & -82.05 & -81.00 & -73.00 & 43.48\% & 1.580761\\
+\hline
+\end{tabular}
+\caption{Wifi Signal Analysis\label{tbl:wifi_signal_analysis}}
+\end{table}
 
 \section{Effect of motion on signal strengths}
 
 To analyze the effect of motion on the RSSI values from the APs, a simple walking
-test was done along a corridoor. The variation of RSSI values seen from the APs in
-the corridoor are shown in \ref{fig:wifi_corridoor_walk}.
+test was done along a corridoor. The variation of RSSI values seen from the AP in
+the corridoor is shown in \ref{fig:wifi_corridoor_walk}.
 
 \begin{figure}\centering
     \includegraphics{figures/wifi_corridoor_walk.png}
-    \caption{RSSI values for APs during a corridoor walk \label{fig:wifi_corridoor_walk}}
+    \caption{AP EC:95 RSSI: Walk up and down the corridoor\label{fig:wifi_corridoor_walk}}
 \end{figure}
 
-\todo{Improve figure with more APs and path description.}
 
 \subsection{Inferences}
-Effect of orientation with respect to AP is important. Signal strength values
-even in LOS situations don't always behave nicely.
+From the figure, it can be clearly seen that orientation with respect to 
+AP is important. There is significant noise in the signal even though the AP 
+is in the line of sight. Thus retaining orientation data with respect to 
+an AP is an important criteria while surveying the test environment to 
+collect location fingerprints.
 
-\section{Wifi Surveying}
+\section{Generating a Location Fingerprinting Dataset}
 
-A $1m \times 1m$ grid was set up on the ground and wifi readings were taken at 8
-different orientations per point on the floor.
-
-\todo{Describe the setup better.}
+A Wifi Survey was carried out in the test environment to generate a location 
+fingerprint dataset. To ensure uniform sampling of the environment, 
+a $1m \times 1m$ grid was set up on the ground and Wifi RSSI readings were taken 
+at 8 different orientations per point on the floor. 
+Figure \ref{fig:grid_pic} shows a snapshot of a small area of the test environment.
+Grid points have been marked out on the floor. 
+Wifi RSSI samples were taken at these grid points along 8 different orientation 
+values. Some samples, however, could not be taken due to obstructions 
+present at the site.
 
 \begin{figure}
     \centering
     \includegraphics[width=5in,angle=270]{figures/grid_pic}
-    \caption{Picture of the $1m \times 1m$ grid drawn on the floor}
+    \caption{Picture of the $1m \times 1m$ grid drawn on the floor\label{fig:grid_pic}}
 \end{figure}
 
-\section{Implementation of a KNN based positioning solution for KNN accuracy\label{sec:knn_pos}}
+\section{Testing Wifi Positioning Accuracy using KNN\label{sec:knn_pos}}
 
-A KNN based location system was implemented to test location accuracy. 
-This was work done as part of the Masters project. Results are included here.
+A KNN based location system was implemented to test location accuracy for positioning using Wifi Signal Strengths. 
+This was work done as part of the Masters project in the same test location. 
+The results of the project are included here. Although the project was 
+done using a laptop instead of a smartphone and with a different set of survey data, 
+it is expected that the results will be comparable as the test environment was the same.
 
 \begin{table}[h]
     \centering
@@ -324,6 +372,37 @@ This was work done as part of the Masters project. Results are included here.
 
 \end{table}
 
-
 \section{Summary}
-\todo{Fill this}
+
+To conclude, we can state that by doing all the experiments and other 
+ground-work mentioned in this chapter, we have obtained a fair idea 
+about the inputs of the system and various system parameters required
+for the algorithms. The groundwork thus helps in guiding the implementation of
+the system. Since groundwork was being done in conjunction with algorithm
+design, some feedback from the groundwork was also incorporated into improving
+the design of the proposed method of Chapter \ref{chap:proposed_method}.
+
+By doing the groundwork, we have been able to derive the ranges of parameters of 
+the proposed algorithm. These ranges are listed in Table \ref{tbl:algo_params}.
+
+\begin{table}
+\centering
+\begin{tabular}{c c}
+\hline
+\hline
+Parameter & Value\\
+\hline
+For Noise Filtering & \\
+Threshold $T$ & $> 0.352813$\\
+Threshold $Q$ & $Q > 0.595963$ and $Q < 2.0$\\
+\hline
+For Orientation Bias & \\
+$\sigma_{angle}$ & 8.307481 degrees\\
+\hline
+For NN based positioning & \\
+Wifi Orientation Tolerance & $> 43.48589$ degrees\\
+Wifi Positioning Error & $> 2.8 m$ with S.D. $> 2.7 m$\\
+\hline
+\end{tabular}
+\caption{Algorithm Parameters Determined by Ground Work\label{tbl:algo_params}}
+\end{table}

@@ -1,17 +1,53 @@
 \chapter{Summary and Future Work\label{chap:summary}}
 
-\section{Particle filter + Wifi data}
+\section{Summary of the Work}
 
-\subsection{Case 1: Use of Wifi data for accounting for drift errors}
-\subsection{Case 2: Use of Oriented Wifi data for accounting for drift errors}
-\subsection{Case 3: Use of clamped wifi data for accounting for drift errors}
-\subsection{Case 4: Use of area Restricted Wifi data for accounting for drift errors}
-\subsection{Case 7: Simple post processing of output.??}
+As per the problem statement described in Section \ref{sec:problem_description},
+an online indoor tracking solution based on a particle filter approach 
+has been developed for the Android smartphone. The performance of the algorithm 
+has been evaluated and it has shown an improvement against prior work in the 
+area.
+
+Based on the insights gained during this work, a few points need to be stated
+in conclusion:
+
+\begin{enumerate}
+\item QRCodes are excellent tools for providing first fixes to tracking algorithms. They are reasonably scalable
+    and extremely easy to use.
+\item Wifi is a poor choice of signal source to correct for drift errors for step estimate based tracking solutions. This is because Wifi signal sources are too noisy that they are only able to correct gross drift errors. In fact, using Wifi data for drift correction probably degrades accuracy rather than improves it. 
+\item Having a Wifi survey of an area is a very time consuming matter. However, it provides an additional way to resolve situtations where the particle filter gets lost. 
+\item Treating all particles at par (as is done in this algorithm) reduces computational complexity of the particle filter by eliminating the reweighting done at each step.
+\item It is very important to analyze the parameters of the sensors to choose appropriate values for the algorithm. Doing so ensures particle conservation and thus reduces the computational load on the system.
+\end{enumerate}
+
+The system has shown excellent performance in the tests and as an outcome of this thesis, it is recommended that only map information be used for drift correction instead of a combination of Map information and Wifi data. 
+
+Of course, as no system is perfect, this system too has its shortcomings and limitations: 
+
+\begin{enumerate}
+\item Due to the lower number of particles allowed, the algorithm has a higher tendency to get lost.
+\item Once lost, it is hard to recover and recovery is usually associated with some tracking error.
+\item The system requires a Wifi Survey of the test area for error recovery which is time consuming and non-scalable. This may be avoided however if we are willing to sacrifice a better chance at recovery in case the algorithm gets lost.
+\item Using the lazy Nearest Neighbour algorithm is expensive in time and memory consumption and is not very scalable.
+\item Small steps cannot be detected due to limitations of the step detection algorithm.
+\item Maps with large open spaces provide very little feedback to the tracking algorithm and thus the tracking quality degrades.
+\end{enumerate}
+
+All these points provide scope for future work on this system.
+
+%\begin{figure}
+%    \centering
+%    \includegraphics[width=5in]{figures/pf_bad.png}
+%    \caption{Sometimes, the recovery process leads to a sequence of states 
+%        which is equivalent to getting lost.\label{fig:pf_bad}}
+%\end{figure}
 
 
 \section{Limitations}
 
-User moving backwards. (Uses more computation, destroys the averaging procedure)
+The one thing that this algorithm is unable to take into account is when a user decides to move backwards
+while retaining the same direction of the smartphone. 
+Since the algorithm makes an assumption of forward motion only, moving backwards significantly affects the accuracy of the tracking algorithm and the algorithm quickly gets lost. This is a limitation of the system.
 
 
 \section{Future enhancements}
@@ -21,47 +57,30 @@ algorithms proposed. For example, we need to look at improving $MapSelect$,
 integrating information from barometric sensors as and when they are made
 available on handheld devices. We also need to figure out how to modify
 the information to be put into first fix QRCodes to link up maps of 
-the same building.
+the same building. SVM can also be used to increase the accuracy of the 
+recovered position on the lines of the work done by \cite{ETHLuba} for 
+Redpin\cite{Redpin}.
 
 On the implementation front, performance of the solution, though 
-adequate, can be significantly improved.
-Improvements can be achieved by leveraging thread parallelism and a 
+adequate, can be significantly improved to enable a greater number of particles
+to be evolved. For example, 
+improvements can be achieved by leveraging thread parallelism and a 
 producer consumer model to allow for higher system lag in the case of 
 a recovery event. The UI can be made event driven from the current 
-polling model to increase responsiveness.
+polling model to increase responsiveness. Also, the Android NDK can be used 
+to write the performance intensive parts of the solution in C.
 
 
-Use and evaluation of SVM as a suitable architecture for the Wifi data.
-Better integration of information from the camera.
-Integration of information using a Barometric sensor would be useful for detecting elevation changes. A system for the same is proposed but the experimental results were not obtained. 
+\section{Crowdsourcing a Signal Strength Map}
+
+An application of this thesis that arises naturally from the results is that
+the base algorithm can be used to set up a crowdsourcing system that will 
+eventually generate a Wifi signal strength map of a large test area based 
+solely on user inputs generated while they are using the tracking application. 
+This would be beneficial for bootstrapping projects like \cite{Redpin} for 
+providing lower complexity solutions to the indoor positioning problem. 
+This aspect requires greater thought and research.
 
 
-\section{Signal Strength Map}
-
-TODO if time permits
-Wifi signal strength map developed using crowdsourced data for use in systems such as RedPin.
-
-
-\section{Integration of barometric information}
-
-\section{Exploration of crowdsourcing Wifi data}
-
-\section{Analysis of Wifi signal strength distribution}
-
------
-\subsection{Improvements}
-Use of SVM is likely to improve the accuracy further at room level. [Redpin]
-
-
-\section{Dead Reckoning by direct integration: What doesn't work}
-\section{What Doesn't work}
-\todo{Fix this!}
-Acceleration of the human body is too slow compared to gravity. Simple orientation changes produce high changes in acceleration along axes which are very difficult to filter out.
-Numerical integration generates errors too quickly. With a high sampling rate, errors balloon.
-Using the gyroscope for step detection (similar to foot mounted devices [insert reference]) – doesn’t work.
-
-
-\section{Other issues}
-Sensor noise, instability and bias. Effect of gravity and orientation on readings. Weather.
 
 

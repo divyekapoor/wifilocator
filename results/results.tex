@@ -1,5 +1,14 @@
 \chapter{Experiments and Results\label{chap:results}}
 
+All the experiments and results of this Chapter are performed in the 
+same test environment as described in Section \ref{sec:test_environment} 
+using the Android Application implementation described in Chapter 
+\ref{chap:implementation_details}.
+Based on the groundwork performed, the parameters of the algorithms were chosen.
+This chapter discusses the performance of the proposed approach and the 
+two control algorithms based on the same set of selected parameters as the 
+proposed algorithm.
+
 %\subsection{Acceleration}
 
 %Raw acceleration information is available on the Android device via samples 
@@ -44,38 +53,15 @@
 %and tracking algorithms.
 
 
+\section{The Filtering Algorithm}
 
-\section{Location Under Test}
+The threshold ($Q$) for the filtering algorithm described in Section 
+\ref{sec:NoiseClamping} was chosen as the mean of the 
+ranges determined in the groundwork to provide adequate noise margin. 
+Therefore, the threshold for the noise filter was set at $1.3 m/s^2$.
 
-The location chosen for performing all experimental verification of the
-proposed work was Floor 3, Wing 6 and 7 of Ravindra Bhawan at the IIT Roorkee
-campus. The environment is suitable for this purpose due to a number of reasons:
-
-\begin{enumerate}
-\item There are a large number of Wifi Access Points in close proximity 
-    installed on the premises.
-\item Wifi Access Points of neighbouring wings and floors provide diversity
-    to the location fingerprints.
-\item Long corridoors of around 30-32 metres each provide long stretches of
-    similar environment for evaluation of algorithm performance over larger
-    distances.
-\end{enumerate}
-
-A map of the location is shown in Figure \ref{fig:ravindra_map}. The red lines
-indicate walls, blue lines indicate windows and green lines indicate doors.
-Wifi Access Points are marked with stars on the map. This map has been used
-for all the experiments detailed below.
-
-\begin{figure}
-    \centering
-    \includegraphics[width=5in]{figures/ravindra_map.png}
-    \caption{A map of the experimental environment\label{fig:ravindra_map}}
-\end{figure}
-
-\section{Output of the Filtering Algorithm}
-
-A simple clamping technique was employed to filter the
-raw acceleration as described in Section \ref{sec:NoiseClamping}.
+The clamping technique described in Section \ref{sec:NoiseClamping} was employed
+to filter the raw acceleration.
 
 The effect of the clamping on the raw accelerometer data is shown in 
 Figure \ref{fig:accel_raw}. Figure \ref{fig:accel_diff} shows the sensor noise
@@ -114,7 +100,6 @@ methods performed in relation with the actual number of steps detected.
 \hline
 \textbf{Algorithm} & \textbf{Steps Detected} \\
 \hline
-
 Simple Zero Crossings Count & 109 \\
 Zero Crossings on Filtered Data & 41 \\
 Peaks and Valley Method & 41 \\
@@ -238,7 +223,7 @@ survey are listed in Table \ref{tbl:QRCode_comparison_survey}.
 \begin{tabular}{p{0.8in} p{0.8in} p{0.8in} p{0.8in}}
 \hline
 \hline
-User Number & First fix by manual method (Ease of use: scale of 5) & First fix by QRCodes (Ease of Use: scale of 5) & Building familiarity required (scale of 5) \\
+User Number & First fix by manual method (Ease of use: scale of 5) & First fix by QRCodes (Ease of use: scale of 5) & Building familiarity required for manual method (scale of 5) \\
 \hline 
 1 & 1 & 5 & 5 \\
 2 & 2 & 3 & 4 \\ 
@@ -268,11 +253,8 @@ the training constant was thus estimated based on the number of steps
 detected and the known distance between the 2 QRCoded locations.
 
 The locations used for this test were along a corridoor and were about $30 m$
-apart. The tests were repeated thrice for each subject. The resulting 
-step constants were taken as the average of the 3 runs.
-
-\todo[inline]{Determining training constant}
-\missingfigure{Table of training constant values}
+apart. The tests were repeated thrice for each subject. The step constants
+for the users were different but consistent.
 
 \section{Step variation analysis}
 
@@ -326,7 +308,8 @@ detection procedure is very accurate for that range.
 
 \section{Test Paths\label{sec:test_paths}}
 
-Five different test paths were used to test the performance of the system.
+Five different test paths were used to test the performance of the proposed 
+algorithm.
 The features of these paths are described below. The paths themselves
 are marked out in Figure \ref{fig:test_paths}.
 
@@ -358,7 +341,8 @@ with orientation information received from the magnetometer to create a
 simple dead reckoning system in accordance with the dynamical equation 
 \eqref{eq:dr_eq}. The initial position for dead reckoning was obtained via
 QRCodes in accordance with the description in Section \ref{sec:QRCodes}.
-
+This algorithm is a control algorithm to be used for comparison with 
+the proposed method.
 
 \subsection{Simple Dead Reckoning Results}
 
@@ -446,11 +430,33 @@ to successfully run a hybrid Dead Reckoning system that utilized
 Wifi Access Point Received Signal Strengths and Step motion information
 to track the device.
 
-The performance of the algorithm was again judged based on the test paths 
-mentioned in Section \ref{sec:test_paths}. Figure \ref{fig:nn_path1} shows
-the track for Test path 1. A quick glance will indicate that the 
-tracked endpoints are reasonably accurate (error $<$ 2m), however, 
-the subjective nature of the tracked path is very poor.
+The performance of the algorithm was again judged based on the test paths
+mentioned in Section \ref{sec:test_paths}. Table \ref{tbl:NN_error} describes
+the statistical nature of the error incurred for Path 1 with respect to the
+actual position of the device. The values obtained agree with those reported in
+papers like \cite{Wang} as well as our groundwork. Figure \ref{fig:nn_path1}
+shows the track for Test path 1. A quick glance will indicate that the tracked
+endpoints are reasonably accurate ($error$ $< 2 m$), however, the subjective nature
+of the tracked path is very poor.
+
+\begin{table}
+\centering
+\begin{tabular}{l c}
+\hline
+\hline
+ & Error Value (m)\\
+\hline
+Min & 1.888e-07\\
+$1^{st}$ Quartile & 1.448\\
+Median & 2.948\\
+Mean  & 3.748\\
+$3^{rd}$ Quartile & 5.064\\
+ Max.   & 14.87\\
+Std. Dev. & 2.953\\
+\hline
+\end{tabular}
+\caption{Error in tracking for the NN Algorithm\label{tbl:NN_error}}
+\end{table}
 
 \begin{figure}
     \centering
@@ -493,11 +499,39 @@ stable. Even after moving close to 100 m, the algorithm was able to
 maintain a tracking error of less than 1 m. This is illustrated in 
 Figure \ref{fig:pf_path4}.
 
+To analyze the algorithm more carefully, the ground truth was 
+mathematically modelled as a series of even sized steps along the path A-B
+for a test done on Path 1. The resulting tracking errors were determined 
+and their statistical analysis was done. The error distribution over the 
+distance of 30 m are summarized in Table \ref{tbl:tracking_error}.
+
+\begin{table}
+\centering
+\begin{tabular}{c c}
+\hline
+\hline
+& Error Value (m)\\
+\hline
+ Min.    & 1.888e-07\\
+ $1^{st}$ Quartile & 0.2750\\  
+ Median  & 0.5218\\  
+ Mean    & 0.5064\\  
+ $3^{rd}$ Quartile & 0.7209\\  
+ Max.    & 0.9412\\  
+ Std. Dev.  & 0.2391\\
+\hline
+\end{tabular}
+\caption{Tracking Error of Proposed Algorithm for Path 1\label{tbl:tracking_error}}
+\end{table}
+
+As is clear from this error distribution, the error incurred is low. Also, 
+more importantly, the standard deviation of the error distribution is low.
+Hence it is unlikely that we will get large deviations from the tracked path.
 
 \begin{figure}
     \centering
     \includegraphics[width=5in]{figures/pf_path2}
-    \caption{Performance of Reckoning with Map information for Test Path 2.\label{fig:pf_path2}}
+    \caption{Performance of Reckoning with Map info for Test Path 2.\label{fig:pf_path2}}
 \end{figure}
 
 \begin{figure}
@@ -506,17 +540,38 @@ Figure \ref{fig:pf_path4}.
     \caption{Performance of the Reckoning algorithm for Test Path 4.\label{fig:pf_path4}}
 \end{figure}
 
-%\subsection{Case 1: Probability of crossing walls is 0}
-%\subsection{Case 2: Probability of crossing walls is finite}
-%\todo[inline]{Should I even do it? It should come out with poorer results.}
 
-%\subsection{Case 3: Resampling of impoverished data points with duplication}
-%\subsection{Case 4: Resampling with introduction of Gaussian noise}
-%\subsection{Case 4a: Use of averaged data points v/s random weighted data point}
-%\subsection{Case 5: Accounting for bias in orientation sensor}
-%\subsection{Case 6: Accounting for step size bias.}
-%\subsection{Case 8: Simple heuristics to deal with impoverished samples}
-%(retry, retry with greater inaccuracy, wifi)
+\section{Recovery from Particle Insufficiency}
+
+For a typical test path, the variation in the number of live particles is 
+shown in Figure \ref{fig:live_particles}. As can be seen clearly, the 
+particle filter does suffer dips in the number of live particles but the 
+number of particles remaining is around 5. Thus maximum value of 50 particles 
+seems to be a reasonable value for our tracking algorithm. An empirical 
+determination of the computational limits of the implemented algorithm 
+seems to indicate that the maximum number of particles that the 
+device is able to update per computation step lies around 200. 
+
+\begin{figure}
+    \centering
+    \includegraphics{figures/live_particles.png}
+    \caption{Number of Live Particles for a Path\label{fig:live_particles}}
+\end{figure}
+
+The dips seen in Figure \ref{fig:live_particles} correspond to events where 
+the particle filter is adapting its location estimate based on feedback 
+received from $MapSelect$. The algorithm may get lost if the dips 
+reach a value 0. In this case the recovery algorithm is invoked.
+Figure \ref{fig:recovery_result} shows how the particle filter 
+recovered successfully from a ``lost" scenario to continue tracking of the 
+device, albeit with some error.
+
+\begin{figure}
+    \centering
+    \includegraphics{figures/recovery_result.png}
+    \caption{Result of a successful recovery\label{fig:recovery_result}}
+\end{figure}
+
 
 \section{Comparison with published results}
 
@@ -525,35 +580,34 @@ dynamical equations of the system and care in avoiding particle degeneracy,
 a significantly better accuracy has been achieved by this system as compared
 to previous published works. 
 
-The comparison of the 3 implemented methods can be done via the cumulative
-distribution function which maps the percentage of sample points 
-expected to be below a given error distance. 
+The comparison of the 3 implemented methods is shown in Table \ref{tbl:pub_comparison}.
 
-\missingfigure{comparison table between results published and our methods}
 
-\missingfigure{CDF of the errors of the methods (will take some time)}
+\begin{table}
+\centering
+\begin{tabular}{l c c}
+\hline
+\hline
+Algorithm & Mean Error (m) & Std. Dev. (m)\\
+\hline
+Wang\cite{Wang} KNN only & 6.44 & 6.84\\
+Wang\cite{Wang} PF with RSSI & 5.57 & 3.9\\
+Wang\cite{Wang} PF with RSSI + Steps & 4.54 & 3.52\\
+Wang\cite{Wang} PF with RSSI + Steps + Map & 4.30 & 2.80\\
+Evennou\cite{Evennou} PF with RSSI & 1.86 & N/A\\
+Evennou\cite{Evennou} PF with RSSI + INS & 1.53 & N/A\\
+\textbf{Control Algorithm: NN Wifi corrected Reckoning} & \textbf{3.748} & \textbf{2.953}\\
+\textbf{Proposed Work: PF with INS + Map} & \textbf{0.5064} & \textbf{0.2391}\\
+\hline
+\end{tabular}
+\caption{Comparison with Published Results\label{tbl:pub_comparison}}
+\end{table} 
 
-\section{Summary of Results}
-\todo[inline]{Which algorithms to pick based on the results, advantages and disadvantages}
+\section{Complete listing of the results}
 
-The complete set of results are stated in the appendix as they were too 
-voluminous to state in the main body of the report.
+In order to maintain the flow of the thesis and due to the voluminous
+nature of reporting the results for each of the test paths for the 3
+algorithms, the results of those tests have been reported in the appendices.
 
-\section{Issues faced}
-Incorrect step sizes yielded states in which no further progress was possible
-using data from the inertial sensors. Hence we had to resort to wifi data to get
-out of the blind spot.
+%\missingfigure{CDF of the errors of the methods (will take some time)}
 
-Limited processing power and near-realtime time constraints of operation
-constrain computational complexity of the solution.
-
-Surveying is the biggest issue in this system.
-
-Computational complexity and scaling issues.
-
-\begin{figure}
-    \centering
-    \includegraphics[width=5in]{figures/pf_bad.png}
-    \caption{Sometimes, the recovery process leads to a sequence of states 
-        which is equivalent to getting lost.\label{fig:pf_bad}}
-\end{figure}

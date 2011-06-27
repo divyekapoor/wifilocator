@@ -1,6 +1,8 @@
 \documentclass[11pt,a4paper,twoside]{book}
 %\usepackage{fullpage}
-\usepackage[twoside,bindingoffset=0.6in,left=1.2in,right=1.2in]{geometry} %,left=1in,right=1in % margins
+\usepackage[twoside,bindingoffset=0.6in,left=1in,right=1in]{geometry} %,left=1in,right=1in % margins
+\usepackage{times}
+\usepackage{pdfpages}
 \usepackage{todonotes} % Todo
 \usepackage[avantgarde]{quotchap} % Chapter headings
 \usepackage{amsmath} % Math formatting 
@@ -8,6 +10,7 @@
 \usepackage{setspace} % Spacing of the thesis
 \usepackage{graphicx} % Includegraphics
 \usepackage{algorithm2e} % Algorithms
+\usepackage{graphpap}
 
 \pdfimageresolution 300
 
@@ -19,11 +22,46 @@
 \date{\today}
 \maketitle
 
-\chapter{Candidate's Declaration}
+%\chapter{Candidate's Declaration}
+\cleardoublepage
+\addcontentsline{toc}{chapter}{Candidate's Declaration}
+\includepdf{figures/candidate.pdf}
 
-\chapter{Acknowledgements}
+\input{acknowledgements.tex}
 
 \chapter{Abstract}
+
+The development of stable outdoor positioning and tracking algorithms has 
+ushered in a new era of technology. Today GPS based navigators are 
+ubiquitous and GPS based positioning and navigation has been integrated 
+into smartphones. This has made life easy for navigation over large 
+distances in an outdoor scenario. A new horizon for research has developed which
+aims at providing that same ease of use in navigation 
+and tracking in an indoor context.
+
+Over the last few years, advances in technology have allowed for the 
+development and integration of MEMS sensors into smartphones. These sensors 
+(an accelerometer, a gyroscope and a magnetometer) can be leveraged to 
+develop an indoor tracking solution. However, the resource constrained nature 
+of smartphones necessitates modifications to prior work achieving the same 
+in a non-mobile context. Additionally, the fact that 
+the tracking device lies in a user's palm and not on a protected, stable 
+surface (as is the case in robotics) generates a new set of challenges.
+
+This thesis proposes and implements an online particle filter based algorithm for 
+indoor positioning on an Android smartphone. The proposed algorithm 
+is not only able to work well on the resource constrained device, it actually
+yields an accuracy better than prior work in this area. Such results have 
+been made possible by a careful approach to the problem with decisions made 
+on factual data determined before and during the implementation of the 
+proposed work. The final system is able to achieve a mean error of $0.5 m$
+with a very low standard deviation value of $0.24 m$ and provides a clean,
+intuitive tracked path. Results for comparison are produced using
+a simple dead reckoning approach and a Nearest Neighbour 
+Wifi corrected tracking algorithm. Both the algorithms are tested in the same
+environment as the proposed work.
+
+
 
 \tableofcontents
 \clearpage
@@ -63,15 +101,17 @@
 
 \appendix
 
-\todo[inline]{Enable this appendix later}
-%\input{appendix-all_test_results.tex}
+%\todo[inline]{Enable this appendix later}
+\input{appendix-all_test_results.tex}
 
-\input{appendix-survey_form.tex}
+%\input{appendix-survey_form.tex}
 
 \backmatter
 
 \singlespace
 \bibliographystyle{IEEEtran}
+\addcontentsline{toc}{chapter}{Bibliography}
 \bibliography{IEEEfull,mybib}
+
 
 \end{document}
