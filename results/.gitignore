@@ -17,3 +17,4 @@ thesis.blg
 *.bbl
 *.blg
 *.tdo
+.*.xml
