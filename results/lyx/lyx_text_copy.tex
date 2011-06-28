@@ -1,0 +1,49 @@
+\begin{bmatrix}x_{i+1}\\
+y_{i+1}
+\end{bmatrix} = \begin{bmatrix}x_{i}\\
+y_{i}
+\end{bmatrix}  + d{}_{i} \begin{bmatrix}-cos(\theta_{i})\\
+sin(\theta_{i})
+\end{bmatrix} 
+
+For the case where the coordinate system for the map is x  positive towards right and y  positive downwards with TrueNorth  of the map pointing upwards.
+
+This dynamical representation is overtly simplistic because it doesn't take into account real world issues as seen in the groundwork section. The most important issue is the issue of sensor drift. The magnetometer is a rather inaccurate sensor and is rated to an accuracy of 5 degrees in static circumstances. There is also a recommendation to re-calibrate before use. This is required because this sensor suffers from a lot of sensor noise and drift. 
+
+Recalibration of the magnetometer involves moving it around in a pattern of 8. Effectively, that randomizes internal magnetic elements enough for magnetic saturation effects to be neutralized. Unfortunately, for a continuous use scenario like ours, recalibration of this sensor is not an option. Hence, we modify our dynamical equation to take this error into account.
+
+\begin{bmatrix}x_{i+1}\\
+y_{i+1}
+\end{bmatrix} = \begin{bmatrix}x_{i}\\
+y_{i}
+\end{bmatrix}  + d{}_{i} \begin{bmatrix}-cos(\theta_{i}+\phi_{mag})\\
+sin(\theta_{i}+\phi_{mag})
+\end{bmatrix} 
+
+In this dynamical equation, we have added an additional parameter \phi_{mag} which is a random variable that represents random white noise in the reading from the true value of the magnetometer.
+
+Besides the sensor noise that creeps into the values of the magnetometer, there are 2 other issues that need to be taken care of in our dynamical modelling of the dead reckoning system.
+
+The first issue is an issue of bias in the angle readings from the magnetometer. This bias can creep in due to 2 different reasons - the first being specific, environmental magnetic fields which distort the actual detection of TrueNorth  in the system and the second being a bias that creeps in due to the way the user holds the smartphone in the palm of his hand and the offset thus produced. To take into account such offsets, we modify the dynamical equations as follows:
+
+\begin{bmatrix}x_{i+1}\\
+y_{i+1}
+\end{bmatrix} = \begin{bmatrix}x_{i}\\
+y_{i}
+\end{bmatrix}  + d{}_{i} \begin{bmatrix}-cos(\theta_{i}+\theta_{b}+\phi_{mag})\\
+sin(\theta_{i}+\theta_{b}+\phi_{mag})
+\end{bmatrix} 
+
+In this modified version of the dynamical equations, we have added a slowly varying term \theta_{b} that represents an explicit bias in the readings from the magnetometer.
+
+The second issue at hand is step size variation. To map accelerometer readings to step sizes, we have used the empirical equation provided by [ref]. However, this empirical equation doesn't take into account changes in step sizes due to changes in footwear or floor material. To account for this bias in step size detection, we introduce an additional parameter d_{b} in the dynamical system. The new equations for the dynamical system are:
+
+\begin{bmatrix}x_{i+1}\\
+y_{i+1}
+\end{bmatrix} = \begin{bmatrix}x_{i}\\
+y_{i}
+\end{bmatrix}  + (d{}_{i}+d_{b}) \begin{bmatrix}-cos(\theta_{i}+\theta_{b}+\phi_{mag})\\
+sin(\theta_{i}+\theta_{b}+\phi_{mag})
+\end{bmatrix} 
+
+In this representation, d_{b} is a slowly varying bias variable on the step size.
