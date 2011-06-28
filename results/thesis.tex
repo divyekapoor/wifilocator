@@ -3,7 +3,7 @@
 \usepackage[twoside,bindingoffset=0.6in,left=1in,right=1in]{geometry} %,left=1in,right=1in % margins
 \usepackage{times}
 \usepackage{pdfpages}
-\usepackage{todonotes} % Todo
+\usepackage[disable]{todonotes} % Todo
 \usepackage[avantgarde]{quotchap} % Chapter headings
 \usepackage{amsmath} % Math formatting 
 \usepackage{amssymb} % "    "
@@ -49,7 +49,7 @@ the tracking device lies in a user's palm and not on a protected, stable
 surface (as is the case in robotics) generates a new set of challenges.
 
 This thesis proposes and implements an online particle filter based algorithm for 
-indoor positioning on an Android smartphone. The proposed algorithm 
+indoor positioning on an Android smartphone for pedestrians. The proposed algorithm 
 is not only able to work well on the resource constrained device, it actually
 yields an accuracy better than prior work in this area. Such results have 
 been made possible by a careful approach to the problem with decisions made 
@@ -91,9 +91,9 @@ environment as the proposed work.
 
 \input{proposed_method.tex}
 
-\input{groundwork.tex}
-
 \input{implementation_details.tex}
+
+\input{groundwork.tex}
 
 \input{results.tex}
 

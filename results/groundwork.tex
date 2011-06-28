@@ -2,14 +2,15 @@
 
 \todo{Figures for this entire chapter have to be rebuilt}
 
-Before implementing any system, it is imperative to understand the data at hand
-so as to make correct analytical decisions. In this regard, groundwork was done
-to characterize all the input data sources.
+While implementing any system, it is imperative to understand the data at hand
+so as to make correct analytical decisions and set correct parameters for the
+algorithms used. To characterize the input data sources, set parameters of the
+algorithms and optimize the resulting implementation, groundwork was done.
 
 \section{Hardware}
-The hardware used to produce the results is the Samsung Nexus S (cobranded with
+The hardware on which the system is implemented is the Samsung Nexus S (cobranded with
 Google) running Android 2.3.4. The official specifications of the device can be
-obtained from the manufacturer's website [link to website with reference] A
+obtained from the official website of the device\cite{NexusSpecs}. A
 short listing of the sensors present on the device is given below based on how
 the device reports the sensors via the software APIs:
 
@@ -384,6 +385,10 @@ the design of the proposed method of Chapter \ref{chap:proposed_method}.
 
 By doing the groundwork, we have been able to derive the ranges of parameters of 
 the proposed algorithm. These ranges are listed in Table \ref{tbl:algo_params}.
+Besides finding the ranges of parameters, the ground work has been useful 
+in exposing the behaviour of the input signals. This is very beneficial 
+in diagnosing implementation bugs and determining source of errors when 
+the application does not behave as expected.
 
 \begin{table}
 \centering

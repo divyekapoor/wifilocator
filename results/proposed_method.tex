@@ -83,7 +83,7 @@ are:
 Particle filters belong to a class of Sequential Monte Carlo algorithms 
 that depend essentially approximating a probability distribution function based
 on a Monte Carlo simulation of the system using observation samples. Particle 
-filters have been known to be very useful for tracking in systems where 
+filters have been known to be very useful for tracking in systems where joint
 probability distribution functions are either not completely known or hard 
 to sample. 
 
@@ -111,16 +111,17 @@ computationally intensive method is proposed in
 Algorithm \ref{algo:proposed_method}.
 
 \begin{algorithm}
+\dontprintsemicolon
 \SetKwInOut{Input}{Input}
 \Input{Sensor Events from device sensors}
 \KwResult{An estimate of the location of the device at any time through the variable $L$}
 \Begin{
     $L \longleftarrow FirstFix()$ \;
-    $P \longleftarrow$ $N$ particles around $L$ corrupted by Gaussian Noise\;
+    $P \longleftarrow$ $N$ particles around $L$ corrupted by gaussian noise\;
     \ForEach{$stepEvent$ from $sensors$}{
-        $P' \longleftarrow ApplyDynamicalEquations(P, stepEvent)$\;
+        $P' \longleftarrow ApplyDynamicalEquations(P)$\;
         $P' \longleftarrow MapSelect(P', P)$\;
-        \If{$P'$ is $\emptyset$}{
+        \eIf{$P'$ is $\emptyset$}{
             $R \longleftarrow PerfomRecovery(P)$\;
             \If{$R$ is not $\emptyset$}{
                 $P \longleftarrow R$
@@ -128,6 +129,8 @@ Algorithm \ref{algo:proposed_method}.
         }{
             $P \longleftarrow P'$\;
         }
+        Resample set $P$ uniformly to a fixed sized set and
+        corrupt the new particles thus generated with gaussian noise\;
         $L \longleftarrow Mean(P)$\;
     }
 }
@@ -391,7 +394,7 @@ values. We can then find the training constant by simply plugging in
 the values into the following equation:
 
 \begin{equation}
-C=\frac{\sqrt{(x_{2}-x_{1})^{2}+(y_{2}-y_{1})^{2}}}{\sum_{n=1}^{stepcount}\sqrt[4]{(A_{max_{i}}-A_{min_{i}})}}
+C=\frac{\sqrt{(x_{2}-x_{1})^{2}+(y_{2}-y_{1})^{2}}}{\sum_{i=1}^{stepcount}\sqrt[4]{(A_{max_{i}}-A_{min_{i}})}}
 \end{equation}
 
 Here,\\
@@ -428,9 +431,10 @@ $d_i$               &   the predicted step distance as per the step estimate equ
 $\theta_i$          &   the angle associated with the detected step based on a magnetometer reading\\
 \end{tabular}
 
-These equations are written assuming a coordinate system for the map where $x$
-positive towards right and $y$ positive downwards with $TrueNorth$ of the map
-pointing upwards. Effectively, this equation represents a raw dead reckoning
+These equations are written assuming a coordinate system for the map where the 
+origin is at the top left corner of the map, the $x$ axis being
+positive towards right and $y$ axis positive downwards with $TrueNorth$ of the map
+pointing upwards. Effectively, equation \eqref{eq:dr_eq} represents a raw dead reckoning
 solution. Unfortunately, these equations do nothing to counteract the biggest
 disadvantage of dead reckoning: unbounded error growth. The dynamical
 representation is also overtly simplistic because it fails to take into account
@@ -673,7 +677,7 @@ Algorithm \ref{algo:recovery}.
 \Begin{
     \emph{Try to recover by finding particles in the surroundings by random sampling}\;
     $retryCount \longleftarrow 0$\;
-    \While{$retryCount < 2$}{
+    \While{$retryCount < MaxRetries$}{
         \For{$j$ in $[1..N]$}{
             $r_j \longleftarrow (\mathcal{N}(0, \sigma_X), \mathcal{N}(0, \sigma_Y))$\;
             $selectParticle \longleftarrow false$\;
@@ -701,7 +705,7 @@ Algorithm \ref{algo:recovery}.
         $R \longleftarrow R \cup \{ r_j \}$\;
     }
     $R' \longleftarrow ApplyDynamicalEquations(R)$\;
-    \If{$R'$ is not $\emptyset$}{
+    \eIf{$R'$ is not $\emptyset$}{
         \Return $R$\;
     }{
         \emph{We've failed to find suitable particles, return failure and handle it by skipping the step information.}\;

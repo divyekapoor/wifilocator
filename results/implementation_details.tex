@@ -16,17 +16,11 @@ is shown in Figure \ref{fig:Android_OS_Structure}.
 
 \begin{figure}
 \centering
-\begin{picture}(300,300)
-%\graphpaper(0,0)(300,300)
-\put(0,0){\framebox(300,30){Device Hardware}}
-\put(0,50){\framebox(300,30){Android OS}}
-\put(0,100){\framebox(80,30){Android App}}\put(110,100){\framebox(80,30){Android App}}\put(220,100){\framebox(80,30){Android App}}
-\put(40,100){\vector(0,-1){20}}\put(150,100){\vector(0,-1){20}}\put(260,100){\vector(0,-1){20}}
-\end{picture}
+\includegraphics[width=4in]{figures/Android_OS.png}
 \caption{Typical Structure of Android OS\label{fig:Android_OS_Structure}}
 \end{figure}
 
-\section{Application Development Tools}
+\subsection{Application Development Tools}
 
 Applications for Android are usually written in Java and are run on the 
 custom Dalvik VM. Embedded programming is usually difficult because of 
@@ -42,7 +36,6 @@ tools on the host computer. A logging mechanism is also provided wherein
 application logs running on the device may be made visible in realtime 
 on the host computer through the ADB. These tools go a long way in making 
 development easier and help the programmer detect root causes of bugs faster.
-
 
 \section{The Android Application Lifecycle\label{sec:android_lifecycle}}
 
@@ -62,6 +55,8 @@ Figure \ref{fig:android_lifecycle}.
 
 
 \begin{figure}
+\centering
+\includegraphics[height=5in]{figures/Android_lifecycle.png}
 \caption{Android Application Lifecycle (Simplified)\label{fig:android_lifecycle}}
 \end{figure}
 
@@ -76,6 +71,28 @@ messages delivered asynchronously to the application via \emph{BroadcastReceiver
 or \emph{Intents}. (\emph{BroadcastReceiver} and \emph{Intent} are important
 classes in the Android framework).
 
+\subsection{Sensor Event Delivery Mechanism}
+
+Sensor events are not delivered synchronously to the system in response to 
+a function call as this would require a polling mode of operation which 
+is a great drain on system resources - especially the battery. Instead, 
+system events are delivered asynchronously to the application code 
+in a thread created by the Android OS and which is owned by the 
+Android Sensor Manager API. Thus any code written to handle sensor event 
+delivery must be multithreaded aware and should be able to handle 
+race conditions. The act of registering and unregistering for sensor events
+with the Sensor Manager API still remains a synchronous operation though.
+Figure \ref{fig:sensor_event} clarifies via a diagram the nature of the 
+sensor event delivery mechanism and the synchronous and asynchronous operations
+involved.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=5in]{figures/Android_Sensor_Setup.png}
+    \caption{Synchronous and Asynchronous operations involved in registering for sensor events\label{fig:sensor_event}}
+\end{figure}
+
+
 \section{System Architecture}
 
 As is clear from the previous section, the Android OS expects applications to 
@@ -88,21 +105,22 @@ being drawn here is that a packet receive event in the case of a
 protocol stack is similar to a sensor event generated for our system. 
 
 The complete layered structure of the application is shown in Figure 
-\ref{fig:system_architecture}. 
+\ref{fig:system_architecture}.
 
 \begin{figure}
     \centering
-    \includegraphics{figures/system_architecture}
+    \includegraphics[width=5in]{figures/SysArch.png}
     \caption{System Architecture\label{fig:system_architecture}}
 \end{figure}
 
-At the lowest layer, we have the \textbf{Sensor Unification Layer}. This layer is 
+At the bottom we have the \textbf{Sensor Unification Layer}. This layer is 
 important as the Android API separates the event delivery mechanism 
 for a Wifi SCAN event and the event delivery mechanism for a sensor 
-sample event. The rationale behind this being that sensors are passive 
-environment samplers while the Wifi NIC is an active communication 
+sample event and a unification mechanism is thus required. 
+The rationale behind the separation of concerns in the Android API is 
+that sensors are passive environment samplers while the Wifi NIC is an active communication 
 device and is not typically intended to be used as a sensor. The \textbf{Sensor 
-Unification Layer} works very hard to unify Wifi SCAN event results and 
+Unification Layer} works very hard to unify Wifi {\tt SCAN\_RESULTS\_AVAILABLE} event results and 
 sensor sample results into a single uniform events system to which 
 a higher layer can subscribe by registering a callback object. Whenever 
 a sensor event takes place for which higher layers have requested notification,
@@ -110,32 +128,116 @@ all registered callbacks for that event are executed by this layer. Thus,
 higher layers can request access to sensor events by just registering an 
 appropriate callback with this layer. The unification layer takes care of 
 interfacing with the Android SensorManager API and the Android WifiManager API
-and exposes lifecycle methods - \tt{pause} and \tt{resume} which free up 
+and exposes lifecycle methods - \texttt{pause} and \texttt{resume} which free up 
 higher layers from performing appropriate registrations and de-registrations
 of sensor event handlers when they intend to go to sleep. The class that 
 provides the API for the higher layers is the \emph{SensorLifecycleManager} class
 and the critical class for implementation of this layer is the 
 \emph{HWSensorEventListener} and \emph{WifiScanEventListener} classes. 
 
+The layer immediately above the \textbf{Sensor Unification Layer} is the 
+\textbf{Step Detection Layer}. This layer is responsible for accepting 
+accelerometer and magnetometer sensor events from the device and notifying 
+callbacks that a step event has taken place. The callbacks receive 
+notification of the step event along with parameters which 
+indicate the \texttt{step size}, the \texttt{step angle} and a 
+\texttt{timestamp} of the event. 
 
+The \textbf{Step Detection Layer} essentially feeds the \textbf{Algorithm Layer}.
+The \textbf{Algorithm Layer} may depend directly on the step information to 
+implement tracking (as is in the case of the Simple Dead Reckoning solution
+and our proposed method),
+or it may register it's own callback for other events such as Wifi 
+\texttt{SCAN\_RESULTS\_AVAILABLE} events from the \textbf{Sensor Unification Layer}
+to implement tracking algorithms that depend on Wifi information.
+In case the \textbf{Algorithm Layer} requires access to a Wifi Site Survey 
+data, it requests a reference to a DB storing such data from the 
+\emph{PersistenceManager} class. Utility modules developed at the \textbf{Algorithm Layer}
+allow population, display and modification of samples in the survey database.
+Map information is brought in by reading a Map downloaded to the Android 
+device. The compressed version of the image is expanded and cached for 
+access by the Algorithm layer.
 
+The \textbf{UI Layer} is built using HTML5 technology as well as native 
+Android Views and simply taps into the \textbf{Algorithm Layer} to get 
+interesting values regarding the current position of the device or the 
+tracked path. This access can be made synchronous if done using 
+Android views or it can be made asynchronous by exposing the algorithm 
+layer via a JavaScript object to a webpage running in a sandboxed browser.
+Currently, the JavaScript route has been chosen as it allows us to 
+remove a UI update from the sensor processing loop. Algorithm data is 
+tapped using a timer that refreshes the UI at 1 Hz.
 
+Java packages and the layers to which code in them belongs is stated in 
+Table \ref{tbl:class_table}.
 
-
-The problem being implemented has a natural event-driven layered structure. 
-We are taking
-low level sensor events being generated at a fast pace and converting 
-them to "step" events that take place much more rarely. These step events 
-are then processed 
+\begin{table}
+\centering
+\begin{tabular}{l p{2.5in} p{1in}}
+\hline
+\hline
+\textbf{Package} & \textbf{Classes} & \textbf{Layer}\\
+\hline
+in.ernet.iitr.divyeuec.ui & \emph{LaunchActivity}, \emph{DeadReckoningActivity}, \emph{WifiSiteSurveyActivity}$\dots$ & UI\\
+\hline
+in.ernet.iitr.divyeuec.algorithms & \emph{DeadReckoning}, \emph{WifiSnappedDeadReckoning}, \emph{ParticleFilteredReckoning} & Algorithm\\
+\hline
+in.ernet.iitr.divyeuec.algorithms & the callback functions of \emph{DeadReckoning} & Step Detection\\
+\hline
+in.ernet.iitr.divyeuec.sensors & \emph{SensorLifecycleManager}, \emph{WifiScanResults} & Sensor Unification Layer\\
+\hline
+in.ernet.iitr.divyeuec.db & \emph{PersistenceFactory}, \emph{FileDB}, \emph{SQLiteDB}, \emph{LocationFingerprint} & Persistence Manager\\
+\hline
+\end{tabular}
+\caption{List of Classes and their Corresponding Layers\label{tbl:class_table}}
+\end{table}
 
 \section{System Implementation of the Lifecycle}
 
 The Android Application Lifecycle referred in Section \ref{sec:android_lifecycle}
 primarily deals with high level user actions such as going idle, switching 
-off the screen, exiting the application etc. 
+off the screen, exiting the application etc. We preempt idle states 
+from occurring in the application by acquiring a \emph{WakeLock} from 
+the \texttt{POWER\_MANAGER} system service. This allows us to keep the 
+display running even when no user interaction has taken place with the 
+device (as is the case when the system is tracking and the user is just 
+observing the screen). The operations that involve the highest complexity 
+in the lifecycle are \emph{Pause} and \emph{Refresh}. In these 
+operations, the application is supposed to let go of all Sensor 
+resources. Since we have a single class managing all the Sensor data, 
+it exposes the \texttt{pause} and \texttt{resume} methods which are
+called by the UI layer whenever the UI is signalled to pause or 
+signalled out of the paused state and asked to resume. 
 
-\missingfigure{Architecture of system}
 
-\missingfigure{List of major classes}
+\section{Computational Complexities}
 
-\missingfigure{Their interactions}
+Everything below and including the \emph{Step Detection Layer} needs necessarily to be of the 
+lowest possible computational complexity in order to keep the application 
+responsive to sensor data being generated asynchronously. There is 
+a slight leeway above the step detection layer to use algorithms that 
+require more computational resources as the step events are not 
+generated as frequently.
+
+\section{Extensibility}
+
+The architecture of the system is very sound. In fact, the layered system 
+made it very easy to develop logging and graphing utilities for the 
+device without causing major modifications to parts of the system. 
+
+A simple module, developed at the appropriate layer and 
+exposed to the UI layer could be built independently and used by using only 
+the features of the lower layers.
+
+Separation of concerns was not an issue in this  
+design as no layer below the UI layer was concerned about how to expose the data 
+to the user. 
+
+Loose coupling ensures that there is ample scope for extending the application via 
+modules that can replace the functionality for entire layers. In fact, 
+the entire system can be turned into a simulation platform by just 
+replacing the \textbf{Sensor Unification Layer} with a class that 
+simulates sensor events from data recorded in files and replicates the same 
+interface as the SensorLifecycleManager.
+
+

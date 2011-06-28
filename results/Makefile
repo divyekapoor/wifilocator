@@ -1,3 +1,5 @@
+default: all
+
 dummy: *.tex figures/*
 	pdflatex dummy.tex
 	pdflatex dummy.tex
