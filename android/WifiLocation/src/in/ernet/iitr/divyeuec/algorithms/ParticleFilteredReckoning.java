@@ -1,9 +1,13 @@
 package in.ernet.iitr.divyeuec.algorithms;
 
 import in.ernet.iitr.divyeuec.R;
+import in.ernet.iitr.divyeuec.ui.views.MapView;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Date;
 import java.util.Random;
 
 import org.json.JSONArray;
@@ -15,6 +19,8 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.os.Environment;
+import android.text.format.DateFormat;
 import android.util.Log;
 
 public class ParticleFilteredReckoning extends DeadReckoning {
@@ -58,16 +64,19 @@ public class ParticleFilteredReckoning extends DeadReckoning {
 	}
 	
 	private static final int NUM_PARTICLES = 50;
-	private static final double ANGLE_VARIANCE = 5.0/180*Math.PI; // 5 degree variance
+	private static final double ANGLE_VARIANCE = (5.0/180)*Math.PI; // 5 degree variance
 	private static final String TAG = "ParticleFilteredReckoning";
-	private static final double X_SD = 2.0/640.0; // 5px X, Y variations in starting position
-	private static final double Y_SD = 2.0/480.0; // TODO fix this hardcoding
+	private static final double X_SD = 5*MapView.PIXELS_PER_METER/640.0; // 5px X, Y variations in starting position
+	private static final double Y_SD = 5*MapView.PIXELS_PER_METER/480.0; // TODO fix this hardcoding
+	private static final double INIT_SD_X = 0.25*MapView.PIXELS_PER_METER/640;
+	private static final double INIT_SD_Y = 0.25*MapView.PIXELS_PER_METER/480;
 	
 	protected Particle[] mParticles;
 	protected Bitmap mFloorPlan;
 	protected Random mRandom;
 	private final int floorPlanHeight;
 	private final int floorPlanWidth;
+	private FileWriter mNumCandidatesFile;
 	
 	public ParticleFilteredReckoning(Context ctx) {
 		super(ctx);
@@ -90,12 +99,52 @@ public class ParticleFilteredReckoning extends DeadReckoning {
 		super.init();
 		mRandom = new Random();
 		mParticles = new Particle[NUM_PARTICLES];
+		try {
+			if(mNumCandidatesFile != null) {
+				mNumCandidatesFile.flush();
+				mNumCandidatesFile.close();
+				mNumCandidatesFile = null;
+			}
+		} catch(IOException e) {
+			e.printStackTrace();
+			Log.e(TAG, "Couldn't close numCandidates file!",e);
+			throw new RuntimeException(e);
+		}
 		resetParticles(0.f, 0.f);
 	}
 
+	@Override
+	public void startLogging() {
+		try {
+			Date now = new Date(System.currentTimeMillis());
+			mNumCandidatesFile = new FileWriter(new File(Environment.getExternalStorageDirectory() + File.separator + "samples", "pfcandidates." + DateFormat.format("yyyy-MM-dd-kk-mm-ss", now) + ".csv"));
+		} catch(IOException e) {
+			e.printStackTrace();
+			Log.e(TAG, "Couldn't create a writer for numCandidates file!",e);
+			throw new RuntimeException(e);
+		}
+		super.startLogging();
+	}
+	
+	@Override
+	public void stopLogging() {
+		try {
+			if(mNumCandidatesFile != null) {
+				mNumCandidatesFile.flush();
+				mNumCandidatesFile.close();
+				mNumCandidatesFile = null;
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			Log.e(TAG, "Couldn't close numCandidates file!",e);
+			throw new RuntimeException(e);
+		}
+		super.stopLogging();
+	}
 	private void resetParticles(float x, float y) {
+		
 		for(int i = 0; i < NUM_PARTICLES; ++i) {
-			mParticles[i] = new Particle(x + X_SD*mRandom.nextGaussian(),y + Y_SD*mRandom.nextGaussian());
+			mParticles[i] = new Particle(x + INIT_SD_X*mRandom.nextGaussian(),y + INIT_SD_Y*mRandom.nextGaussian());
 		}
 	}
 	
@@ -103,7 +152,7 @@ public class ParticleFilteredReckoning extends DeadReckoning {
 	public void setmStartX(float mStartX) {
 		super.setmStartX(mStartX);
 		for(int i = 0; i < NUM_PARTICLES; ++i) {
-			mParticles[i].x = mStartX + (float)(X_SD*mRandom.nextGaussian());
+			mParticles[i].x = mStartX + (float)(INIT_SD_X*mRandom.nextGaussian());
 		}
 	}
 	
@@ -111,7 +160,7 @@ public class ParticleFilteredReckoning extends DeadReckoning {
 	public void setmStartY(float mStartY) {
 		super.setmStartY(mStartY);
 		for(int i = 0; i < NUM_PARTICLES; ++i) {
-			mParticles[i].y = mStartY + (float)(Y_SD*mRandom.nextGaussian());
+			mParticles[i].y = mStartY + (float)(INIT_SD_Y*mRandom.nextGaussian());
 		}
 	}
 	
@@ -135,9 +184,9 @@ public class ParticleFilteredReckoning extends DeadReckoning {
 		
 		for(int i = 0; i < NUM_PARTICLES; ++i) {
 			double anglePerturbation = ANGLE_VARIANCE*mRandom.nextGaussian();
-			double stepPerturbation = 0; //*(stepSize/25.0)*mRandom.nextGaussian();
-			double peturbedAngle = radAngle + anglePerturbation + mParticles[i].radAngleBias; // TODO modify for orientation info
-			double peturbedStepSize = stepSize + stepPerturbation; // + mParticles[i].stepOffset
+			double stepPerturbation =  (stepSize/25.0)*mRandom.nextGaussian(); // 0;
+			double peturbedAngle = radAngle + anglePerturbation + mParticles[i].radAngleBias;
+			double peturbedStepSize = stepSize + stepPerturbation + mParticles[i].stepBias;
 			
 			// TODO Refactor this to get rid of the mMapWidth and mMapHeight constants
 			double newParticleX = Math.min(1, Math.max(mParticles[i].x + peturbedStepSize*Math.sin(peturbedAngle)/getmMapWidth(), 0));
@@ -163,6 +212,17 @@ public class ParticleFilteredReckoning extends DeadReckoning {
 		// Now, pick and replicate samples using weights
 		int numCandidates = transitionStates.size();
 		Log.d(TAG, "numCandidates: " + numCandidates);
+		try {
+			if(this.isLogging()) {
+				mNumCandidatesFile.write(System.currentTimeMillis() + "," + numCandidates + "\n");
+				mNumCandidatesFile.flush();
+			}
+		} catch(IOException e) {
+			e.printStackTrace();
+			Log.e(TAG, "Couldn't write to numCandidates file!", e);
+			throw new RuntimeException(e);
+		}
+		
 		if(numCandidates > 0) {
 			double[] cumulativeWeights = new double[numCandidates];
 			double cWeight = 0;
@@ -174,12 +234,13 @@ public class ParticleFilteredReckoning extends DeadReckoning {
 			
 			for(int i = 0; i < NUM_PARTICLES; ++i) {
 				mParticles[i] = transitionStates.get(rouletteWheel(cumulativeWeights, mRandom.nextDouble()*cWeight));
-				Particle disturbedParticle = new Particle(mParticles[i].x + X_SD*mRandom.nextGaussian(), mParticles[i].y + Y_SD*mRandom.nextGaussian());
+				Particle disturbedParticle = new Particle(mParticles[i].x + INIT_SD_X*mRandom.nextGaussian(), mParticles[i].y + INIT_SD_Y*mRandom.nextGaussian()); // TODO Add the other parameters for the constructor
 				if(transitionCost(mParticles[i], disturbedParticle) < MAX_ACCEPTABLE_TRANSITION_COST) {
 					mParticles[i] = disturbedParticle;
 				}
 			}
 		} else {
+			// Resampling stage: don't go here unless you get lost!!!
 			// Retry with lesser accuracy particles
 			for(int i = 0; i < NUM_PARTICLES; ++i) {
 				Particle disturbedParticle = new Particle(mParticles[i].x + X_SD*mRandom.nextGaussian(), mParticles[i].y + Y_SD*mRandom.nextGaussian());

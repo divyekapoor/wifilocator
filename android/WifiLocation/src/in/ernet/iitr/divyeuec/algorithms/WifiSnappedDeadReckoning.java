@@ -52,6 +52,7 @@ public class WifiSnappedDeadReckoning extends DefaultSensorCallbacks implements
 	
 	public void restart() {
 		mDeadReckoning.restart();
+		mWifiManager.startScan(); // To restart the wifi detection process
 	}
 	
 	
@@ -60,7 +61,7 @@ public class WifiSnappedDeadReckoning extends DefaultSensorCallbacks implements
 	public void onWifiScanResultsAvailable(List<Map<String, String>> scanResults) {
 		Log.i(TAG, "Wifi Scan results available.");
 		LocationFingerprint currentLocationFingerprint = new LocationFingerprint(LocationFingerprint.RAVINDRA_BHAWAN_MAP_ID, new Date(System.currentTimeMillis()), (float) mDeadReckoning.getAngle(), 0, 0, scanResults, "unknown");
-		List<LocationFingerprint> allSamples = PersistenceFactory.getInstance(mCtx).getAllSamples();
+		List<LocationFingerprint> allSamples = PersistenceFactory.getInstance(mCtx).getAllSamples(); // .query(currentLocationFingerprint.getmX(), currentLocationFingerprint.getmY(), currentLocationFingerprint.getmAngle())
 		LocationFingerprint closestSample = null;
 		double minDistance = Double.POSITIVE_INFINITY;
 		for(LocationFingerprint f : allSamples) {

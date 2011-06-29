@@ -246,6 +246,7 @@ public class DeadReckoningActivity extends Activity {
 			            				stepDistance.write("" + now.getTime() + "," + + numSteps + "," + actualDistance + "," + estimatedDistance + "," + distancePerStep + "," + trainingConstant + "\n");
 			            				stepDistance.flush();
 										stepDistance.close();
+										Toast.makeText(this, "Training Constant: " + trainingConstant + " written to file.", Toast.LENGTH_SHORT).show();
 									} catch (IOException e) {
 										Log.e(TAG, "Writing to stepDistance file failed!", e);
 										e.printStackTrace();

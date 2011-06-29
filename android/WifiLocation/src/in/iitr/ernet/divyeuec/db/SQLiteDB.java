@@ -20,6 +20,7 @@ import android.database.sqlite.SQLiteStatement;
 import android.os.Environment;
 import android.text.format.DateFormat;
 import android.util.Log;
+import android.widget.Toast;
 
 public class SQLiteDB implements IFingerprintDB {
 
@@ -80,8 +81,10 @@ public class SQLiteDB implements IFingerprintDB {
 	private FingerprintDBOpenHelper mFingerprintDBOpenHelper;
 	private SQLiteStatement mInsertFingerprint;
 	private List<LocationFingerprint> mAllSamples;
+	private Context mCtx;
 	
 	private SQLiteDB(Context context) {
+		mCtx = context;
 		mFingerprintDBOpenHelper = new FingerprintDBOpenHelper(context);
 		mFingerprintDb = mFingerprintDBOpenHelper.getWritableDatabase();
 		mInsertFingerprint = mFingerprintDb.compileStatement("insert into " + TABLE_NAME + "(" + COL_MAPID + "," + COL_X + "," + COL_Y + "," + COL_ANGLE + "," + COL_DATETIME + "," + COL_SAMPLENAME + "," + COL_FINGERPRINTJSON + ") " + " values (?, ?, ?, ?, ?, ?, ?)");
@@ -135,11 +138,12 @@ public class SQLiteDB implements IFingerprintDB {
 		return lf;
 	}
 	
+	// TODO Buggy code. Doesn't seem to work correctly
 	@Override
 	public List<LocationFingerprint> query(Float X, Float Y, Float angle) {
-		final double xTolerance = 2.5*MapView.PIXELS_PER_METER/640.; // 2.5 metres tolerance on either side
-		final double yTolerance = 2.5*MapView.PIXELS_PER_METER/480.;
-		final double angleTolerance = 20.; // 20 degree tolerance in angles
+		final double xTolerance = 3.2*MapView.PIXELS_PER_METER/640.; // 2.5 metres tolerance on either side
+		final double yTolerance = 3.2*MapView.PIXELS_PER_METER/480.;
+		final double angleTolerance = 90.; // 20 degree tolerance in angles
 		
 		final double angleLowerLimit = angle - angleTolerance;
 		final double angleUpperLimit = angle + angleTolerance;
@@ -159,6 +163,8 @@ public class SQLiteDB implements IFingerprintDB {
 		
 		ArrayList<LocationFingerprint> nearbyFingerprints = new ArrayList<LocationFingerprint>();
 		Cursor nearbyFingerprintCursor = mFingerprintDb.query(TABLE_NAME, new String[]{COL_FINGERPRINTJSON}, angleConstraint + " and " + COL_X + " > ? and " + COL_X + "< ? and " + COL_Y + " > ? and " + COL_Y + " < ? and " + COL_ANGLE + " > ? ", new String[] { "" + (X - xTolerance), "" + (X + xTolerance), "" + (Y - yTolerance), "" + (Y + yTolerance)}, null, null, null, null);
+		//Cursor nearbyFingerprintCursor = mFingerprintDb.query(TABLE_NAME, new String[]{COL_FINGERPRINTJSON},  COL_X + " >= " + (X - xTolerance) + " and " + COL_X + " <= " + (X + xTolerance) + " and " + COL_Y + " >= " + (Y-yTolerance) + " and " + COL_Y + " <= " + (Y + yTolerance), null, null, null, null, null);
+		Toast.makeText(mCtx, "Count: " + nearbyFingerprintCursor.getCount(), Toast.LENGTH_SHORT).show();
 		int fingerprintColumn = nearbyFingerprintCursor.getColumnIndex(COL_FINGERPRINTJSON);
 		if(!nearbyFingerprintCursor.moveToFirst()) {
 			return nearbyFingerprints;
