@@ -2,7 +2,7 @@ default: paper
 
 paper:*.tex figures/
 	pdflatex paper.tex
-	echo bibtex paper.aux
+	bibtex paper.aux
 	pdflatex paper.tex
 	pdflatex paper.tex
 	gnome-open paper.pdf
